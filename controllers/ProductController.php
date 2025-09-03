@@ -183,14 +183,16 @@ class ProductController {
 
         try {
             // Vérifier s'il y a des commandes liées à ce produit
-            $stmt = $this->conn->prepare("SELECT COUNT(*) FROM order_items WHERE product_id = :id");
-            $stmt->execute([':id' => $id]);
-            $orderCount = (int)$stmt->fetchColumn();
+            // Vérifier s'il y a des commandes liées à ce produit
+$stmt = $this->conn->prepare("SELECT COUNT(*) FROM orders WHERE product_id = :id");
+$stmt->execute([':id' => $id]);
+$orderCount = (int)$stmt->fetchColumn();
 
-            if ($orderCount > 0) {
-                $_SESSION['error'] = 'Cannot delete product. There are existing orders for this product.';
-                return false;
-            }
+if ($orderCount > 0) {
+    $_SESSION['error'] = 'Cannot delete product. There are existing orders for this product.';
+    return false;
+}
+
 
             // Supprimer l'image principale
             if (!empty($product['image'])) {

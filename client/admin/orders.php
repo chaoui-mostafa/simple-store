@@ -50,9 +50,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // Get filter parameters
 $phoneFilter = $_GET['phone'] ?? '';
 $minOrdersFilter = $_GET['min_orders'] ?? '';
+$codeFilter = $_GET['code'] ?? ''; // New filter for order code
 
-// Get orders with optional filters
-$orders = $orderController->getAllOrders($phoneFilter, $minOrdersFilter);
+// Pagination parameters
+$currentPage = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+$perPage = 25; // Items per page
+
+// Get orders with optional filters and pagination
+$orders = $orderController->getAllOrders($phoneFilter, $minOrdersFilter, $codeFilter, $currentPage, $perPage);
+
+// Get total count for pagination
+$totalOrders = $orderController->countAllOrders($phoneFilter, $minOrdersFilter, $codeFilter);
+$totalPages = ceil($totalOrders / $perPage);
 
 // Get status counts for statistics
 $statusCounts = [
@@ -366,6 +375,56 @@ $whatsappNumber = '+212724893110';
         .btn-danger {
             background: linear-gradient(135deg, var(--danger-color) 0%, #dc2626 100%);
         }
+        
+        /* Pagination styles */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 2rem;
+            padding: 1rem;
+        }
+        
+        .page-item {
+            margin: 0 0.25rem;
+        }
+        
+        .page-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: white;
+            color: #4B5563;
+            font-weight: 500;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .page-link:hover {
+            background: #3B82F6;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
+        }
+        
+        .page-link.active {
+            background: linear-gradient(135deg, #3B82F6 0%, #2563eb 100%);
+            color: white;
+        }
+        
+        .page-link.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .page-info {
+            text-align: center;
+            margin-top: 1rem;
+            color: #6B7280;
+            font-size: 0.875rem;
+        }
     </style>
 </head>
 
@@ -463,7 +522,7 @@ $whatsappNumber = '+212724893110';
                 <div class="flex justify-between items-center mb-6">
                     <h1 class="text-2xl font-bold text-gray-800">Gestion des Commandes</h1>
                     <span class="bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full">
-                        Commandes Total: <?php echo count($orders); ?>
+                        Commandes Total: <?php echo $totalOrders; ?>
                     </span>
                 </div>
 
@@ -521,7 +580,13 @@ $whatsappNumber = '+212724893110';
                 <!-- Filter section -->
                 <div class="filter-section mb-6">
                     <h3 class="text-lg font-semibold mb-4">Filtrer les Commandes</h3>
-                    <form method="GET" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <form method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div>
+                            <label class="form-label">Code Commande</label>
+                            <input type="text" name="code" value="<?php echo htmlspecialchars($codeFilter); ?>" 
+                                   placeholder="Rechercher par code..." class="form-input">
+                        </div>
+                        
                         <div>
                             <label class="form-label">Numéro de Téléphone</label>
                             <input type="text" name="phone" value="<?php echo htmlspecialchars($phoneFilter); ?>" 
@@ -704,6 +769,69 @@ $whatsappNumber = '+212724893110';
                                 </tbody>
                             </table>
                         </div>
+                        
+                        <!-- Pagination -->
+                        <?php if ($totalPages > 1): ?>
+                        <div class="pagination">
+                            <?php
+                            // Build query string for pagination links
+                            $queryParams = [];
+                            if (!empty($phoneFilter)) $queryParams['phone'] = $phoneFilter;
+                            if (!empty($minOrdersFilter)) $queryParams['min_orders'] = $minOrdersFilter;
+                            if (!empty($codeFilter)) $queryParams['code'] = $codeFilter;
+                            $queryString = !empty($queryParams) ? '&' . http_build_query($queryParams) : '';
+                            ?>
+                            
+                            <!-- First page -->
+                            <div class="page-item">
+                                <a href="?page=1<?php echo $queryString; ?>" class="page-link <?php echo $currentPage == 1 ? 'disabled' : ''; ?>">
+                                    <i class="fas fa-angle-double-left"></i>
+                                </a>
+                            </div>
+                            
+                            <!-- Previous page -->
+                            <div class="page-item">
+                                <a href="?page=<?php echo max(1, $currentPage - 1); ?><?php echo $queryString; ?>" class="page-link <?php echo $currentPage == 1 ? 'disabled' : ''; ?>">
+                                    <i class="fas fa-angle-left"></i>
+                                </a>
+                            </div>
+                            
+                            <!-- Page numbers -->
+                            <?php
+                            $startPage = max(1, $currentPage - 2);
+                            $endPage = min($totalPages, $startPage + 4);
+                            
+                            if ($endPage - $startPage < 4) {
+                                $startPage = max(1, $endPage - 4);
+                            }
+                            
+                            for ($i = $startPage; $i <= $endPage; $i++): ?>
+                                <div class="page-item">
+                                    <a href="?page=<?php echo $i; ?><?php echo $queryString; ?>" class="page-link <?php echo $currentPage == $i ? 'active' : ''; ?>">
+                                        <?php echo $i; ?>
+                                    </a>
+                                </div>
+                            <?php endfor; ?>
+                            
+                            <!-- Next page -->
+                            <div class="page-item">
+                                <a href="?page=<?php echo min($totalPages, $currentPage + 1); ?><?php echo $queryString; ?>" class="page-link <?php echo $currentPage == $totalPages ? 'disabled' : ''; ?>">
+                                    <i class="fas fa-angle-right"></i>
+                                </a>
+                            </div>
+                            
+                            <!-- Last page -->
+                            <div class="page-item">
+                                <a href="?page=<?php echo $totalPages; ?><?php echo $queryString; ?>" class="page-link <?php echo $currentPage == $totalPages ? 'disabled' : ''; ?>">
+                                    <i class="fas fa-angle-double-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <div class="page-info">
+                            Affichage de <?php echo (($currentPage - 1) * $perPage) + 1; ?> à <?php echo min($currentPage * $perPage, $totalOrders); ?> sur <?php echo $totalOrders; ?> commandes
+                        </div>
+                        <?php endif; ?>
                     <?php endif; ?>
                 </div>
             </main>

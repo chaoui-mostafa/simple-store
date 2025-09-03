@@ -45,44 +45,44 @@ class AdminController {
     }
 
     // Get all admins
-    public function getAllAdmins() {
-        try {
-            $stmt = $this->conn->query("SELECT id, username, created_at FROM admins ORDER BY id DESC");
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch(PDOException $e) {
-            error_log("Error fetching admins: " . $e->getMessage());
-            return [];
-        }
-    }
+    // public function getAllAdmins() {
+    //     try {
+    //         $stmt = $this->conn->query("SELECT id, username, created_at FROM admins ORDER BY id DESC");
+    //         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    //     } catch(PDOException $e) {
+    //         error_log("Error fetching admins: " . $e->getMessage());
+    //         return [];
+    //     }
+    // }
 
     // Create new admin
-    public function createAdmin($username, $password) {
-        $username = htmlspecialchars(trim($username));
+    // public function createAdmin($username, $password) {
+    //     $username = htmlspecialchars(trim($username));
 
-        // Check if username already exists
-        if ($this->adminExists($username)) {
-            $_SESSION['error'] = 'Ce nom d\'utilisateur existe déjà.';
-            return false;
-        }
+    //     // Check if username already exists
+    //     if ($this->adminExists($username)) {
+    //         $_SESSION['error'] = 'Ce nom d\'utilisateur existe déjà.';
+    //         return false;
+    //     }
 
-        $password_hash = password_hash($password, PASSWORD_DEFAULT);
+    //     $password_hash = password_hash($password, PASSWORD_DEFAULT);
 
-        try {
-            $stmt = $this->conn->prepare("INSERT INTO admins (username, password_hash) VALUES (:username, :password_hash)");
-            $stmt->bindParam(':username', $username);
-            $stmt->bindParam(':password_hash', $password_hash);
+    //     try {
+    //         $stmt = $this->conn->prepare("INSERT INTO admins (username, password_hash) VALUES (:username, :password_hash)");
+    //         $stmt->bindParam(':username', $username);
+    //         $stmt->bindParam(':password_hash', $password_hash);
 
-            if ($stmt->execute()) {
-                $_SESSION['success'] = 'Administrateur créé avec succès.';
-                return true;
-            }
-        } catch(PDOException $e) {
-            error_log("Error creating admin: " . $e->getMessage());
-            $_SESSION['error'] = 'Échec de la création de l\'administrateur. Veuillez réessayer plus tard.';
-        }
+    //         if ($stmt->execute()) {
+    //             $_SESSION['success'] = 'Administrateur créé avec succès.';
+    //             return true;
+    //         }
+    //     } catch(PDOException $e) {
+    //         error_log("Error creating admin: " . $e->getMessage());
+    //         $_SESSION['error'] = 'Échec de la création de l\'administrateur. Veuillez réessayer plus tard.';
+    //     }
 
-        return false;
-    }
+    //     return false;
+    // }
 
     // Check if admin exists
     private function adminExists($username) {
@@ -291,13 +291,38 @@ class AdminController {
         return !empty($_SESSION['admin_logged_in']);
     }
    
-    public function getGalleryImages() {
-        // Retourner les images de la galerie depuis la base de données ou le dossier d'images
-        return [
-            'img1.jpg',
-            'img2.jpg',
-            'img3.jpg',
-        ];
+   // In AdminController.php
+public function getAllAdmins() {
+    $sql = "SELECT id, username FROM admins ORDER BY id";
+    $stmt = $this->conn->prepare($sql);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+public function createAdmin($username, $password) {
+    // Check if username already exists
+    $checkSql = "SELECT id FROM admins WHERE username = ?";
+    $checkStmt = $this->conn->prepare($checkSql);
+    $checkStmt->execute([$username]);
+    
+    if ($checkStmt->rowCount() > 0) {
+        $_SESSION['error'] = "Ce nom d'utilisateur existe déjà.";
+        return false;
     }
+    
+    // Hash the password
+    $passwordHash = password_hash($password, PASSWORD_DEFAULT);
+    
+    // Insert the new admin
+    $sql = "INSERT INTO admins (username, password_hash) VALUES (?, ?)";
+    $stmt = $this->conn->prepare($sql);
+    
+    if ($stmt->execute([$username, $passwordHash])) {
+        $_SESSION['success'] = "Administrateur créé avec succès.";
+        return true;
+    } else {
+        $_SESSION['error'] = "Erreur lors de la création de l'administrateur.";
+        return false;
+    }
+}
 }
 ?>

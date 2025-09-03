@@ -551,7 +551,8 @@ $currentAdminId = $_SESSION['admin_id'] ?? null;
                                                     </span>
                                                 </td>
                                                 <td class="py-4 px-6">
-                                                    <?php echo date('d/m/Y à H:i', strtotime($admin['created_at'])); ?>
+                                                    <!-- Removed date display since created_at column doesn't exist -->
+                                                    N/A
                                                 </td>
                                                 <td class="py-4 px-6">
                                                     <div class="action-buttons">

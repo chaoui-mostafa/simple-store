@@ -124,21 +124,21 @@ class OrderController {
     }
 
     // Get all orders (admin)
-    public function getAllOrders(): array {
-        try {
-            $stmt = $this->conn->prepare("
-                SELECT o.*, p.name AS product_name, p.price AS product_price, p.image AS product_image
-                FROM orders o
-                LEFT JOIN products p ON o.product_id = p.id
-                ORDER BY o.created_at DESC
-            ");
-            $stmt->execute();
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch(PDOException $e) {
-            error_log("Error fetching orders: " . $e->getMessage());
-            return [];
-        }
-    }
+    // public function getAllOrders(): array {
+    //     try {
+    //         $stmt = $this->conn->prepare("
+    //             SELECT o.*, p.name AS product_name, p.price AS product_price, p.image AS product_image
+    //             FROM orders o
+    //             LEFT JOIN products p ON o.product_id = p.id
+    //             ORDER BY o.created_at DESC
+    //         ");
+    //         $stmt->execute();
+    //         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    //     } catch(PDOException $e) {
+    //         error_log("Error fetching orders: " . $e->getMessage());
+    //         return [];
+    //     }
+    // }
 
     // Get single order by ID
     public function getOrder($id) {
@@ -425,5 +425,89 @@ public function getOrderDetails($orderId) {
         return null;
     }
 }
+// In OrderController.php
+public function getAllOrders($phoneFilter = '', $minOrdersFilter = '', $codeFilter = '', $page = 1, $perPage = 10) {
+    $offset = ($page - 1) * $perPage;
+    
+    $sql = "SELECT o.*, p.name as product_name, p.price as product_price, p.image as product_image 
+            FROM orders o 
+            LEFT JOIN products p ON o.product_id = p.id 
+            WHERE 1=1";
+    
+    $params = [];
+    
+    if (!empty($phoneFilter)) {
+        $sql .= " AND o.customer_phone LIKE ?";
+        $params[] = "%$phoneFilter%";
+    }
+    
+    if (!empty($codeFilter)) {
+        $sql .= " AND o.order_code LIKE ?";
+        $params[] = "%$codeFilter%";
+    }
+    
+    // For min_orders filter, we need to find customers with at least X orders
+    if (!empty($minOrdersFilter)) {
+        $sql .= " AND o.customer_phone IN (
+                    SELECT customer_phone 
+                    FROM orders 
+                    GROUP BY customer_phone 
+                    HAVING COUNT(*) >= ?
+                )";
+        $params[] = $minOrdersFilter;
+    }
+    
+    // Add ordering and pagination
+    $sql .= " ORDER BY o.created_at DESC LIMIT $perPage OFFSET $offset";
+    
+    try {
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        error_log("SQL Error in getAllOrders: " . $e->getMessage());
+        error_log("SQL Query: " . $sql);
+        return [];
+    }
+}
 
+// Also add a method to count total orders for pagination
+public function countAllOrders($phoneFilter = '', $minOrdersFilter = '', $codeFilter = '') {
+    $sql = "SELECT COUNT(*) as total 
+            FROM orders o 
+            WHERE 1=1";
+    $params = [];
+    
+    if (!empty($phoneFilter)) {
+        $sql .= " AND o.customer_phone LIKE ?";
+        $params[] = "%$phoneFilter%";
+    }
+    
+    if (!empty($codeFilter)) {
+        $sql .= " AND o.order_code LIKE ?";
+        $params[] = "%$codeFilter%";
+    }
+    
+    // For min_orders filter, we need to find customers with at least X orders
+    if (!empty($minOrdersFilter)) {
+        $sql .= " AND o.customer_phone IN (
+                    SELECT customer_phone 
+                    FROM orders 
+                    GROUP BY customer_phone 
+                    HAVING COUNT(*) >= ?
+                )";
+        $params[] = $minOrdersFilter;
+    }
+    
+    try {
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute($params);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result['total'] ?? 0;
+    } catch (PDOException $e) {
+        error_log("SQL Error in countAllOrders: " . $e->getMessage());
+        error_log("SQL Query: " . $sql);
+        return 0;
+    }
+}
 }

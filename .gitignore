@@ -1,4 +1,24 @@
+# Ignore vendor and node_modules
 /vendor/
 /node_modules/
+
+# Ignore log files
 *.log
+
+# Ignore Mac system files
 .DS_Store
+# Ignore IDE files
+.vscode/
+.idea/
+# Ignore compiled files
+*.class
+*.o
+
+# Ignore product images if needed
+/assets/images/product_images/
+/assets/images/
+
+# Ignore environment files
+.env
+.env.local
+.env.*.local

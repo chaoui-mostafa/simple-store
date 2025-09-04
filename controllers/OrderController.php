@@ -4,7 +4,7 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 require_once __DIR__ . '/../config/db.php';
-require_once __DIR__ . '/ProductController.php';
+require_once __DIR__ . '/../controllers/ProductController.php'; // CORRECTED PATH
 
 class OrderController {
     private PDO $conn;
@@ -123,23 +123,6 @@ class OrderController {
         }
     }
 
-    // Get all orders (admin)
-    // public function getAllOrders(): array {
-    //     try {
-    //         $stmt = $this->conn->prepare("
-    //             SELECT o.*, p.name AS product_name, p.price AS product_price, p.image AS product_image
-    //             FROM orders o
-    //             LEFT JOIN products p ON o.product_id = p.id
-    //             ORDER BY o.created_at DESC
-    //         ");
-    //         $stmt->execute();
-    //         return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    //     } catch(PDOException $e) {
-    //         error_log("Error fetching orders: " . $e->getMessage());
-    //         return [];
-    //     }
-    // }
-
     // Get single order by ID
     public function getOrder($id) {
         try {
@@ -247,13 +230,14 @@ class OrderController {
             return [];
         }
     }
-     // ✅ Update order status (⚡ this fixes your error)
-    public function updateOrderStatus($orderId, $status)
-    {
+
+    // ✅ Update order status (⚡ this fixes your error)
+    public function updateOrderStatus($orderId, $status) {
         $stmt = $this->conn->prepare("UPDATE orders SET status = ? WHERE id = ?");
         return $stmt->execute([$status, $orderId]);
     }
- // Ensure status column exists in orders table
+
+    // Ensure status column exists in orders table
     public function ensureStatusColumnExists() {
         try {
             // Check if status column exists
@@ -271,6 +255,7 @@ class OrderController {
             error_log("Error ensuring status column exists: " . $e->getMessage());
         }
     }
+
     // Get order items for a specific order
     public function getOrderItems($orderId) {
         try {
@@ -301,213 +286,214 @@ class OrderController {
             return [];
         }
     }
+
     // Get user information
-public function getUserInfo($userId) {
-    try {
-        // You'll need to create a users table or use the orders table to get the latest info
-        $stmt = $this->conn->prepare("
-            SELECT 
-                customer_name as name,
-                customer_email as email,
-                customer_phone as phone,
-                customer_address as address,
-                customer_city as city,
-                customer_state as state,
-                customer_zipcode as zipcode,
-                customer_country as country
-            FROM orders 
-            WHERE session_id = :session_id 
-            ORDER BY created_at DESC 
-            LIMIT 1
-        ");
-        $stmt->bindParam(':session_id', $_SESSION['session_id']);
-        $stmt->execute();
-        
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $result ? $result : [];
-    } catch(PDOException $e) {
-        error_log("Error fetching user info: " . $e->getMessage());
-        return [];
+    public function getUserInfo($userId) {
+        try {
+            // You'll need to create a users table or use the orders table to get the latest info
+            $stmt = $this->conn->prepare("
+                SELECT 
+                    customer_name as name,
+                    customer_email as email,
+                    customer_phone as phone,
+                    customer_address as address,
+                    customer_city as city,
+                    customer_state as state,
+                    customer_zipcode as zipcode,
+                    customer_country as country
+                FROM orders 
+                WHERE session_id = :session_id 
+                ORDER BY created_at DESC 
+                LIMIT 1
+            ");
+            $stmt->bindParam(':session_id', $_SESSION['session_id']);
+            $stmt->execute();
+            
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $result ? $result : [];
+        } catch(PDOException $e) {
+            error_log("Error fetching user info: " . $e->getMessage());
+            return [];
+        }
     }
-}
 
-// Update user information
-public function updateUserInfo($userId, $name, $email, $phone, $address, $city, $state, $zipcode, $country) {
-    try {
-        // In a real application, you would update a users table
-        // For now, we'll update the session information
-        $_SESSION['user_info'] = [
-            'name' => $name,
-            'email' => $email,
-            'phone' => $phone,
-            'address' => $address,
-            'city' => $city,
-            'state' => $state,
-            'zipcode' => $zipcode,
-            'country' => $country
-        ];
-        
-        return true;
-    } catch(PDOException $e) {
-        error_log("Error updating user info: " . $e->getMessage());
-        return false;
-    }
-}
-// Add these methods to your OrderController class
-
-// Get user orders with pagination support
-public function getUserOrdersWithPagination($sessionId, $perPage = 5, $offset = 0) {
-    try {
-        // Get orders
-        $stmt = $this->conn->prepare("
-            SELECT o.*, p.name AS product_name, p.price AS product_price, p.image AS product_image
-            FROM orders o
-            LEFT JOIN products p ON o.product_id = p.id
-            WHERE o.session_id = :session_id
-            ORDER BY o.created_at DESC
-            LIMIT :limit OFFSET :offset
-        ");
-        $stmt->bindParam(':session_id', $sessionId);
-        $stmt->bindParam(':limit', $perPage, PDO::PARAM_INT);
-        $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
-        $stmt->execute();
-        $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        
-        // Get total count
-        $countStmt = $this->conn->prepare("
-            SELECT COUNT(*) as total 
-            FROM orders 
-            WHERE session_id = :session_id
-        ");
-        $countStmt->bindParam(':session_id', $sessionId);
-        $countStmt->execute();
-        $total = $countStmt->fetch(PDO::FETCH_ASSOC)['total'];
-        
-        return [
-            'orders' => $orders,
-            'total' => $total
-        ];
-    } catch(PDOException $e) {
-        error_log("Error fetching user orders: " . $e->getMessage());
-        return ['orders' => [], 'total' => 0];
-    }
-}
-
-// Get order details for AJAX request
-public function getOrderDetails($orderId) {
-    try {
-        $stmt = $this->conn->prepare("
-            SELECT o.*, p.name AS product_name, p.price AS product_price, p.image AS product_image
-            FROM orders o
-            LEFT JOIN products p ON o.product_id = p.id
-            WHERE o.id = :id
-        ");
-        $stmt->bindParam(':id', $orderId);
-        $stmt->execute();
-        $order = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-        if ($order) {
-            // Get order items (in your current structure, each order has one product)
-            $order['items'] = [
-                [
-                    'product_id' => $order['product_id'],
-                    'product_name' => $order['product_name'],
-                    'product_price' => $order['product_price'],
-                    'product_image' => $order['product_image'],
-                    'quantity' => $order['quantity']
-                ]
+    // Update user information
+    public function updateUserInfo($userId, $name, $email, $phone, $address, $city, $state, $zipcode, $country) {
+        try {
+            // In a real application, you would update a users table
+            // For now, we'll update the session information
+            $_SESSION['user_info'] = [
+                'name' => $name,
+                'email' => $email,
+                'phone' => $phone,
+                'address' => $address,
+                'city' => $city,
+                'state' => $state,
+                'zipcode' => $zipcode,
+                'country' => $country
             ];
+            
+            return true;
+        } catch(PDOException $e) {
+            error_log("Error updating user info: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    // Get user orders with pagination support
+    public function getUserOrdersWithPagination($sessionId, $perPage = 5, $offset = 0) {
+        try {
+            // Get orders
+            $stmt = $this->conn->prepare("
+                SELECT o.*, p.name AS product_name, p.price AS product_price, p.image AS product_image
+                FROM orders o
+                LEFT JOIN products p ON o.product_id = p.id
+                WHERE o.session_id = :session_id
+                ORDER BY o.created_at DESC
+                LIMIT :limit OFFSET :offset
+            ");
+            $stmt->bindParam(':session_id', $sessionId);
+            $stmt->bindParam(':limit', $perPage, PDO::PARAM_INT);
+            $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+            $stmt->execute();
+            $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            // Get total count
+            $countStmt = $this->conn->prepare("
+                SELECT COUNT(*) as total 
+                FROM orders 
+                WHERE session_id = :session_id
+            ");
+            $countStmt->bindParam(':session_id', $sessionId);
+            $countStmt->execute();
+            $total = $countStmt->fetch(PDO::FETCH_ASSOC)['total'];
+            
+            return [
+                'orders' => $orders,
+                'total' => $total
+            ];
+        } catch(PDOException $e) {
+            error_log("Error fetching user orders: " . $e->getMessage());
+            return ['orders' => [], 'total' => 0];
+        }
+    }
+
+    // Get order details for AJAX request
+    public function getOrderDetails($orderId) {
+        try {
+            $stmt = $this->conn->prepare("
+                SELECT o.*, p.name AS product_name, p.price AS product_price, p.image AS product_image
+                FROM orders o
+                LEFT JOIN products p ON o.product_id = p.id
+                WHERE o.id = :id
+            ");
+            $stmt->bindParam(':id', $orderId);
+            $stmt->execute();
+            $order = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if ($order) {
+                // Get order items (in your current structure, each order has one product)
+                $order['items'] = [
+                    [
+                        'product_id' => $order['product_id'],
+                        'product_name' => $order['product_name'],
+                        'product_price' => $order['product_price'],
+                        'product_image' => $order['product_image'],
+                        'quantity' => $order['quantity']
+                    ]
+                ];
+            }
+        
+            return $order;
+        } catch(PDOException $e) {
+            error_log("Error fetching order details: " . $e->getMessage());
+            return null;
+        }
+    }
+
+    // Get all orders with filters
+    public function getAllOrders($phoneFilter = '', $minOrdersFilter = '', $codeFilter = '', $page = 1, $perPage = 10) {
+        $offset = ($page - 1) * $perPage;
+        
+        $sql = "SELECT o.*, p.name as product_name, p.price as product_price, p.image as product_image 
+                FROM orders o 
+                LEFT JOIN products p ON o.product_id = p.id 
+                WHERE 1=1";
+        
+        $params = [];
+        
+        if (!empty($phoneFilter)) {
+            $sql .= " AND o.customer_phone LIKE ?";
+            $params[] = "%$phoneFilter%";
         }
         
-        return $order;
-    } catch(PDOException $e) {
-        error_log("Error fetching order details: " . $e->getMessage());
-        return null;
+        if (!empty($codeFilter)) {
+            $sql .= " AND o.order_code LIKE ?";
+            $params[] = "%$codeFilter%";
+        }
+        
+        // For min_orders filter, we need to find customers with at least X orders
+        if (!empty($minOrdersFilter)) {
+            $sql .= " AND o.customer_phone IN (
+                        SELECT customer_phone 
+                        FROM orders 
+                        GROUP BY customer_phone 
+                        HAVING COUNT(*) >= ?
+                    )";
+            $params[] = $minOrdersFilter;
+        }
+        
+        // Add ordering and pagination
+        $sql .= " ORDER BY o.created_at DESC LIMIT $perPage OFFSET $offset";
+        
+        try {
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute($params);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("SQL Error in getAllOrders: " . $e->getMessage());
+            error_log("SQL Query: " . $sql);
+            return [];
+        }
     }
-}
-// In OrderController.php
-public function getAllOrders($phoneFilter = '', $minOrdersFilter = '', $codeFilter = '', $page = 1, $perPage = 10) {
-    $offset = ($page - 1) * $perPage;
-    
-    $sql = "SELECT o.*, p.name as product_name, p.price as product_price, p.image as product_image 
-            FROM orders o 
-            LEFT JOIN products p ON o.product_id = p.id 
-            WHERE 1=1";
-    
-    $params = [];
-    
-    if (!empty($phoneFilter)) {
-        $sql .= " AND o.customer_phone LIKE ?";
-        $params[] = "%$phoneFilter%";
-    }
-    
-    if (!empty($codeFilter)) {
-        $sql .= " AND o.order_code LIKE ?";
-        $params[] = "%$codeFilter%";
-    }
-    
-    // For min_orders filter, we need to find customers with at least X orders
-    if (!empty($minOrdersFilter)) {
-        $sql .= " AND o.customer_phone IN (
-                    SELECT customer_phone 
-                    FROM orders 
-                    GROUP BY customer_phone 
-                    HAVING COUNT(*) >= ?
-                )";
-        $params[] = $minOrdersFilter;
-    }
-    
-    // Add ordering and pagination
-    $sql .= " ORDER BY o.created_at DESC LIMIT $perPage OFFSET $offset";
-    
-    try {
-        $stmt = $this->conn->prepare($sql);
-        $stmt->execute($params);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    } catch (PDOException $e) {
-        error_log("SQL Error in getAllOrders: " . $e->getMessage());
-        error_log("SQL Query: " . $sql);
-        return [];
-    }
-}
 
-// Also add a method to count total orders for pagination
-public function countAllOrders($phoneFilter = '', $minOrdersFilter = '', $codeFilter = '') {
-    $sql = "SELECT COUNT(*) as total 
-            FROM orders o 
-            WHERE 1=1";
-    $params = [];
-    
-    if (!empty($phoneFilter)) {
-        $sql .= " AND o.customer_phone LIKE ?";
-        $params[] = "%$phoneFilter%";
+    // Count total orders for pagination
+    public function countAllOrders($phoneFilter = '', $minOrdersFilter = '', $codeFilter = '') {
+        $sql = "SELECT COUNT(*) as total 
+                FROM orders o 
+                WHERE 1=1";
+        $params = [];
+        
+        if (!empty($phoneFilter)) {
+            $sql .= " AND o.customer_phone LIKE ?";
+            $params[] = "%$phoneFilter%";
+        }
+        
+        if (!empty($codeFilter)) {
+            $sql .= " AND o.order_code LIKE ?";
+            $params[] = "%$codeFilter%";
+        }
+        
+        // For min_orders filter, we need to find customers with at least X orders
+        if (!empty($minOrdersFilter)) {
+            $sql .= " AND o.customer_phone IN (
+                        SELECT customer_phone 
+                        FROM orders 
+                        GROUP BY customer_phone 
+                        HAVING COUNT(*) >= ?
+                    )";
+            $params[] = $minOrdersFilter;
+        }
+        
+        try {
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute($params);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $result['total'] ?? 0;
+        } catch (PDOException $e) {
+            error_log("SQL Error in countAllOrders: " . $e->getMessage());
+            error_log("SQL Query: " . $sql);
+            return 0;
+        }
     }
-    
-    if (!empty($codeFilter)) {
-        $sql .= " AND o.order_code LIKE ?";
-        $params[] = "%$codeFilter%";
-    }
-    
-    // For min_orders filter, we need to find customers with at least X orders
-    if (!empty($minOrdersFilter)) {
-        $sql .= " AND o.customer_phone IN (
-                    SELECT customer_phone 
-                    FROM orders 
-                    GROUP BY customer_phone 
-                    HAVING COUNT(*) >= ?
-                )";
-        $params[] = $minOrdersFilter;
-    }
-    
-    try {
-        $stmt = $this->conn->prepare($sql);
-        $stmt->execute($params);
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $result['total'] ?? 0;
-    } catch (PDOException $e) {
-        error_log("SQL Error in countAllOrders: " . $e->getMessage());
-        error_log("SQL Query: " . $sql);
-        return 0;
-    }
-}
 }

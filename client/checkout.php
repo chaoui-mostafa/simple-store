@@ -719,35 +719,39 @@ function generateCaptcha($length = 6)
         </div>
     <?php endif; ?>
 
-    <!-- Header -->
-    <header class="sticky-header">
-        <div class="container">
-            <div class="flex items-center justify-between py-4">
-                <div class="flex items-center">
-                    <a href="index.php" class="w-10 h-10 rounded-lg bg-blue-600 flex items-center justify-center mr-3">
-                        <span class="text font-bold text-xl">M</span>
-                    </a>
-                    <h1 class="text-xl font-bold dark:text">Finaliser la Commande</h1>
-                </div>
+<!-- Header -->
+<header class="sticky-header">
+    <div class="container">
+        <div class="flex items-center justify-between py-4">
+            <div class="flex items-center">
+                <a href="index.php" class="mr-3">
+                    <div class="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center overflow-hidden">
+                        <img src="../assets/images/logo/logo.jpg" 
+                             alt="Logo" 
+                             class="w-full h-full object-cover" 
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <span class="text-white font-bold text-xl hidden">M</span>
+                    </div>
+                </a>
+                <h1 class="text-xl font-bold dark:text">Finaliser la Commande</h1>
+            </div>
 
-                <div class="flex items-center gap-4">
-                    <button id="theme-toggle" class="theme-toggle">
-                        <i id="theme-icon" class="fas fa-moon"></i>
-                    </button>
-                    
-                   <a href="cart.php" 
-   class="text-blue-600 hover:text-blue-800 flex items-center 
-          text-sm sm:text-base md:text-lg 
-          dark:text-blue-400 dark:hover:text-blue-300 
-          mb-3">
-    <i class="fas fa-arrow-left mr-2 text-xs sm:text-sm"></i> 
-    Retour au panier
-</a>
-
-                </div>
+            <div class="flex items-center gap-4">
+                <button id="theme-toggle" class="theme-toggle">
+                    <i id="theme-icon" class="fas fa-moon"></i>
+                </button>
+                
+                <a href="cart.php" 
+                   class="text-blue-600 hover:text-blue-800 flex items-center 
+                          text-sm sm:text-base md:text-lg 
+                          dark:text-blue-400 dark:hover:text-blue-300 mb-3">
+                    <i class="fas fa-arrow-left mr-2 text-xs sm:text-sm"></i> 
+                    Retour au panier
+                </a>
             </div>
         </div>
-    </header>
+    </div>
+</header>
 
     <!-- Main Content -->
     <main class="main-content">

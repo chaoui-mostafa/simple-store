@@ -50,21 +50,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['search'])) {
 <header class="sticky-header">
     <div class="container">
         <div class="flex items-center justify-between py-4">
+            <!-- Logo + Title -->
             <div class="flex items-center">
-                <a href="index.php" class="w-10 h-10 rounded-lg bg-blue-600 flex items-center justify-center mr-3">
-                    <span class="text-white font-bold text-xl">M</span>
+                <a href="index.php" class="flex items-center">
+                    <div class="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center mr-3 overflow-hidden">
+                        <img src="../../assets/images/logo/logo.jpg" 
+                             alt="Logo" 
+                             class="w-full h-full object-cover" 
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <span class="text-white font-bold text-xl hidden">M</span>
+                    </div>
                 </a>
                 <h1 class="text-xl font-bold text-light-dark">Monster Store</h1>
             </div>
             
+            <!-- Navigation Links -->
             <div class="hidden md:flex items-center space-x-6">
                 <a href="index.php" class="text-secondary-light-dark hover:text-primary-color transition-colors">Accueil</a>
                 <a href="checkout.php" class="text-secondary-light-dark hover:text-primary-color transition-colors">Checkout</a>
-                <!-- <a href="categories.php" class="text-gray-700 hover:text-blue-600 transition-colors">Catégories</a> -->
                 <a href="orders.php" class="text-secondary-light-dark hover:text-primary-color transition-colors">Mes Commandes</a>
-                
             </div>
             
+            <!-- Cart -->
             <div class="flex items-center gap-4">
                 <a href="cart.php" class="relative p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                     <i class="fas fa-shopping-cart text-xl text-secondary-light-dark"></i>
@@ -74,8 +81,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['search'])) {
                     </span>
                     <?php endif; ?>
                 </a>
-                
-            
             </div>
         </div>
         
@@ -94,7 +99,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['search'])) {
             </button>
         </form>
         
-        <!-- Search Results Dropdown (if on search page) -->
+        <!-- Search Results -->
         <?php if (basename($_SERVER['PHP_SELF']) === 'search.php' && !empty($searchResults)): ?>
         <div class="search-results bg-card-bg border border-color rounded-lg shadow-lg mt-2 absolute left-4 right-4 z-50 max-h-96 overflow-y-auto">
             <div class="p-4">
@@ -124,12 +129,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['search'])) {
     </div>
 </header>
 
-
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Search functionality
     const searchInput = document.querySelector('input[name="search"]');
-    const searchForm = document.querySelector('.search-container form');
     
     if (searchInput) {
         // Focus search input on '/' key press
@@ -147,37 +149,29 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.blur();
             }
         });
-    }
-    
-    // Add search hint
-    if (searchInput) {
+
+        // Add search hint
         searchInput.setAttribute('title', 'Appuyez sur / pour rechercher');
     }
 });
 </script>
 
 <style>
-/* Add these CSS utility classes if not already defined */
 .bg-input-bg {
     background-color: var(--input-bg);
 }
-
 .border-color {
     border-color: var(--border);
 }
-
 .text-primary-color {
     color: var(--primary-color);
 }
-
 .text-secondary-light-dark {
     color: var(--text-secondary);
 }
-
 .text-light-dark {
     color: var(--text-primary);
 }
-
 .bg-card-bg {
     background-color: var(--card-bg);
 }

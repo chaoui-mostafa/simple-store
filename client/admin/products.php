@@ -520,46 +520,7 @@ $products = $adminController->getAllProducts();
 
     <div class="flex">
         <!-- Sidebar -->
-        <div class="sidebar shadow-xl fixed h-full">
-            <div class="p-6 border-b border-blue-400/20">
-                <div class="flex items-center space-x-3">
-                    <div class="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center glass-effect">
-                        <span class="text-white font-bold text-lg"><?php echo substr($_SESSION['admin_username'], 0, 1); ?></span>
-                    </div>
-                    <div>
-                        <h1 class="text-xl font-bold text-white">Panneau Admin</h1>
-                        <p class="text-blue-100 text-sm">Bienvenue, <?php echo $_SESSION['admin_username']; ?></p>
-                    </div>
-                </div>
-            </div>
-            
-            <nav class="mt-6 p-2">
-                <a href="../index.php" class="nav-link block py-3 px-4 text-blue-100 hover:text-white hover:bg-white/10 transition-all duration-200">
-                    <i class="fas fa-store mr-3"></i> Retour à la boutique
-                </a>
-                <a href="products.php" class="nav-link active block py-3 px-4 text-white bg-white/15 transition-all duration-200">
-                    <i class="fas fa-box mr-3"></i> Produits
-                </a>
-                <a href="orders.php" class="nav-link block py-3 px-4 text-blue-100 hover:text-white transition-all duration-200">
-                    <i class="fas fa-shopping-cart mr-3"></i> Commandes
-                </a>
-                <a href="gallery.php" class="nav-link block py-3 px-4 text-blue-100 hover:text-white transition-all duration-200">
-                    <i class="fas fa-images mr-3"></i> Galerie
-                </a>
-                <a href="admins.php" class="nav-link block py-3 px-4 text-blue-100 hover:text-white transition-all duration-200">
-                    <i class="fas fa-users mr-3"></i> Administrateurs
-                </a>
-                <a href="logout.php" class="nav-link block py-3 px-4 text-blue-100 hover:text-white hover:bg-white/10 transition-all duration-200">
-                    <i class="fas fa-sign-out-alt mr-3"></i> Déconnexion
-                </a>
-            </nav>
-            
-            <div class="absolute bottom-0 w-full p-4 border-t border-blue-400/20">
-                <div class="text-center text-blue-200 text-sm">
-                    <p>StyleShop Admin v1.0</p>
-                </div>
-            </div>
-        </div>
+        <?php include 'assets/slide.php'; ?>
         
         <!-- Main content -->
         <div class="main-content w-full min-h-screen">
@@ -707,7 +668,7 @@ $products = $adminController->getAllProducts();
                                             <p class="text-gray-600 text-sm mb-3 line-clamp-2"><?php echo htmlspecialchars($product['description']); ?></p>
                                             
                                             <div class="flex justify-between items-center mb-4">
-                                                <span class="text-2xl font-bold text-blue-600"><?php echo number_format($product['price'], 2); ?> €</span>
+                                                <span class="text-2xl font-bold text-blue-600"><?php echo number_format($product['price'], 2); ?> DH </span>
                                                 <span class="text-sm text-gray-500">ID: <?php echo $product['id']; ?></span>
                                             </div>
                                             
@@ -716,7 +677,7 @@ $products = $adminController->getAllProducts();
                                             <div class="additional-images mb-4">
                                                 <?php foreach ($additionalImages as $image): ?>
                                                     <div class="additional-image">
-    <img src="/../../assets/images/product_images<?php echo htmlspecialchars($image['image_path']); ?>" 
+    <img src="../../assets/images/product_images/<?php echo htmlspecialchars($image['image_path']); ?>" 
          alt="Image supplémentaire">
     <div class="image-actions">
         <button onclick="confirmImageDelete(<?php echo $image['id']; ?>)" title="Supprimer cette image">
@@ -775,7 +736,7 @@ $products = $adminController->getAllProducts();
                     </div>
                     
                     <div>
-                        <label class="form-label">Prix (€)</label>
+                        <label class="form-label">Prix (DH)</label>
                         <input type="number" name="price" step="0.01" required class="form-input">
                     </div>
                     
@@ -833,7 +794,7 @@ $products = $adminController->getAllProducts();
                     </div>
                     
                     <div>
-                        <label class="form-label">Prix (€)</label>
+                        <label class="form-label">Prix (DH)</label>
                         <input type="number" name="price" id="editProductPrice" step="0.01" required class="form-input">
                     </div>
                     

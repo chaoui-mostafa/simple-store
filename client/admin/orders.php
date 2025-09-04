@@ -452,46 +452,7 @@ $whatsappNumber = '+212724893110';
 
     <div class="flex">
         <!-- Sidebar -->
-        <div class="sidebar shadow-xl fixed h-full">
-            <div class="p-6 border-b border-blue-400/20">
-                <div class="flex items-center space-x-3">
-                    <div class="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center glass-effect">
-                        <span class="text-white font-bold text-lg"><?php echo substr($_SESSION['admin_username'], 0, 1); ?></span>
-                    </div>
-                    <div>
-                        <h1 class="text-xl font-bold text-white">Panneau Admin</h1>
-                        <p class="text-blue-100 text-sm">Bienvenue, <?php echo $_SESSION['admin_username']; ?></p>
-                    </div>
-                </div>
-            </div>
-            
-            <nav class="mt-6 p-2">
-                <a href="../index.php" class="nav-link block py-3 px-4 text-blue-100 hover:text-white hover:bg-white/10 transition-all duration-200">
-                    <i class="fas fa-store mr-3"></i> Retour à la boutique
-                </a>
-                <a href="products.php" class="nav-link block py-3 px-4 text-blue-100 hover:text-white transition-all duration-200">
-                    <i class="fas fa-box mr-3"></i> Produits
-                </a>
-                <a href="orders.php" class="nav-link active block py-3 px-4 text-white bg-white/15 transition-all duration-200">
-                    <i class="fas fa-shopping-cart mr-3"></i> Commandes
-                </a>
-                <a href="gallery.php" class="nav-link block py-3 px-4 text-blue-100 hover:text-white transition-all duration-200">
-                    <i class="fas fa-images mr-3"></i> Galerie
-                </a>
-                <a href="admins.php" class="nav-link block py-3 px-4 text-blue-100 hover:text-white transition-all duration-200">
-                    <i class="fas fa-users mr-3"></i> Administrateurs
-                </a>
-                <a href="logout.php" class="nav-link block py-3 px-4 text-blue-100 hover:text-white hover:bg-white/10 transition-all duration-200">
-                    <i class="fas fa-sign-out-alt mr-3"></i> Déconnexion
-                </a>
-            </nav>
-            
-            <div class="absolute bottom-0 w-full p-4 border-t border-blue-400/20">
-                <div class="text-center text-blue-200 text-sm">
-                    <p>StyleShop Admin v1.0</p>
-                </div>
-            </div>
-        </div>
+        <?php include 'assets/slide.php'; ?>
         
         <!-- Main content -->
         <div class="main-content w-full min-h-screen">
@@ -654,7 +615,7 @@ $whatsappNumber = '+212724893110';
                                                     </div>
                                                     <div class="ml-3">
                                                         <p class="font-medium text-gray-900"><?php echo htmlspecialchars($order['product_name']); ?></p>
-                                                        <p class="text-sm text-gray-500"><?php echo number_format($order['product_price'], 2); ?> €</p>
+                                                        <p class="text-sm text-gray-500"><?php echo number_format($order['product_price'], 2); ?> DH </p>
                                                     </div>
                                                 </div>
                                             </td>
@@ -664,7 +625,7 @@ $whatsappNumber = '+212724893110';
                                                 <p class="text-sm text-gray-500"><?php echo htmlspecialchars($order['customer_email']); ?></p>
                                                 <p class="text-sm text-gray-500"><?php echo htmlspecialchars($order['customer_phone']); ?></p>
                                             </td>
-                                            <td class="py-3 px-4 font-semibold"><?php echo number_format($orderTotal, 2); ?> €</td>
+                                            <td class="py-3 px-4 font-semibold"><?php echo number_format($orderTotal, 2); ?> DH </td>
                                             <td class="py-3 px-4">
                                                 <span class="status-badge status-<?php echo $status; ?>">
                                                     <?php 
@@ -739,8 +700,8 @@ $whatsappNumber = '+212724893110';
                                                             <p><strong>Code Commande:</strong> <?php echo $order['order_code']; ?></p>
                                                             <p><strong>Produit:</strong> <?php echo htmlspecialchars($order['product_name']); ?></p>
                                                             <p><strong>Quantité:</strong> <?php echo $order['quantity']; ?></p>
-                                                            <p><strong>Prix Unitaire:</strong> <?php echo number_format($order['product_price'], 2); ?> €</p>
-                                                            <p><strong>Total:</strong> <?php echo number_format($orderTotal, 2); ?> €</p>
+                                                            <p><strong>Prix Unitaire:</strong> <?php echo number_format($order['product_price'], 2); ?> DH </p>
+                                                            <p><strong>Total:</strong> <?php echo number_format($orderTotal, 2); ?> DH </p>
                                                             <p><strong>Date de Commande:</strong> <?php echo date('d/m/Y à H:i', strtotime($order['created_at'])); ?></p>
                                                             
                                                             <!-- Status Update Form -->

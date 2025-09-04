@@ -462,46 +462,7 @@ foreach ($orders as $order) {
 
     <div class="flex">
         <!-- Sidebar -->
-        <div class="sidebar shadow-xl fixed h-full">
-            <div class="p-6 border-b border-blue-400/20">
-                <div class="flex items-center space-x-3">
-                    <div class="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center glass-effect">
-                        <span class="text-white font-bold text-lg"><?php echo substr($_SESSION['admin_username'], 0, 1); ?></span>
-                    </div>
-                    <div>
-                        <h1 class="text-xl font-bold text-white">Panneau Admin</h1>
-                        <p class="text-blue-100 text-sm">Bienvenue, <?php echo $_SESSION['admin_username']; ?></p>
-                    </div>
-                </div>
-            </div>
-            
-            <nav class="mt-6 p-2">
-                <a href="../index.php" class="nav-link block py-3 px-4 text-blue-100 hover:text-white hover:bg-white/10 transition-all duration-200">
-                    <i class="fas fa-store mr-3"></i> Retour à la boutique
-                </a>
-                <a href="#" data-tab="products" class="nav-link tab-link block py-3 px-4 text-blue-100 hover:text-white transition-all duration-200">
-                    <i class="fas fa-box mr-3"></i> Produits
-                </a>
-                <a href="#" data-tab="orders" class="nav-link tab-link block py-3 px-4 text-blue-100 hover:text-white transition-all duration-200">
-                    <i class="fas fa-shopping-cart mr-3"></i> Commandes
-                </a>
-                <a href="orders.php" class="nav-link block py-3 px-4 text-blue-100 hover:text-white hover:bg-white/10 transition-all duration-200">
-                    <i class="fas fa-list mr-3"></i> Toutes les commandes
-                </a>
-                <a href="#" data-tab="admins" class="nav-link tab-link block py-3 px-4 text-blue-100 hover:text-white transition-all duration-200">
-                    <i class="fas fa-users mr-3"></i> Administrateurs
-                </a>
-                <a href="logout.php" class="nav-link block py-3 px-4 text-blue-100 hover:text-white hover:bg-white/10 transition-all duration-200">
-                    <i class="fas fa-sign-out-alt mr-3"></i> Déconnexion
-                </a>
-            </nav>
-            
-            <div class="absolute bottom-0 w-full p-4 border-t border-blue-400/20">
-                <div class="text-center text-blue-200 text-sm">
-                    <p>StyleShop Admin v1.0</p>
-                </div>
-            </div>
-        </div>
+        <?php include 'assets/slide.php'; ?>
         
         <!-- Main content -->
         <div class="main-content w-full min-h-screen">
@@ -643,7 +604,7 @@ foreach ($orders as $order) {
                                         <p class="text-gray-600 text-sm mb-3 line-clamp-2"><?php echo htmlspecialchars($product['description']); ?></p>
                                         
                                         <div class="flex justify-between items-center mb-4">
-                                            <span class="text-2xl font-bold text-blue-600"><?php echo number_format($product['price'], 2); ?> €</span>
+                                            <span class="text-2xl font-bold text-blue-600"><?php echo number_format($product['price'], 2); ?> DH</span>
                                             <span class="text-sm text-gray-500">ID: <?php echo $product['id']; ?></span>
                                         </div>
                                         
@@ -723,7 +684,7 @@ foreach ($orders as $order) {
                                                         <p class="text-xs text-gray-500 truncate"><?php echo $customerEmail; ?></p>
                                                     </div>
                                                 </td>
-                                                <td class="py-4 px-6 font-semibold text-green-600"><?php echo number_format($total, 2); ?> €</td>
+                                                <td class="py-4 px-6 font-semibold text-green-600"><?php echo number_format($total, 2); ?> DH</td>
                                                 <td class="py-4 px-6">
                                                     <span class="status-badge status-<?php echo $status; ?>">
                                                         <?php 
@@ -753,55 +714,6 @@ foreach ($orders as $order) {
                 </div>
                 
                 <!-- Admins Tab -->
-              
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <?php foreach ($admins as $admin): ?>
-                            <div class="bg-white rounded-2xl shadow-md p-6">
-                                <div class="flex items-center mb-4">
-                                    <div class="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg">
-                                        <?php echo strtoupper(substr($admin['username'], 0, 1)); ?>
-                                    </div>
-                                    <div class="ml-4">
-                                        <h3 class="font-semibold text-gray-800"><?php echo htmlspecialchars($admin['username']); ?></h3>
-                                        <p class="text-sm text-gray-500">ID: <?php echo $admin['id']; ?></p>
-                                    </div>
-                                </div>
-                                
-                                <div class="space-y-2 mb-4">
-                                    <div class="flex justify-between text-sm">
-                                        <span class="text-gray-500">Créé le:</span>
-                                        <span class="text-gray-700"><?php echo date('d/m/Y', strtotime($admin['created_at'])); ?></span>
-                                    </div>
-                                    <div class="flex justify-between text-sm">
-                                        <span class="text-gray-500">Statut:</span>
-                                        <span class="<?php echo $admin['id'] == 1 ? 'text-blue-600' : 'text-green-600'; ?> font-medium">
-                                            <?php echo $admin['id'] == 1 ? 'Admin Principal' : 'Actif'; ?>
-                                        </span>
-                                    </div>
-                                </div>
-                                
-                                <div class="flex space-x-2">
-                                    <?php if ($admin['id'] != 1): ?>
-                                        <button onclick="openPasswordModal(<?php echo $admin['id']; ?>)" 
-                                                class="flex-1 bg-blue-100 text-blue-600 py-2 px-3 rounded-lg text-sm font-medium hover:bg-blue-200 transition-colors">
-                                            <i class="fas fa-key mr-1"></i> Mot de passe
-                                        </button>
-                                        <button onclick="confirmAdminDelete(<?php echo $admin['id']; ?>)" 
-                                                class="flex-1 bg-red-100 text-red-600 py-2 px-3 rounded-lg text-sm font-medium hover:bg-red-200 transition-colors">
-                                            <i class="fas fa-trash mr-1"></i> Supprimer
-                                        </button>
-                                    <?php else: ?>
-                                        <span class="flex-1 text-center text-gray-500 text-sm py-2">Protégé</span>
-                                    <?php endif; ?>
-                                </div>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-                </div>
-            </main>
-        </div>
-    </div>
 
     <!-- Add Product Modal -->
     <div id="addProductModal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
@@ -824,7 +736,7 @@ foreach ($orders as $order) {
                     </div>
                     
                     <div>
-                        <label class="form-label">Prix (€)</label>
+                        <label class="form-label">Prix (DH)</label>
                         <input type="number" name="price" step="0.01" required class="form-input">
                     </div>
                     
@@ -876,7 +788,7 @@ foreach ($orders as $order) {
                     </div>
                     
                     <div>
-                        <label class="form-label">Prix (€)</label>
+                        <label class="form-label">Prix (DH)</label>
                         <input type="number" name="price" id="editProductPrice" step="0.01" required class="form-input">
                     </div>
                     

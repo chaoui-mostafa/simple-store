@@ -8,31 +8,39 @@ $isAdmin = isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin';
     <div class="container">
         <div class="flex items-center justify-between py-4">
             <div class="flex items-center">
-                <div class="w-10 h-10 rounded-lg bg-blue-600 flex items-center justify-center mr-3">
-                    <span class="text font-bold text-xl">M</span>
-                </div>
-                <h1 class="text-xl font-bold dark:text">Monster Store</h1>
+                <a href="index.php" class="flex items-center">
+                  <div class="w-20 h-20 rounded-full bg-blue-600 flex items-center justify-center mr-3 overflow-hidden">
+    <!-- Fallback text if image doesn't load -->
+    <img src="../assets/images/logo/logo.jpg" 
+         alt="Logo" 
+         class="w-full h-full object-cover" 
+         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+    <span class="text-white font-bold text-xl hidden">M</span>
+</div>
+
+                    <h1 class="text-xl font-bold dark:text">Monster Store</h1>
+                </a>
             </div>
-            
+
             <div class="hidden md:flex items-center space-x-6">
                 <a href="index.php" class="text-gray-700 hover:text-blue-600 transition-colors">Accueil</a>
                 <a href="checkout.php" class="text-gray-700 hover:text-blue-600 transition-colors">Checkout</a>
                 <!-- <a href="categories.php" class="text-gray-700 hover:text-blue-600 transition-colors">Catégories</a> -->
                 <a href="orders.php" class="text-gray-700 hover:text-blue-600 transition-colors">Mes Commandes</a>
-                
+
             </div>
             <div class="flex items-center gap-4">
                 <button id="theme-toggle" class="theme-toggle">
                     <i id="theme-icon" class="fas fa-moon"></i>
                 </button>
-                
+
                 <a href="cart.php" class="relative">
                     <i class="fas fa-shopping-cart text-xl dark:text-black-300"></i>
                     <?php if ($cartCount > 0): ?>
-                    <span class="cart-badge"><?php echo $cartCount; ?></span>
+                        <span class="cart-badge"><?php echo $cartCount; ?></span>
                     <?php endif; ?>
                 </a>
-                
+
                 <!-- <?php if (isset($_SESSION['user_id'])): ?>
                 <a href="profile.php" class="hidden md:block">
                     <i class="fas fa-user-circle text-xl dark:text-black-300"></i>
@@ -48,7 +56,7 @@ $isAdmin = isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin';
                 </button> -->
             </div>
         </div>
-        
+
         <div class="search-container">
             <i class="fas fa-search search-icon"></i>
             <input type="text" id="search-input" placeholder="Rechercher des produits..." class="search-input">
@@ -68,3 +76,4 @@ $isAdmin = isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin';
         <a href="#" class="category-item" data-category="sports">Sport</a>
     </div>
 </div>
+

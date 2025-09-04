@@ -109,6 +109,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             min-height: 100vh;
             color: var(--text-primary);
             transition: background-color 0.3s, color 0.3s;
+            overflow-x: hidden;
         }
 
         /* Fix for text colors - ensure proper contrast in both modes */
@@ -126,6 +127,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             box-shadow: 0 10px 40px var(--shadow-color);
             overflow: hidden;
             transition: all 0.3s ease;
+            margin: 1rem;
         }
 
         .product-card:hover {
@@ -334,6 +336,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             grid-template-columns: repeat(4, 1fr);
             gap: 1rem;
             margin-top: 1.5rem;
+            overflow-x: auto;
+            padding-bottom: 0.5rem;
         }
 
         .thumbnail {
@@ -343,6 +347,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             border: 2px solid transparent;
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            min-width: 80px;
         }
 
         .thumbnail:hover {
@@ -439,7 +444,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         /* Responsive Design */
         @media (max-width: 768px) {
             .product-card {
-                margin: 1rem;
+                margin: 0.5rem;
                 border-radius: 16px;
             }
             
@@ -465,6 +470,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 width: 80px;
                 padding: 0.5rem;
             }
+            
+            .product-card > .md\:flex {
+                flex-direction: column;
+            }
+            
+            .md\:w-1\/2 {
+                width: 100%;
+            }
         }
 
         @media (max-width: 480px) {
@@ -474,6 +487,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             .main-product-image {
                 height: 250px;
+            }
+            
+            .product-card {
+                margin: 0.25rem;
+            }
+            
+            .btn {
+                padding: 0.875rem 1.25rem;
+                font-size: 0.85rem;
+            }
+            
+            h1.text-4xl {
+                font-size: 1.875rem;
             }
         }
 
@@ -496,6 +522,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         /* Custom Scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
+            height: 8px;
         }
 
         ::-webkit-scrollbar-track {
@@ -509,6 +536,63 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         ::-webkit-scrollbar-thumb:hover {
             background: var(--text-secondary);
+        }
+        
+        /* Mobile-specific fixes */
+        @media (max-width: 640px) {
+            body {
+                padding-bottom: 80px; /* Space for bottom nav */
+            }
+            
+            .container {
+                padding-left: 0.5rem;
+                padding-right: 0.5rem;
+            }
+            
+            .px-4 {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+            
+            .py-8 {
+                padding-top: 1.5rem;
+                padding-bottom: 1.5rem;
+            }
+            
+            .main-image-container {
+                border-radius: 16px;
+            }
+            
+            .thumbnail-container {
+                grid-template-columns: repeat(4, 80px);
+                overflow-x: auto;
+                display: flex;
+                flex-wrap: nowrap;
+                gap: 0.5rem;
+                padding-bottom: 1rem;
+            }
+            
+            .thumbnail {
+                flex: 0 0 auto;
+            }
+        }
+        
+        /* Prevent horizontal scrolling */
+        html, body {
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+        
+        /* Smooth scrolling for the whole page */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        /* Fix for iOS Safari viewport */
+        @supports (-webkit-touch-callout: none) {
+            .min-h-screen {
+                min-height: -webkit-fill-available;
+            }
         }
     </style>
 </head>
@@ -534,11 +618,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="product-card max-w-6xl mx-auto animate-fade-in-up">
                 <div class="md:flex">
                     <!-- Product Image Gallery -->
-                    <div class="md:w-1/2 p-8">
+                    <div class="md:w-1/2 p-4 md:p-8">
                         <div class="product-gallery">
                             <div class="main-image-container">
                                 <?php
-                                // Get the main image path from database
+                                // Get the main image path from database - FIXED PATH
                                 $mainImage = !empty($product['image']) ? "../assets/images/" . htmlspecialchars($product['image']) : '../assets/images/placeholder.jpg';
                                 ?>
                                 <img id="main-product-image" src="<?php echo $mainImage; ?>" 
@@ -564,14 +648,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 </div>
                                 
                                 <?php
-                                // Display additional images from database if available
+                                // Display additional images from database if available - FIXED PATH
                                 $additionalImages = $productController->getProductImages($product['id']);
                                 
                                 if (!empty($additionalImages)) {
                                     foreach ($additionalImages as $index => $image) {
-                                        $fullImagePath = "../assets/images/product_images" . htmlspecialchars($image['image_path']);
+                                        // CORRECTED PATH: Removed extra slash
+                                        $fullImagePath = "../assets/images/product_images/" . htmlspecialchars($image['image_path']);
                                         echo '<div class="thumbnail" onclick="changeImage(\'' . $fullImagePath . '\')">';
-                                        echo '<img src="' . $fullImagePath . '" alt="Image produit ' . ($index + 1) . '">';
+                                        echo '<img src="' . $fullImagePath . '" alt="Image produit ' . ($index + 1) . '" onerror="this.parentElement.style.display=\'none\'">';
                                         echo '</div>';
                                     }
                                 } else {
@@ -594,14 +679,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                     
                     <!-- Product Details -->
-                    <div class="md:w-1/2 p-8">
-                        <div class="mb-8">
-                            <h1 class="text-4xl font-bold text-light-dark mb-4"><?php echo htmlspecialchars($product['name']); ?></h1>
+                    <div class="md:w-1/2 p-4 md:p-8">
+                        <div class="mb-6 md:mb-8">
+                            <h1 class="text-3xl md:text-4xl font-bold text-light-dark mb-4"><?php echo htmlspecialchars($product['name']); ?></h1>
                             
                             <div class="flex items-center justify-between mb-6">
-                                <p class="text-3xl font-bold text-gradient"><?php echo number_format($product['price'], 2); ?> DH</p>
-                                <button class="p-4 rounded-full bg-gray-100 text-red-500 hover:bg-gray-200 transition-colors dark:bg-gray-700 dark:hover:bg-gray-600 hover-lift">
-                                    <i class="fas fa-heart text-xl"></i>
+                                <p class="text-2xl md:text-3xl font-bold text-gradient"><?php echo number_format($product['price'], 2); ?> DH</p>
+                                <button class="p-3 md:p-4 rounded-full bg-gray-100 text-red-500 hover:bg-gray-200 transition-colors dark:bg-gray-700 dark:hover:bg-gray-600 hover-lift">
+                                    <i class="fas fa-heart text-lg md:text-xl"></i>
                                 </button>
                             </div>
                             
@@ -622,7 +707,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <?php endif; ?>
                             </div>
                             
-                            <p class="text-secondary-light-dark leading-relaxed text-lg mb-6"><?php echo htmlspecialchars($product['description']); ?></p>
+                            <p class="text-secondary-light-dark leading-relaxed text-base md:text-lg mb-6"><?php echo htmlspecialchars($product['description']); ?></p>
                         </div>
                         
                         <!-- Add to Cart Form -->
@@ -631,7 +716,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <input type="hidden" name="product_id" value="<?php echo $product['id']; ?>">
                             
                             <div class="flex items-center space-x-4">
-                                <label for="quantity" class="text-lg font-medium text-light-dark">Quantité :</label>
+                                <label for="quantity" class="text-base md:text-lg font-medium text-light-dark">Quantité :</label>
                                 <input type="number" id="quantity" name="quantity" min="1" 
                                        max="<?php echo $product['quantity']; ?>" value="1" 
                                        class="quantity-input focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
@@ -652,32 +737,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </div>
                             
                             <?php if ($product['quantity'] <= 0): ?>
-                                <p class="text-red-500 text-lg text-center font-medium">Ce produit est actuellement en rupture de stock.</p>
+                                <p class="text-red-500 text-base md:text-lg text-center font-medium">Ce produit est actuellement en rupture de stock.</p>
                             <?php endif; ?>
                         </form>
                         
                         <!-- Product features -->
-                        <div class="mt-10 pt-8 border-t border-gray-200 dark:border-gray-700">
-                            <h3 class="font-semibold text-2xl text-light-dark mb-6">Caractéristiques :</h3>
-                            <ul class="space-y-4">
-                                <li class="flex items-center text-lg">
-                                    <i class="fas fa-check text-green-500 mr-4 text-xl"></i>
+                        <div class="mt-8 md:mt-10 pt-6 md:pt-8 border-t border-gray-200 dark:border-gray-700">
+                            <h3 class="font-semibold text-xl md:text-2xl text-light-dark mb-4 md:mb-6">Caractéristiques :</h3>
+                            <ul class="space-y-3 md:space-y-4">
+                                <li class="flex items-center text-base md:text-lg">
+                                    <i class="fas fa-check text-green-500 mr-3 md:mr-4 text-lg md:text-xl"></i>
                                     <span class="text-secondary-light-dark">Matériaux de qualité premium</span>
                                 </li>
-                                <li class="flex items-center text-lg">
-                                    <i class="fas fa-check text-green-500 mr-4 text-xl"></i>
+                                <li class="flex items-center text-base md:text-lg">
+                                    <i class="fas fa-check text-green-500 mr-3 md:mr-4 text-lg md:text-xl"></i>
                                     <span class="text-secondary-light-dark">Garantie satisfait ou remboursé 7 jours</span>
                                 </li>
-                                <li class="flex items-center text-lg">
-                                    <i class="fas fa-check text-green-500 mr-4 text-xl"></i>
+                                <li class="flex items-center text-base md:text-lg">
+                                    <i class="fas fa-check text-green-500 mr-3 md:mr-4 text-lg md:text-xl"></i>
                                     <span class="text-secondary-light-dark">Livraison gratuite au Maroc</span>
                                 </li>
-                                <li class="flex items-center text-lg">
-                                    <i class="fas fa-check text-green-500 mr-4 text-xl"></i>
+                                <li class="flex items-center text-base md:text-lg">
+                                    <i class="fas fa-check text-green-500 mr-3 md:mr-4 text-lg md:text-xl"></i>
                                     <span class="text-secondary-light-dark">Paiement sécurisé</span>
                                 </li>
-                                <li class="flex items-center text-lg">
-                                    <i class="fas fa-check text-green-500 mr-4 text-xl"></i>
+                                <li class="flex items-center text-base md:text-lg">
+                                    <i class="fas fa-check text-green-500 mr-3 md:mr-4 text-lg md:text-xl"></i>
                                     <span class="text-secondary-light-dark">Support client 24/7</span>
                                 </li>
                             </ul>
@@ -742,6 +827,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     this.style.opacity = '1';
                 });
             }
+            
+            // Mobile-specific adjustments
+            if (window.innerWidth <= 768) {
+                // Make thumbnails horizontally scrollable on mobile
+                const thumbnailContainer = document.querySelector('.thumbnail-container');
+                if (thumbnailContainer) {
+                    thumbnailContainer.style.overflowX = 'auto';
+                    thumbnailContainer.style.flexWrap = 'nowrap';
+                    thumbnailContainer.style.paddingBottom = '0.5rem';
+                }
+            }
         });
 
         function toggleTheme() {
@@ -800,6 +896,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 setTimeout(() => toast.remove(), 300);
             }, 3000);
         }
+        
+        // Handle window resize for responsive adjustments
+        window.addEventListener('resize', function() {
+            if (window.innerWidth <= 768) {
+                const thumbnailContainer = document.querySelector('.thumbnail-container');
+                if (thumbnailContainer) {
+                    thumbnailContainer.style.overflowX = 'auto';
+                    thumbnailContainer.style.flexWrap = 'nowrap';
+                }
+            } else {
+                const thumbnailContainer = document.querySelector('.thumbnail-container');
+                if (thumbnailContainer) {
+                    thumbnailContainer.style.overflowX = 'visible';
+                    thumbnailContainer.style.flexWrap = 'wrap';
+                }
+            }
+        });
     </script>
 </body>
 </html>

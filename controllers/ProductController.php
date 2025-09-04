@@ -123,7 +123,7 @@ class ProductController {
             }
             // Remove old image safely
             if (!empty($product['image'])) {
-                $oldImage = __DIR__ . '/../assets/images/' . $product['image'];
+                $oldImage = $this->getImagePath($product['image'], false);
                 if (file_exists($oldImage)) @unlink($oldImage);
             }
         }
@@ -173,7 +173,7 @@ class ProductController {
         }
     }
 
-    // Delete product - VERSION CORRIGÉE
+    // Delete product
     public function deleteProduct($id) {
         $product = $this->getProductById($id);
         if (!$product) { 
@@ -183,20 +183,18 @@ class ProductController {
 
         try {
             // Vérifier s'il y a des commandes liées à ce produit
-            // Vérifier s'il y a des commandes liées à ce produit
-$stmt = $this->conn->prepare("SELECT COUNT(*) FROM orders WHERE product_id = :id");
-$stmt->execute([':id' => $id]);
-$orderCount = (int)$stmt->fetchColumn();
+            $stmt = $this->conn->prepare("SELECT COUNT(*) FROM orders WHERE product_id = :id");
+            $stmt->execute([':id' => $id]);
+            $orderCount = (int)$stmt->fetchColumn();
 
-if ($orderCount > 0) {
-    $_SESSION['error'] = 'Cannot delete product. There are existing orders for this product.';
-    return false;
-}
-
+            if ($orderCount > 0) {
+                $_SESSION['error'] = 'Cannot delete product. There are existing orders for this product.';
+                return false;
+            }
 
             // Supprimer l'image principale
             if (!empty($product['image'])) {
-                $imgPath = __DIR__ . '/../assets/images/' . $product['image'];
+                $imgPath = $this->getImagePath($product['image'], false);
                 if (file_exists($imgPath)) {
                     if (!unlink($imgPath)) {
                         error_log("Failed to delete main image: " . $imgPath);
@@ -207,8 +205,7 @@ if ($orderCount > 0) {
             // Supprimer les images supplémentaires
             $additionalImages = $this->getProductImages($id);
             foreach ($additionalImages as $image) {
-                // CHEMIN CORRIGÉ : C:\laragon\www\test\simple store\assets\images\product_images\
-                $imgPath = __DIR__ . '/../assets/images/product_images/' . $image['image_path'];
+                $imgPath = $this->getImagePath($image['image_path'], true);
                 if (file_exists($imgPath)) {
                     if (!unlink($imgPath)) {
                         error_log("Failed to delete additional image: " . $imgPath);
@@ -255,21 +252,13 @@ if ($orderCount > 0) {
         if (!$image) return false;
         $ext = strtolower(pathinfo($image['name'], PATHINFO_EXTENSION));
         $fileName = uniqid('prod_', true) . '.' . $ext;
-        $dest = __DIR__ . '/../assets/images/' . $fileName;
+        $dest = $this->getImagePath($fileName, false);
         if (!is_dir(dirname($dest))) mkdir(dirname($dest), 0775, true);
         return move_uploaded_file($image['tmp_name'], $dest) ? $fileName : false;
     }
 
     // Upload additional images
     private function uploadAdditionalImages($productId, $files) {
-        // CHEMIN CORRIGÉ : C:\laragon\www\test\simple store\assets\images\product_images\
-        $uploadDir = __DIR__ . '/../assets/images/product_images/';
-        
-        // Créer le dossier s'il n'existe pas
-        if (!is_dir($uploadDir)) {
-            mkdir($uploadDir, 0755, true);
-        }
-
         $uploadedCount = 0;
         
         foreach ($files['tmp_name'] as $key => $tmpName) {
@@ -277,7 +266,7 @@ if ($orderCount > 0) {
                 $originalName = basename($files['name'][$key]);
                 $safeName = preg_replace("/[^A-Za-z0-9_\-\.]/", "_", $originalName);
                 $fileName = uniqid('prod_') . '_' . $safeName;
-                $uploadFile = $uploadDir . $fileName;
+                $uploadFile = $this->getImagePath($fileName, true);
 
                 // Vérifier le type MIME
                 $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
@@ -321,6 +310,26 @@ if ($orderCount > 0) {
         } catch (PDOException $e) {
             error_log("Error getting product images: " . $e->getMessage());
             return [];
+        }
+    }
+    
+    // Get image URL for display (web accessible)
+    public function getImageUrl($imagePath, $isAdditional = false) {
+        // Use relative path that works on both local and server environments
+        if ($isAdditional) {
+            return '/../assets/images/product_images/' . $imagePath;
+        } else {
+            return '/../assets/images/pro' . $imagePath;
+        }
+    }
+    
+    // Get image path for file operations (server file system)
+    public function getImagePath($imagePath, $isAdditional = false) {
+        // Use __DIR__ to get absolute path that works on any server
+        if ($isAdditional) {
+            return __DIR__ . '/../assets/images/product_images/' . $imagePath;
+        } else {
+            return __DIR__ . '/../assets/images/' . $imagePath;
         }
     }
 }

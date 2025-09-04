@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>500 Internal Server Error</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #2c3e50, #2980b9);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .error-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 30px;
+        }
+        
+        .error-visual {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .error-illustration {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .error-illustration .circle {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            animation: pulse 3s infinite ease-in-out;
+        }
+        
+        .error-illustration .icon {
+            font-size: 120px;
+            z-index: 2;
+            color: #ff6b6b;
+            filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.3));
+        }
+        
+        .error-code {
+            font-size: 8rem;
+            font-weight: 800;
+            line-height: 1;
+            margin: 20px 0;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% auto;
+            animation: gradientShift 3s infinite linear;
+            text-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .error-message {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .error-title {
+            font-size: 2.2rem;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .error-description {
+            font-size: 1.2rem;
+            margin-bottom: 35px;
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.6;
+        }
+        
+        .server-status {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 20px;
+            margin: 25px 0;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            text-align: left;
+        }
+        
+        .server-status h3 {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .status-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        
+        .status-online {
+            background: #4ecdc4;
+            box-shadow: 0 0 8px #4ecdc4;
+        }
+        
+        .status-offline {
+            background: #ff6b6b;
+            box-shadow: 0 0 8px #ff6b6b;
+        }
+        
+        .status-warning {
+            background: #ffd166;
+            box-shadow: 0 0 8px #ffd166;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 14px 32px;
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #3b82f6, #6366f1);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(45deg, #6b7280, #4b5563);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(45deg, #f59e0b, #d97706);
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .btn i {
+            margin-right: 10px;
+        }
+        
+        .floating-elements {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+        }
+        
+        .floating-element {
+            position: absolute;
+            font-size: 24px;
+            opacity: 0.3;
+            animation: float 6s infinite ease-in-out;
+        }
+        
+        .floating-element:nth-child(1) {
+            top: 10%;
+            left: 20%;
+            animation-delay: 0s;
+            color: #ff6b6b;
+        }
+        
+        .floating-element:nth-child(2) {
+            top: 60%;
+            left: 10%;
+            animation-delay: 1s;
+            color: #4ecdc4;
+        }
+        
+        .floating-element:nth-child(3) {
+            top: 30%;
+            right: 20%;
+            animation-delay: 2s;
+            color: #ffd166;
+        }
+        
+        .floating-element:nth-child(4) {
+            top: 70%;
+            right: 15%;
+            animation-delay: 3s;
+            color: #3b82f6;
+        }
+        
+        .server-animation {
+            margin: 30px auto;
+            max-width: 500px;
+            height: 80px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .server-rack {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .server-unit {
+            width: 40px;
+            height: 70px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 6px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .server-light {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .server-light.red {
+            background: #ff6b6b;
+            box-shadow: 0 0 10px #ff6b6b;
+            animation: blink 2s infinite;
+        }
+        
+        .server-light.blue {
+            background: #4ecdc4;
+            box-shadow: 0 0 10px #4ecdc4;
+            animation: blink 1.5s infinite;
+            animation-delay: 0.5s;
+        }
+        
+        .server-light.yellow {
+            background: #ffd166;
+            box-shadow: 0 0 10px #ffd166;
+            animation: blink 1s infinite;
+            animation-delay: 1s;
+        }
+        
+        .signal-bars {
+            display: flex;
+            align-items: flex-end;
+            gap: 4px;
+            height: 30px;
+            margin-left: 20px;
+        }
+        
+        .signal-bar {
+            width: 8px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 2px;
+        }
+        
+        .signal-bar:nth-child(1) {
+            height: 10px;
+            animation: signal 2s infinite;
+        }
+        
+        .signal-bar:nth-child(2) {
+            height: 15px;
+            animation: signal 2s infinite;
+            animation-delay: 0.2s;
+        }
+        
+        .signal-bar:nth-child(3) {
+            height: 20px;
+            animation: signal 2s infinite;
+            animation-delay: 0.4s;
+        }
+        
+        .signal-bar:nth-child(4) {
+            height: 25px;
+            animation: signal 2s infinite;
+            animation-delay: 0.6s;
+        }
+        
+        .signal-bar:nth-child(5) {
+            height: 30px;
+            animation: signal 2s infinite;
+            animation-delay: 0.8s;
+        }
+        
+        .footer {
+            margin-top: 60px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+        
+        /* Animations */
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 0.1;
+            }
+            50% {
+                transform: scale(1.05);
+                opacity: 0.2;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 0.1;
+            }
+        }
+        
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-20px) rotate(10deg);
+            }
+            100% {
+                transform: translateY(0) rotate(0deg);
+            }
+        }
+        
+        @keyframes blink {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.3;
+            }
+        }
+        
+        @keyframes signal {
+            0%, 100% {
+                background: rgba(255, 255, 255, 0.3);
+            }
+            50% {
+                background: #4ecdc4;
+                box-shadow: 0 0 10px #4ecdc4;
+            }
+        }
+        
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .error-code {
+                font-size: 6rem;
+            }
+            
+            .error-title {
+                font-size: 1.8rem;
+            }
+            
+            .error-description {
+                font-size: 1.1rem;
+            }
+            
+            .error-visual {
+                width: 250px;
+                height: 250px;
+            }
+            
+            .error-illustration .icon {
+                font-size: 100px;
+            }
+            
+            .btn {
+                padding: 12px 25px;
+            }
+            
+            .server-status {
+                padding: 15px;
+            }
+            
+            .server-unit {
+                width: 35px;
+                height: 60px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .error-code {
+                font-size: 4.5rem;
+            }
+            
+            .error-title {
+                font-size: 1.5rem;
+            }
+            
+            .error-description {
+                font-size: 1rem;
+            }
+            
+            .error-visual {
+                width: 200px;
+                height: 200px;
+            }
+            
+            .error-illustration .icon {
+                font-size: 80px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 280px;
+                justify-content: center;
+            }
+            
+            .server-rack {
+                gap: 10px;
+            }
+            
+            .server-unit {
+                width: 30px;
+                height: 50px;
+            }
+        }
+        
+        /* Fade in animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate-fade-in {
+            opacity: 0;
+            animation: fadeIn 1s ease-out forwards;
+        }
+        
+        .delay-1 {
+            animation-delay: 0.2s;
+        }
+        
+        .delay-2 {
+            animation-delay: 0.4s;
+        }
+        
+        .delay-3 {
+            animation-delay: 0.6s;
+        }
+        
+        .delay-4 {
+            animation-delay: 0.8s;
+        }
+        
+        .delay-5 {
+            animation-delay: 1s;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="animate-fade-in">Server Error</h1>
+        <p class="subtitle animate-fade-in delay-1">Something went wrong on our end</p>
+        
+        <div class="error-content">
+            <div class="error-visual animate-fade-in delay-1">
+                <div class="error-illustration">
+                    <div class="circle"></div>
+                    <div class="icon"><i class="fas fa-server"></i></div>
+                    <div class="floating-elements">
+                        <div class="floating-element"><i class="fas fa-bug"></i></div>
+                        <div class="floating-element"><i class="fas fa-cogs"></i></div>
+                        <div class="floating-element"><i class="fas fa-exclamation-circle"></i></div>
+                        <div class="floating-element"><i class="fas fa-tools"></i></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="error-message animate-fade-in delay-2">
+                <div class="error-code">500</div>
+                <div class="error-title">Internal Server Error</div>
+                <div class="error-description">
+                    The server encountered an internal error or misconfiguration and was unable to complete your request.
+                    Our technical team has been notified and is working to resolve the issue.
+                </div>
+                
+                <div class="server-animation animate-fade-in delay-3">
+                    <div class="server-rack">
+                        <div class="server-unit">
+                            <div class="server-light red"></div>
+                        </div>
+                        <div class="server-unit">
+                            <div class="server-light blue"></div>
+                        </div>
+                        <div class="server-unit">
+                            <div class="server-light yellow"></div>
+                        </div>
+                    </div>
+                    <div class="signal-bars">
+                        <div class="signal-bar"></div>
+                        <div class="signal-bar"></div>
+                        <div class="signal-bar"></div>
+                        <div class="signal-bar"></div>
+                        <div class="signal-bar"></div>
+                    </div>
+                </div>
+                
+                <div class="server-status animate-fade-in delay-4">
+                    <h3><i class="fas fa-server"></i> Server Status</h3>
+                    <div class="status-item">
+                        <span><span class="status-indicator status-offline"></span> Web Server</span>
+                        <span>Offline</span>
+                    </div>
+                    <div class="status-item">
+                        <span><span class="status-indicator status-warning"></span> Database</span>
+                        <span>Unstable</span>
+                    </div>
+                    <div class="status-item">
+                        <span><span class="status-indicator status-online"></span> Network</span>
+                        <span>Online</span>
+                    </div>
+                </div>
+                
+                <div class="action-buttons animate-fade-in delay-5">
+                    <a href="#" class="btn btn-primary">
+                        <i class="fas fa-home"></i> Go Home
+                    </a>
+                    <a href="#" class="btn btn-secondary">
+                        <i class="fas fa-redo"></i> Try Again
+                    </a>
+                    <a href="#" class="btn">
+                        <i class="fas fa-envelope"></i> Contact Support
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer animate-fade-in delay-5">
+             <p>© 2025 Monster Store  • by eTwin Technology</p>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add animation to elements
+            const animatedElements = document.querySelectorAll('.animate-fade-in');
+            
+            // Trigger animations
+            setTimeout(() => {
+                animatedElements.forEach(element => {
+                    element.style.animationPlayState = 'running';
+                });
+            }, 100);
+            
+            // Try again button functionality
+            const tryAgainBtn = document.querySelector('.btn-secondary');
+            tryAgainBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Trying...';
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
+            });
+            
+            // Simulate server status updates
+            function updateServerStatus() {
+                const statusIndicators = document.querySelectorAll('.status-indicator');
+                const statusTexts = document.querySelectorAll('.status-item span:last-child');
+                
+                // Randomly change status for demonstration
+                if (Math.random() > 0.7) {
+                    statusIndicators[0].className = 'status-indicator status-online';
+                    statusTexts[0].textContent = 'Online';
+                }
+                
+                if (Math.random() > 0.5) {
+                    statusIndicators[1].className = 'status-indicator status-online';
+                    statusTexts[1].textContent = 'Online';
+                }
+            }
+            
+            // Update status every few seconds
+            setInterval(updateServerStatus, 5000);
+            
+            // Add interactive effect to server icon
+            const serverIcon = document.querySelector('.error-illustration .icon');
+            serverIcon.addEventListener('mouseover', function() {
+                this.style.transform = 'scale(1.1) rotate(10deg)';
+            });
+            
+            serverIcon.addEventListener('mouseout', function() {
+                this.style.transform = 'scale(1) rotate(0deg)';
+            });
+        });
+    </script>
+</body>
+</html>

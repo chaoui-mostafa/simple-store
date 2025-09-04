@@ -65,7 +65,8 @@ $currentAdminId = $_SESSION['admin_id'] ?? null;
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestion des Administrateurs - StyleShop</title>
+    <title>Gestion des Administrateurs - Monster store </title>
+      <link rel="icon" href="../../assets/images/logo/logo.jpg" type="image/x-icon">
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome -->
@@ -510,10 +511,16 @@ $currentAdminId = $_SESSION['admin_id'] ?? null;
                                                         <?php echo $isSuperAdmin ? 'Super Admin' : 'Admin'; ?>
                                                     </span>
                                                 </td>
-                                                <td class="py-4 px-6">
-                                                    <!-- Removed date display since created_at column doesn't exist -->
-                                                    N/A
-                                                </td>
+                                              <td class="py-4 px-6">
+    <?php 
+        if(isset($admin['created_at'])) {
+            // تحويل التاريخ من string إلى timestamp و Format جميل
+            echo date('d/m/Y H:i', strtotime($admin['created_at']));
+        } else {
+            echo 'N/A';
+        }
+    ?>
+</td>
                                                 <td class="py-4 px-6">
                                                     <div class="action-buttons">
                                                         <?php if (!$isSuperAdmin): ?>

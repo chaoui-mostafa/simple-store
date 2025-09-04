@@ -61,7 +61,7 @@
     <!-- Footer -->
     <div class="absolute bottom-0 w-full p-4 border-t border-blue-400/20">
         <div class="text-center text-blue-200 text-sm">
-            <p>StyleShop Admin v1.0</p>
+            <p>Monster Store Admin v1.0 by eTwin Technology</p>
         </div>
     </div>
 </div>

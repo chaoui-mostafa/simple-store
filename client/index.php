@@ -50,7 +50,8 @@ $availableProducts = array_filter($products, function($product) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Monster Store</title>
-    
+    <link rel="icon" href="../assets/images/logo/logo.jpg" type="image/x-icon">
+
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome -->
@@ -114,14 +115,257 @@ $availableProducts = array_filter($products, function($product) {
     <!-- Main Content -->
     <main class="main-content">
         <div class="container">
-            <!-- Hero Section -->
-            <div class="hero-pattern">
-                <div class="max-w-md mx-auto md:mx-0">
-                    <h2 class="text-2xl font-bold mb-3">Collection Été 2023</h2>
-                    <p class="mb-5">Découvrez les dernières tendances et profitez de -30% sur des articles sélectionnés.</p>
-                    <a href="#products" class="bg text-blue-600 font-semibold py-2 px-6 rounded-full hover:bg-blue-50 transition-colors inline-block dark:bg-gray-800 dark:text dark:hover:bg-gray-700">Acheter maintenant</a>
-                </div>
+       <!-- Announcement Slider -->
+<div class="announcement-slider">
+    <div class="slides-container">
+        <!-- Slide 1 - Your Hero Section -->
+      <div class="slide slide-1">
+    <div class="slide-content">
+        <h2>كولكسيون الصيف 2025 </h2>
+        <p>شوفو آخر صيحات الموضة و ربحو تخفيض -30% فحوايج مختارين.</p>
+        <a href="#products" class="btn">شري دابا</a>
+    </div>
+</div>
+
+        
+        <!-- Slide 2 -->
+        <div class="slide slide-2">
+            <div class="slide-content">
+                <h2>Nouveautés Exclusives</h2>
+                <p>Soyez le premier à découvrir notre nouvelle collection limitée. Livraison gratuite à partir de 50€ d'achat.</p>
+                <a href="#new" class="btn">Découvrir</a>
             </div>
+        </div>
+        
+        <!-- Slide 3 -->
+        <div class="slide slide-3">
+            <div class="slide-content">
+                <h2>Soldes d'Été</h2>
+                <p>Profitez de nos soldes exceptionnelles avec jusqu'à -50% sur une sélection de produits.</p>
+                <a href="#sales" class="btn">Voir les offres</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="slider-nav">
+        <div class="nav-dot active" data-slide="0"></div>
+        <div class="nav-dot" data-slide="1"></div>
+        <div class="nav-dot" data-slide="2"></div>
+    </div>
+    
+    <div class="slider-arrows">
+        <div class="arrow prev"><i class="fas fa-chevron-left"></i></div>
+        <div class="arrow next"><i class="fas fa-chevron-right"></i></div>
+    </div>
+</div>
+
+<style>
+    .announcement-slider {
+        width: 100%;
+        max-width: 1000px;
+        position: relative;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        margin: 20px auto;
+    }
+    
+    .slides-container {
+        display: flex;
+        transition: transform 0.5s ease;
+        height: 300px;
+    }
+    
+    .slide {
+        min-width: 100%;
+        display: flex;
+        align-items: center;
+        padding: 40px;
+        background-size: cover;
+        background-position: center;
+    }
+    
+    .slide-1 {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    .slide-2 {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+    
+    .slide-3 {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+    
+    .slide-content {
+        max-width: 500px;
+        color: white;
+    }
+    
+    .slide h2 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 15px;
+    }
+    
+    .slide p {
+        font-size: 1.1rem;
+        margin-bottom: 25px;
+        opacity: 0.9;
+    }
+    
+    .btn {
+        display: inline-block;
+        padding: 12px 28px;
+        background: white;
+        color: #3b82f6;
+        font-weight: 600;
+        border-radius: 50px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    .slider-nav {
+        position: absolute;
+        bottom: 20px;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        z-index: 10;
+    }
+    
+    .nav-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.5);
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .nav-dot.active {
+        background: white;
+        transform: scale(1.2);
+    }
+    
+    .slider-arrows {
+        position: absolute;
+        top: 50%;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        padding: 0 20px;
+        transform: translateY(-50%);
+        z-index: 10;
+    }
+    
+    .arrow {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(5px);
+    }
+    
+    .arrow:hover {
+        background: rgba(255, 255, 255, 0.5);
+    }
+    
+    @media (max-width: 768px) {
+        .slide {
+            padding: 30px;
+            text-align: center;
+            justify-content: center;
+        }
+        
+        .slide h2 {
+            font-size: 1.7rem;
+        }
+        
+        .slide-content {
+            max-width: 100%;
+        }
+        
+        .arrow {
+            width: 40px;
+            height: 40px;
+            font-size: 1.2rem;
+        }
+        
+        .slides-container {
+            height: 250px;
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const slidesContainer = document.querySelector('.slides-container');
+        const slides = document.querySelectorAll('.slide');
+        const dots = document.querySelectorAll('.nav-dot');
+        const prevBtn = document.querySelector('.arrow.prev');
+        const nextBtn = document.querySelector('.arrow.next');
+        
+        let currentSlide = 0;
+        const slideCount = slides.length;
+        
+        // Function to update slider position
+        function updateSlider() {
+            slidesContainer.style.transform = `translateX(-${currentSlide * 100}%)`;
+            
+            // Update active dot
+            dots.forEach((dot, index) => {
+                if (index === currentSlide) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+        }
+        
+        // Next slide function
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % slideCount;
+            updateSlider();
+        }
+        
+        // Previous slide function
+        function prevSlide() {
+            currentSlide = (currentSlide - 1 + slideCount) % slideCount;
+            updateSlider();
+        }
+        
+        // Event listeners for arrows
+        nextBtn.addEventListener('click', nextSlide);
+        prevBtn.addEventListener('click', prevSlide);
+        
+        // Event listeners for dots
+        dots.forEach((dot, index) => {
+            dot.addEventListener('click', () => {
+                currentSlide = index;
+                updateSlider();
+            });
+        });
+        
+        // Auto slide every 5 seconds
+        setInterval(nextSlide, 5000);
+    });
+</script>
 
             <h2 class="text-xl font-bold mb-4 dark:text" id="products">Nos Produits</h2>
             

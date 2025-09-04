@@ -44,6 +44,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         header("Location: orders.php");
         exit();
+    } elseif (isset($_POST['update_customer_info'])) {
+        // Handle customer info update
+        $orderId = $_POST['order_id'];
+        $customerData = [
+            'customer_name' => $_POST['customer_name'],
+            'customer_email' => $_POST['customer_email'],
+            'customer_phone' => $_POST['customer_phone'],
+            'customer_whatsapp' => $_POST['customer_whatsapp'] ?? '',
+            'customer_address' => $_POST['customer_address'],
+            'customer_city' => $_POST['customer_city'] ?? '',
+            'customer_state' => $_POST['customer_state'] ?? '',
+            'customer_zipcode' => $_POST['customer_zipcode'] ?? '',
+            'customer_country' => $_POST['customer_country'] ?? '',
+            'customer_notes' => $_POST['customer_notes'] ?? ''
+        ];
+        
+        if ($orderController->updateCustomerInfo($orderId, $customerData)) {
+            $_SESSION['success'] = "Customer information updated successfully!";
+        } else {
+            $_SESSION['error'] = "Failed to update customer information.";
+        }
+        
+        header("Location: orders.php");
+        exit();
     }
 }
 
@@ -89,6 +113,7 @@ $whatsappNumber = '+212724893110';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Order Management - Admin Panel</title>
+    <link rel="icon" href="../../assets/images/logo/logo.jpg" type="image/x-icon">
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome -->
@@ -425,6 +450,74 @@ $whatsappNumber = '+212724893110';
             color: #6B7280;
             font-size: 0.875rem;
         }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #E5E7EB;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .modal-footer {
+            padding: 1.5rem;
+            border-top: 1px solid #E5E7EB;
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6B7280;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 
@@ -541,34 +634,35 @@ $whatsappNumber = '+212724893110';
                 <!-- Filter section -->
                 <div class="filter-section mb-6">
                     <h3 class="text-lg font-semibold mb-4">Filtrer les Commandes</h3>
-                    <form method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                        <div>
-                            <label class="form-label">Code Commande</label>
-                            <input type="text" name="code" value="<?php echo htmlspecialchars($codeFilter); ?>" 
-                                   placeholder="Rechercher par code..." class="form-input">
-                        </div>
-                        
-                        <div>
-                            <label class="form-label">Numéro de Téléphone</label>
-                            <input type="text" name="phone" value="<?php echo htmlspecialchars($phoneFilter); ?>" 
-                                   placeholder="Rechercher par téléphone..." class="form-input">
-                        </div>
-                        
-                        <div>
-                            <label class="form-label">Nombre Minimum de Commandes</label>
-                            <input type="number" name="min_orders" value="<?php echo htmlspecialchars($minOrdersFilter); ?>" 
-                                   min="1" placeholder="Min commandes..." class="form-input">
-                        </div>
-                        
-                        <div class="flex items-end">
-                            <button type="submit" class="btn btn-primary px-6 py-3 text-white rounded-xl font-medium mr-2">
-                                <i class="fas fa-filter mr-2"></i> Appliquer
-                            </button>
-                            <a href="orders.php" class="px-6 py-3 border border-gray-300 rounded-xl text-gray-700 font-medium hover:bg-gray-50 transition-colors">
-                                <i class="fas fa-times mr-2"></i> Effacer
-                            </a>
-                        </div>
-                    </form>
+                  <form method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+    <div>
+        <label class="form-label">Code Commande</label>
+        <input type="text" name="code" value="<?php echo htmlspecialchars($codeFilter); ?>" 
+               placeholder="Rechercher par code..." class="form-input">
+    </div>
+
+    <div>
+        <label class="form-label">Numéro de Téléphone</label>
+        <input type="text" name="phone" value="<?php echo htmlspecialchars($phoneFilter); ?>" 
+               placeholder="Rechercher par téléphone..." class="form-input">
+    </div>
+
+    <div>
+        <label class="form-label">Nombre Minimum de Commandes</label>
+        <input type="number" name="min_orders" value="<?php echo htmlspecialchars($minOrdersFilter); ?>" 
+               min="1" placeholder="Min commandes..." class="form-input">
+    </div>
+
+    <div class="flex items-end">
+        <button type="submit" class="btn btn-primary px-6 py-3 text-white rounded-xl font-medium mr-2">
+            <i class="fas fa-filter mr-2"></i> Appliquer
+        </button>
+        <a href="orders.php" class="px-6 py-3 border border-gray-300 rounded-xl text-gray-700 font-medium hover:bg-gray-50 transition-colors">
+            <i class="fas fa-times mr-2"></i> Effacer
+        </a>
+    </div>
+</form>
+
                 </div>
 
                 <div class="bg-white rounded-2xl shadow-md overflow-hidden">
@@ -598,7 +692,7 @@ $whatsappNumber = '+212724893110';
                                         $orderTotal = $order['quantity'] * $order['product_price'];
                                         $status = $order['status'] ?? 'pending';
                                     ?>
-                                        <tr class="border-b border-gray-200 hover:bg-gray-50">
+                                        <tr class="border-b border-gray-200 hover:bg-gray-50" data-order-id="<?php echo $order['id']; ?>">
                                             <td class="py-3 px-4 font-mono"><?php echo $order['order_code']; ?></td>
                                             <td class="py-3 px-4">
                                                 <div class="flex items-center">
@@ -646,11 +740,23 @@ $whatsappNumber = '+212724893110';
                                                         class="btn-icon bg-blue-100 text-blue-600 hover:bg-blue-200 transition-colors" title="Voir les détails">
                                                         <i class="fas fa-eye"></i>
                                                     </button>
-                                                    <a href="https://wa.me/<?php echo preg_replace('/\D/', '', $whatsappNumber); ?>?text=Bonjour%20<?php echo urlencode($order['customer_name']); ?>%20(Commande%20<?php echo $order['order_code']; ?>),%20"
-                                                       target="_blank"
-                                                       class="btn-icon bg-green-100 text-green-600 hover:bg-green-200 transition-colors" title="Contacter sur WhatsApp">
-                                                        <i class="fab fa-whatsapp"></i>
-                                                    </a>
+                                                    <button onclick="openEditModal(<?php echo $order['id']; ?>)"
+                                                        class="btn-icon bg-purple-100 text-purple-600 hover:bg-purple-200 transition-colors" title="Modifier les informations">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                    <!-- WhatsApp Contact (if customer WhatsApp exists, use it; else use phone) -->
+                                                    <?php
+                                                        $contactNumber = !empty($order['customer_whatsapp']) ? $order['customer_whatsapp'] : $order['customer_phone'];
+                                                        $contactNumber = preg_replace('/\D/', '', $contactNumber);
+                                                    ?>
+         <a href="https://wa.me/<?php echo $contactNumber; ?>?text=<?php echo urlencode("Bonjour " . $order['customer_name'] . ",\nMerci pour votre commande (Code: " . $order['order_code'] . ") sur Monster Store.\nNous allons traiter votre commande et vous contacterons bientôt pour la livraison.\nSi vous avez des questions, n'hésitez pas à répondre à ce message."); ?>"
+   target="_blank"
+   class="btn-icon bg-green-100 text-green-600 hover:bg-green-200 transition-colors"
+   title="Contacter sur WhatsApp">
+   <i class="fab fa-whatsapp"></i>
+</a>
+
+
                                                     <form method="POST">
                                                         <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
                                                         <input type="hidden" name="id" value="<?php echo $order['id']; ?>">
@@ -799,6 +905,79 @@ $whatsappNumber = '+212724893110';
         </div>
     </div>
 
+    <!-- Edit Customer Modal -->
+    <div id="editCustomerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="text-xl font-semibold">Modifier les informations client</h2>
+                <button class="close-modal" onclick="closeEditModal()">&times;</button>
+            </div>
+            <form method="POST" id="customerForm">
+                <div class="modal-body">
+                    <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
+                    <input type="hidden" name="order_id" id="editOrderId">
+                    <input type="hidden" name="update_customer_info" value="1">
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Nom complet</label>
+                            <input type="text" name="customer_name" id="editCustomerName" class="form-input" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Email</label>
+                            <input type="email" name="customer_email" id="editCustomerEmail" class="form-input" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Téléphone</label>
+                            <input type="text" name="customer_phone" id="editCustomerPhone" class="form-input" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">WhatsApp</label>
+                            <input type="text" name="customer_whatsapp" id="editCustomerWhatsapp" class="form-input">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Adresse</label>
+                            <textarea name="customer_address" id="editCustomerAddress" class="form-input" rows="2" required></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Ville</label>
+                            <input type="text" name="customer_city" id="editCustomerCity" class="form-input">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Région</label>
+                            <input type="text" name="customer_state" id="editCustomerState" class="form-input">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Code postal</label>
+                            <input type="text" name="customer_zipcode" id="editCustomerZipcode" class="form-input">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Pays</label>
+                            <input type="text" name="customer_country" id="editCustomerCountry" class="form-input">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Notes</label>
+                        <textarea name="customer_notes" id="editCustomerNotes" class="form-input" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" onclick="closeEditModal()">Annuler</button>
+                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Toggle mobile menu
@@ -827,6 +1006,88 @@ $whatsappNumber = '+212724893110';
             const detailsRow = document.getElementById('details-' + orderId);
             detailsRow.classList.toggle('active');
         }
+
+        // Edit modal functions
+        function openEditModal(orderId) {
+            // Get the details row
+            const detailsRow = document.getElementById('details-' + orderId);
+            if (!detailsRow) {
+                console.error('Details row not found for order ID:', orderId);
+                return;
+            }
+            
+            // Extract customer data from the details row
+            const customerInfoDiv = detailsRow.querySelector('div:first-child > div:last-child');
+            if (!customerInfoDiv) {
+                console.error('Customer info div not found');
+                return;
+            }
+            
+            // Helper function to extract text content
+            const extractValue = (text, label) => {
+                const regex = new RegExp(label + ':\\s*(.*)');
+                const match = text.match(regex);
+                return match ? match[1].trim() : '';
+            };
+            
+            // Get all paragraph elements
+            const paragraphs = customerInfoDiv.querySelectorAll('p');
+            
+            // Extract values from paragraphs
+            let customerData = {
+                name: '',
+                email: '',
+                phone: '',
+                whatsapp: '',
+                address: '',
+                city: '',
+                state: '',
+                zipcode: '',
+                country: '',
+                notes: ''
+            };
+            
+            paragraphs.forEach(p => {
+                const text = p.textContent;
+                if (text.includes('Nom:')) customerData.name = extractValue(text, 'Nom');
+                else if (text.includes('Email:')) customerData.email = extractValue(text, 'Email');
+                else if (text.includes('Téléphone:')) customerData.phone = extractValue(text, 'Téléphone');
+                else if (text.includes('WhatsApp:')) customerData.whatsapp = extractValue(text, 'WhatsApp');
+                else if (text.includes('Adresse:')) customerData.address = extractValue(text, 'Adresse');
+                else if (text.includes('Ville:')) customerData.city = extractValue(text, 'Ville');
+                else if (text.includes('Région:')) customerData.state = extractValue(text, 'Région');
+                else if (text.includes('Code Postal:')) customerData.zipcode = extractValue(text, 'Code Postal');
+                else if (text.includes('Pays:')) customerData.country = extractValue(text, 'Pays');
+                else if (text.includes('Notes:')) customerData.notes = extractValue(text, 'Notes');
+            });
+            
+            // Fill the form with extracted data
+            document.getElementById('editOrderId').value = orderId;
+            document.getElementById('editCustomerName').value = customerData.name;
+            document.getElementById('editCustomerEmail').value = customerData.email;
+            document.getElementById('editCustomerPhone').value = customerData.phone;
+            document.getElementById('editCustomerWhatsapp').value = customerData.whatsapp;
+            document.getElementById('editCustomerAddress').value = customerData.address;
+            document.getElementById('editCustomerCity').value = customerData.city;
+            document.getElementById('editCustomerState').value = customerData.state;
+            document.getElementById('editCustomerZipcode').value = customerData.zipcode;
+            document.getElementById('editCustomerCountry').value = customerData.country;
+            document.getElementById('editCustomerNotes').value = customerData.notes;
+            
+            // Show the modal
+            document.getElementById('editCustomerModal').classList.add('active');
+        }
+
+        function closeEditModal() {
+            document.getElementById('editCustomerModal').classList.remove('active');
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('editCustomerModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeEditModal();
+            }
+        });
     </script>
 </body>
 

@@ -496,4 +496,39 @@ class OrderController {
             return 0;
         }
     }
+    /**
+     * Update customer information for a specific order.
+     *
+     * @param int $orderId
+     * @param array $customerData
+     * @return bool
+     */
+    public function updateCustomerInfo($orderId, $customerData) {
+        $sql = "UPDATE orders SET 
+            customer_name = :customer_name,
+            customer_email = :customer_email,
+            customer_phone = :customer_phone,
+            customer_whatsapp = :customer_whatsapp,
+            customer_address = :customer_address,
+            customer_city = :customer_city,
+            customer_state = :customer_state,
+            customer_zipcode = :customer_zipcode,
+            customer_country = :customer_country,
+            customer_notes = :customer_notes
+            WHERE id = :order_id";
+        $stmt = $this->conn->prepare($sql);
+        return $stmt->execute([
+            ':customer_name' => $customerData['customer_name'],
+            ':customer_email' => $customerData['customer_email'],
+            ':customer_phone' => $customerData['customer_phone'],
+            ':customer_whatsapp' => $customerData['customer_whatsapp'],
+            ':customer_address' => $customerData['customer_address'],
+            ':customer_city' => $customerData['customer_city'],
+            ':customer_state' => $customerData['customer_state'],
+            ':customer_zipcode' => $customerData['customer_zipcode'],
+            ':customer_country' => $customerData['customer_country'],
+            ':customer_notes' => $customerData['customer_notes'],
+            ':order_id' => $orderId
+        ]);
+    }
 }

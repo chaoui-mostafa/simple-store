@@ -253,11 +253,12 @@ class AdminController {
     }
    
     public function getAllAdmins() {
-        $sql = "SELECT id, username FROM admins ORDER BY id";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
+    $sql = "SELECT id, username, created_at FROM admins ORDER BY id";
+    $stmt = $this->conn->prepare($sql);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
 
     public function createAdmin($username, $password) {
         // Check if username already exists

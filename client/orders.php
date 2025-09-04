@@ -95,6 +95,7 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 'order_details' && isset($_GET['ord
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mes Commandes - Monster Store</title>
+      <link rel="icon" href="../assets/images/logo/logo.jpg" type="image/x-icon">
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome -->
@@ -547,28 +548,39 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 'order_details' && isset($_GET['ord
     <?php endif; ?>
 
     <!-- Header -->
-    <header class="sticky-header">
-        <div class="container">
-            <div class="flex items-center justify-between py-4">
-                <div class="flex items-center">
-                    <a href="index.php" class="w-10 h-10 rounded-lg bg-blue-600 flex items-center justify-center mr-3">
-                        <span class="text font-bold text-xl">M</span>
-                    </a>
-                    <h1 class="text-xl font-bold dark:text">Mes Commandes</h1>
-                </div>
+<!-- Header -->
+<header class="sticky-header">
+    <div class="container">
+        <div class="flex items-center justify-between py-4">
+            
+            <!-- Logo + Title -->
+            <div class="flex items-center">
+                <a href="index.php" class="mr-3">
+                    <div class="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center overflow-hidden">
+                        <img src="../assets/images/logo/logo.jpg" 
+                             alt="Logo" 
+                             class="w-full h-full object-cover"
+                             onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');">
+                        <span class="text-white font-bold text-xl hidden">M</span>
+                    </div>
+                </a>
+                <h1 class="text-xl font-bold dark:text">Mes Commandes</h1>
+            </div>
+            
+            <!-- Actions -->
+            <div class="flex items-center gap-4">
+                <button id="theme-toggle" class="theme-toggle">
+                    <i id="theme-icon" class="fas fa-moon"></i>
+                </button>
                 
-                <div class="flex items-center gap-4">
-                    <button id="theme-toggle" class="theme-toggle">
-                        <i id="theme-icon" class="fas fa-moon"></i>
-                    </button>
-                    
-                    <a href="index.php" class="text-blue-600 hover:text-blue-800 flex items-center text-sm dark:text-blue-400 dark:hover:text-blue-300">
-                        <i class="fas fa-home mr-2"></i> boutique
-                    </a>
-                </div>
+                <a href="index.php" class="text-blue-600 hover:text-blue-800 flex items-center text-sm dark:text-blue-400 dark:hover:text-blue-300">
+                    <i class="fas fa-home mr-2"></i> boutique
+                </a>
             </div>
         </div>
-    </header>
+    </div>
+</header>
+
 
     <!-- Main Content -->
     <main class="main-content">
@@ -680,9 +692,9 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 'order_details' && isset($_GET['ord
                                 <a href="download_invoice.php?order_id=<?php echo $order['id']; ?>&lang=fr" class="btn btn-success">
                                     <i class="fas fa-download"></i> Facture
                                 </a>
-                                <button class="btn btn-primary reorder-btn" data-product-id="<?php echo $order['product_id']; ?>">
+                                <!-- <button class="btn btn-primary reorder-btn" data-product-id="<?php echo $order['product_id']; ?>">
                                     <i class="fas fa-redo"></i> Commander à nouveau
-                                </button>
+                                </button> -->
                             </div>
                         </div>
                     </div>

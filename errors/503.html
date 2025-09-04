@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>503 Service Unavailable</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #2c3e50, #3498db);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .error-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 30px;
+        }
+        
+        .error-visual {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .error-illustration {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .error-illustration .circle {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            animation: pulse 3s infinite ease-in-out;
+        }
+        
+        .error-illustration .icon {
+            font-size: 120px;
+            z-index: 2;
+            color: #ffd166;
+            filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.3));
+        }
+        
+        .error-code {
+            font-size: 8rem;
+            font-weight: 800;
+            line-height: 1;
+            margin: 20px 0;
+            background: linear-gradient(45deg, #ffd166, #f59e0b, #ffd166);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% auto;
+            animation: gradientShift 3s infinite linear;
+            text-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .error-message {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .error-title {
+            font-size: 2.2rem;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .error-description {
+            font-size: 1.2rem;
+            margin-bottom: 35px;
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.6;
+        }
+        
+        .maintenance-info {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 20px;
+            margin: 25px 0;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            text-align: left;
+        }
+        
+        .maintenance-info h3 {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .progress-container {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+            height: 20px;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            width: 65%;
+            background: linear-gradient(90deg, #4ecdc4, #3b82f6);
+            border-radius: 10px;
+            animation: progressPulse 2s infinite ease-in-out;
+            position: relative;
+        }
+        
+        .progress-bar:after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background-image: linear-gradient(
+                -45deg, 
+                rgba(255, 255, 255, 0.2) 25%, 
+                transparent 25%, 
+                transparent 50%, 
+                rgba(255, 255, 255, 0.2) 50%, 
+                rgba(255, 255, 255, 0.2) 75%, 
+                transparent 75%, 
+                transparent
+            );
+            z-index: 1;
+            background-size: 50px 50px;
+            animation: move 2s linear infinite;
+            overflow: hidden;
+        }
+        
+        .countdown {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 25px 0;
+        }
+        
+        .countdown-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 70px;
+        }
+        
+        .countdown-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            width: 70px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 5px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .countdown-label {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 14px 32px;
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #3b82f6, #6366f1);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(45deg, #6b7280, #4b5563);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(45deg, #f59e0b, #d97706);
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .btn i {
+            margin-right: 10px;
+        }
+        
+        .floating-elements {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+        }
+        
+        .floating-element {
+            position: absolute;
+            font-size: 24px;
+            opacity: 0.3;
+            animation: float 6s infinite ease-in-out;
+        }
+        
+        .floating-element:nth-child(1) {
+            top: 10%;
+            left: 20%;
+            animation-delay: 0s;
+            color: #ffd166;
+        }
+        
+        .floating-element:nth-child(2) {
+            top: 60%;
+            left: 10%;
+            animation-delay: 1s;
+            color: #4ecdc4;
+        }
+        
+        .floating-element:nth-child(3) {
+            top: 30%;
+            right: 20%;
+            animation-delay: 2s;
+            color: #3b82f6;
+        }
+        
+        .floating-element:nth-child(4) {
+            top: 70%;
+            right: 15%;
+            animation-delay: 3s;
+            color: #ff6b6b;
+        }
+        
+        .maintenance-animation {
+            margin: 30px auto;
+            max-width: 500px;
+            height: 80px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+        }
+        
+        .tool-icon {
+            font-size: 40px;
+            color: #ffd166;
+            animation: toolBounce 2s infinite ease-in-out;
+        }
+        
+        .tool-icon:nth-child(2) {
+            animation-delay: 0.3s;
+            color: #4ecdc4;
+        }
+        
+        .tool-icon:nth-child(3) {
+            animation-delay: 0.6s;
+            color: #3b82f6;
+        }
+        
+        .gear-icon {
+            font-size: 50px;
+            color: rgba(255, 255, 255, 0.2);
+            animation: spin 8s infinite linear;
+        }
+        
+        .footer {
+            margin-top: 60px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+        
+        /* Animations */
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 0.1;
+            }
+            50% {
+                transform: scale(1.05);
+                opacity: 0.2;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 0.1;
+            }
+        }
+        
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-20px) rotate(10deg);
+            }
+            100% {
+                transform: translateY(0) rotate(0deg);
+            }
+        }
+        
+        @keyframes progressPulse {
+            0%, 100% {
+                opacity: 0.8;
+            }
+            50% {
+                opacity: 1;
+            }
+        }
+        
+        @keyframes move {
+            0% {
+                background-position: 0 0;
+            }
+            100% {
+                background-position: 50px 50px;
+            }
+        }
+        
+        @keyframes toolBounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-15px);
+            }
+        }
+        
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .error-code {
+                font-size: 6rem;
+            }
+            
+            .error-title {
+                font-size: 1.8rem;
+            }
+            
+            .error-description {
+                font-size: 1.1rem;
+            }
+            
+            .error-visual {
+                width: 250px;
+                height: 250px;
+            }
+            
+            .error-illustration .icon {
+                font-size: 100px;
+            }
+            
+            .btn {
+                padding: 12px 25px;
+            }
+            
+            .maintenance-info {
+                padding: 15px;
+            }
+            
+            .countdown-value {
+                font-size: 2rem;
+                width: 60px;
+                height: 60px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .error-code {
+                font-size: 4.5rem;
+            }
+            
+            .error-title {
+                font-size: 1.5rem;
+            }
+            
+            .error-description {
+                font-size: 1rem;
+            }
+            
+            .error-visual {
+                width: 200px;
+                height: 200px;
+            }
+            
+            .error-illustration .icon {
+                font-size: 80px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 280px;
+                justify-content: center;
+            }
+            
+            .countdown {
+                gap: 10px;
+            }
+            
+            .countdown-value {
+                font-size: 1.5rem;
+                width: 50px;
+                height: 50px;
+            }
+            
+            .countdown-label {
+                font-size: 0.7rem;
+            }
+            
+            .maintenance-animation {
+                gap: 15px;
+            }
+            
+            .tool-icon {
+                font-size: 30px;
+            }
+            
+            .gear-icon {
+                font-size: 40px;
+            }
+        }
+        
+        /* Fade in animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate-fade-in {
+            opacity: 0;
+            animation: fadeIn 1s ease-out forwards;
+        }
+        
+        .delay-1 {
+            animation-delay: 0.2s;
+        }
+        
+        .delay-2 {
+            animation-delay: 0.4s;
+        }
+        
+        .delay-3 {
+            animation-delay: 0.6s;
+        }
+        
+        .delay-4 {
+            animation-delay: 0.8s;
+        }
+        
+        .delay-5 {
+            animation-delay: 1s;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="animate-fade-in">Maintenance Mode</h1>
+        <p class="subtitle animate-fade-in delay-1">We're making some improvements to serve you better</p>
+        
+        <div class="error-content">
+            <div class="error-visual animate-fade-in delay-1">
+                <div class="error-illustration">
+                    <div class="circle"></div>
+                    <div class="icon"><i class="fas fa-tools"></i></div>
+                    <div class="floating-elements">
+                        <div class="floating-element"><i class="fas fa-wrench"></i></div>
+                        <div class="floating-element"><i class="fas fa-screwdriver"></i></div>
+                        <div class="floating-element"><i class="fas fa-cog"></i></div>
+                        <div class="floating-element"><i class="fas fa-hammer"></i></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="error-message animate-fade-in delay-2">
+                <div class="error-code">503</div>
+                <div class="error-title">Service Unavailable</div>
+                <div class="error-description">
+                    Our website is currently undergoing scheduled maintenance. We'll be back online shortly.
+                    Thank you for your patience and understanding.
+                </div>
+                
+                <div class="maintenance-animation animate-fade-in delay-3">
+                    <i class="fas fa-wrench tool-icon"></i>
+                    <i class="fas fa-cog gear-icon"></i>
+                    <i class="fas fa-screwdriver tool-icon"></i>
+                </div>
+                
+                <div class="maintenance-info animate-fade-in delay-4">
+                    <h3><i class="fas fa-clock"></i> Estimated Time Until Completion</h3>
+                    
+                    <div class="countdown">
+                        <div class="countdown-item">
+                            <div class="countdown-value" id="hours">02</div>
+                            <div class="countdown-label">HOURS</div>
+                        </div>
+                        <div class="countdown-item">
+                            <div class="countdown-value" id="minutes">30</div>
+                            <div class="countdown-label">MINUTES</div>
+                        </div>
+                        <div class="countdown-item">
+                            <div class="countdown-value" id="seconds">45</div>
+                            <div class="countdown-label">SECONDS</div>
+                        </div>
+                    </div>
+                    
+                    <h3><i class="fas fa-tasks"></i> Maintenance Progress</h3>
+                    <div class="progress-container">
+                        <div class="progress-bar"></div>
+                    </div>
+                </div>
+                
+                <div class="action-buttons animate-fade-in delay-5">
+                    <a href="#" class="btn btn-primary">
+                        <i class="fas fa-home"></i> Go Home
+                    </a>
+                    <a href="#" class="btn btn-secondary">
+                        <i class="fas fa-redo"></i> Try Again
+                    </a>
+                    <a href="#" class="btn">
+                        <i class="fas fa-envelope"></i> Contact Us
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer animate-fade-in delay-5">
+            <p>© 2025 Monster Store  • by eTwin Technology</p>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add animation to elements
+            const animatedElements = document.querySelectorAll('.animate-fade-in');
+            
+            // Trigger animations
+            setTimeout(() => {
+                animatedElements.forEach(element => {
+                    element.style.animationPlayState = 'running';
+                });
+            }, 100);
+            
+            // Try again button functionality
+            const tryAgainBtn = document.querySelector('.btn-secondary');
+            tryAgainBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Trying...';
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
+            });
+            
+            // Countdown timer
+            function updateCountdown() {
+                const hoursElem = document.getElementById('hours');
+                const minutesElem = document.getElementById('minutes');
+                const secondsElem = document.getElementById('seconds');
+                
+                let hours = parseInt(hoursElem.textContent);
+                let minutes = parseInt(minutesElem.textContent);
+                let seconds = parseInt(secondsElem.textContent);
+                
+                if (seconds > 0) {
+                    seconds--;
+                } else {
+                    seconds = 59;
+                    if (minutes > 0) {
+                        minutes--;
+                    } else {
+                        minutes = 59;
+                        if (hours > 0) {
+                            hours--;
+                        } else {
+                            // Countdown completed
+                            hours = 0;
+                            minutes = 0;
+                            seconds = 0;
+                            clearInterval(countdownInterval);
+                        }
+                    }
+                }
+                
+                hoursElem.textContent = hours.toString().padStart(2, '0');
+                minutesElem.textContent = minutes.toString().padStart(2, '0');
+                secondsElem.textContent = seconds.toString().padStart(2, '0');
+            }
+            
+            const countdownInterval = setInterval(updateCountdown, 1000);
+            
+            // Progress bar animation
+            const progressBar = document.querySelector('.progress-bar');
+            let progress = 65;
+            
+            function updateProgress() {
+                if (progress < 100) {
+                    progress += Math.random() * 2;
+                    progress = Math.min(progress, 100);
+                    progressBar.style.width = progress + '%';
+                    
+                    if (progress > 85) {
+                        progressBar.style.background = 'linear-gradient(90deg, #4ecdc4, #10b981)';
+                    }
+                }
+            }
+            
+            setInterval(updateProgress, 3000);
+            
+            // Add interactive effect to tools icon
+            const toolsIcon = document.querySelector('.error-illustration .icon');
+            toolsIcon.addEventListener('mouseover', function() {
+                this.style.transform = 'scale(1.1) rotate(15deg)';
+            });
+            
+            toolsIcon.addEventListener('mouseout', function() {
+                this.style.transform = 'scale(1) rotate(0deg)';
+            });
+        });
+    </script>
+</body>
+</html>

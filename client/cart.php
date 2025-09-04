@@ -72,6 +72,7 @@ if (isset($_SESSION['error'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panier d'achat - Monster Store</title>
+      <link rel="icon" href="../assets/images/logo/logo.jpg" type="image/x-icon">
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome -->
@@ -655,29 +656,34 @@ if (isset($_SESSION['error'])) {
     </div>
     <?php endif; ?>
 
-    <!-- Header -->
-    <header class="sticky-header">
-        <div class="container">
-            <div class="flex items-center justify-between py-4">
-                <div class="flex items-center">
-                    <a href="index.php" class="w-10 h-10 rounded-lg bg-blue-600 flex items-center justify-center mr-3">
-                        <span class="text font-bold text-xl">M</span>
-                    </a>
-                    <h1 class="text-xl font-bold dark:text">Monster Store</h1>
-                </div>
-                
-                <div class="flex items-center gap-4">
-                    <button id="theme-toggle" class="theme-toggle">
-                        <i id="theme-icon" class="fas fa-moon"></i>
-                    </button>
-                    
-                    <a href="index.php" class="text-blue-600 hover:text-blue-800 flex items-center text-sm dark:text-blue-400 dark:hover:text-blue-300">
-                        <i class="fas fa-arrow-left mr-2"></i> Continuer les achats
-                    </a>
-                </div>
+ <!-- Header -->
+<header class="sticky-header">
+    <div class="container">
+        <div class="flex items-center justify-between py-4">
+            <div class="flex items-center">
+                <a href="index.php" class="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center mr-3 overflow-hidden">
+                    <img src="../assets/images/logo/logo.jpg" 
+                         alt="Logo" 
+                         class="w-full h-full object-cover" 
+                         onerror="this.style.display='none'; this.parentElement.querySelector('span').style.display='flex';">
+                    <span class="text-white font-bold text-xl hidden">M</span>
+                </a>
+                <h1 class="text-xl font-bold dark:text">Monster Store</h1>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <button id="theme-toggle" class="theme-toggle">
+                    <i id="theme-icon" class="fas fa-moon"></i>
+                </button>
+
+                <a href="index.php" class="text-blue-600 hover:text-blue-800 flex items-center text-sm dark:text-blue-400 dark:hover:text-blue-300">
+                    <i class="fas fa-arrow-left mr-2"></i> Continuer les achats
+                </a>
             </div>
         </div>
-    </header>
+    </div>
+</header>
+
 
     <!-- Main Content -->
     <main class="main-content">

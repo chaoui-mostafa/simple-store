@@ -733,7 +733,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body class="antialiased">
     <div class="min-h-screen flex flex-col">
         <!-- Desktop Navigation -->
-        <nav class="desktop-nav">
+        <nav class="desktop-nav sticky-header">
             <div class="desktop-nav-container">
                 <a href="index.php" class="desktop-nav-logo">
                     <img src="../assets/images/logo/logo.jpg" alt="Monster Store Logo">
@@ -742,10 +742,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
                 <div class="desktop-nav-menu">
                     <a href="index.php" class="desktop-nav-link">Accueil</a>
-                    <a href="products.php" class="desktop-nav-link">Produits</a>
-                    <a href="categories.php" class="desktop-nav-link">Catégories</a>
-                    <a href="about.php" class="desktop-nav-link">À propos</a>
-                    <a href="contact.php" class="desktop-nav-link">Contact</a>
+                    <a href="orders.php" class="desktop-nav-link">Mes commandes</a>
+                    <a href="checkout.php" class="desktop-nav-link">Checkout</a>
+                    <!-- <a href="about.php" class="desktop-nav-link">À propos</a> -->
+                    <!-- <a href="contact.php" class="desktop-nav-link">Contact</a> -->
                 </div>
                 
                 <div class="desktop-nav-actions">
@@ -753,13 +753,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <i class="fas fa-moon" id="theme-icon"></i>
                     </div>
                     
-                    <a href="search.php" class="desktop-nav-icon">
-                        <i class="fas fa-search"></i>
-                    </a>
+                 
                     
-                    <a href="profile.php" class="desktop-nav-icon">
-                        <i class="fas fa-user"></i>
-                    </a>
+                   
                     
                     <a href="cart.php" class="desktop-nav-icon">
                         <i class="fas fa-shopping-cart"></i>
@@ -947,7 +943,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <!-- Bottom Navigation (Mobile) -->
         <?php include '../assets/part/nav-mobil.php' ?>
+        
     </div>
+   
 
     <script>
         // Theme management

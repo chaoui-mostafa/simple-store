@@ -142,49 +142,71 @@ if (!isset($_SESSION['login_ip'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Admin Login - StyleShop Administration Panel">
+    <meta name="description" content="Admin Login - Monster Store Administration Panel">
     <meta name="robots" content="noindex, nofollow">
     <title>Admin Login - Monster Store</title>
     <link rel="icon" href="../../assets/images/logo/logo.jpg" type="image/x-icon">
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+        
+        :root {
+            --primary-color: #4f46e5;
+            --primary-dark: #4338ca;
+            --primary-light: #c7d2fe;
+            --secondary-color: #10b981;
+            --error-color: #ef4444;
+            --warning-color: #f59e0b;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --text-light: #9ca3af;
+            --bg-light: #f9fafb;
+            --bg-white: #ffffff;
+            --border-color: #e5e7eb;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --transition: all 0.2s ease;
+            --radius: 12px;
+            --radius-sm: 8px;
         }
         
         body {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            background: var(--bg-light);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            padding: 16px;
         }
         
         .container {
             display: flex;
             width: 100%;
-            max-width: 1000px;
-            background: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+            max-width: 900px;
+            background: var(--bg-white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
             overflow: hidden;
+            animation: fadeIn 0.4s ease-out;
         }
         
         .login-section {
             width: 50%;
-            padding: 40px;
+            padding: 32px;
+            position: relative;
         }
         
         .slider-section {
             width: 50%;
-            background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
             color: white;
-            padding: 40px;
+            padding: 32px;
             position: relative;
             display: flex;
             flex-direction: column;
@@ -193,54 +215,62 @@ if (!isset($_SESSION['login_ip'])) {
         
         .login-header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 24px;
         }
         
         .logo {
-            font-size: 32px;
+            font-size: 24px;
             font-weight: 700;
-            color: #4361ee;
-            margin-bottom: 10px;
+            color: var(--primary-color);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .logo-icon {
+            font-size: 28px;
         }
         
         .login-header h1 {
-            font-size: 24px;
-            color: #2d3748;
-            margin-bottom: 8px;
+            font-size: 20px;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+            font-weight: 600;
         }
         
         .login-header p {
-            color: #718096;
-            font-size: 15px;
+            color: var(--text-secondary);
+            font-size: 14px;
         }
         
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
         
         .form-label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             font-weight: 500;
-            color: #2d3748;
-            font-size: 14px;
+            color: var(--text-primary);
+            font-size: 13px;
         }
         
         .form-input {
             width: 100%;
-            padding: 14px 16px;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: all 0.3s ease;
-            background: #f8fafc;
+            padding: 12px 14px;
+            border: 1.5px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            font-size: 15px;
+            transition: var(--transition);
+            background: var(--bg-white);
         }
         
         .form-input:focus {
-            border-color: #4361ee;
+            border-color: var(--primary-color);
             outline: none;
-            background: #ffffff;
-            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+            box-shadow: 0 0 0 3px var(--primary-light);
         }
         
         .input-icon {
@@ -249,166 +279,151 @@ if (!isset($_SESSION['login_ip'])) {
         
         .input-icon i {
             position: absolute;
-            left: 16px;
+            left: 14px;
             top: 50%;
             transform: translateY(-50%);
-            color: #718096;
+            color: var(--text-light);
+            font-size: 15px;
         }
         
         .input-icon .form-input {
-            padding-left: 45px;
+            padding-left: 40px;
         }
         
         .password-toggle {
             position: absolute;
-            right: 16px;
+            right: 14px;
             top: 50%;
             transform: translateY(-50%);
             cursor: pointer;
-            color: #718096;
+            color: var(--text-light);
+            transition: var(--transition);
+            font-size: 15px;
+        }
+        
+        .password-toggle:hover {
+            color: var(--primary-color);
         }
         
         .btn-login {
             width: 100%;
-            background: #4361ee;
+            background: var(--primary-color);
             color: white;
             border: none;
-            padding: 14px;
-            border-radius: 8px;
-            font-size: 16px;
+            padding: 12px;
+            border-radius: var(--radius-sm);
+            font-size: 15px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 10px;
+            transition: var(--transition);
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: var(--shadow-sm);
         }
         
         .btn-login:hover {
-            background: #3a56d4;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.25);
+            background: var(--primary-dark);
+            box-shadow: var(--shadow-md);
         }
         
         .btn-login:active {
-            transform: translateY(0);
-        }
-        
-        .divider {
-            height: 1px;
-            background: #e2e8f0;
-            margin: 25px 0;
-            position: relative;
-        }
-        
-        .divider-text {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            padding: 0 15px;
-            color: #718096;
-            font-size: 14px;
+            transform: translateY(1px);
         }
         
         .security-notice {
-            background: #f8fafc;
-            border-left: 4px solid #4361ee;
-            padding: 15px;
-            border-radius: 6px;
-            margin-bottom: 20px;
-            font-size: 14px;
+            background: #f0f9ff;
+            border: 1px solid #e0f2fe;
+            padding: 12px;
+            border-radius: var(--radius-sm);
+            margin-bottom: 16px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #0c4a6e;
         }
         
         .security-notice i {
-            color: #4361ee;
-            margin-right: 10px;
+            color: #0ea5e9;
         }
         
         .error-message {
-            background: #fff5f5;
-            color: #e53e3e;
-            padding: 12px 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            border-left: 4px solid #e53e3e;
+            background: #fef2f2;
+            color: var(--error-color);
+            padding: 10px 12px;
+            border-radius: var(--radius-sm);
+            margin-bottom: 16px;
+            border: 1px solid #fee2e2;
             display: flex;
             align-items: center;
-        }
-        
-        .error-message i {
-            margin-right: 10px;
+            gap: 8px;
+            font-size: 13px;
+            animation: shake 0.4s ease-in-out;
         }
         
         .warning-message {
             background: #fffbeb;
-            color: #d97706;
-            padding: 12px 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            border-left: 4px solid #d97706;
+            color: var(--warning-color);
+            padding: 10px 12px;
+            border-radius: var(--radius-sm);
+            margin-bottom: 16px;
+            border: 1px solid #fef3c7;
             display: flex;
             align-items: center;
-        }
-        
-        .warning-message i {
-            margin-right: 10px;
+            gap: 8px;
+            font-size: 13px;
         }
         
         .captcha-container {
-            background: #f8fafc;
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 20px;
-            border: 1px solid #e2e8f0;
+            background: var(--bg-light);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            margin-bottom: 16px;
+            border: 1px solid var(--border-color);
+            animation: slideIn 0.3s ease-out;
         }
         
         .captcha-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
         
-       .captcha-code {
-    font-family: 'Courier New', monospace;
-    font-size: 24px;
-    font-weight: bold;
-    letter-spacing: 5px;
-    background: linear-gradient(45deg, #4361ee, #3a0ca3);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    padding: 15px;
-    text-align: center;
-    margin-bottom: 15px;
-    border-radius: 6px;
-    border: 1px dashed #cbd5e0;
-    user-select: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    cursor: default;
-}
+        .captcha-code {
+            font-family: 'Courier New', monospace;
+            font-size: 20px;
+            font-weight: bold;
+            letter-spacing: 4px;
+            background: linear-gradient(45deg, var(--primary-color), var(--primary-dark));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            padding: 12px;
+            text-align: center;
+            margin-bottom: 12px;
+            border-radius: var(--radius-sm);
+            border: 1px dashed #d1d5db;
+            user-select: none;
+            cursor: default;
+        }
+        
         .footer {
             text-align: center;
-            margin-top: 30px;
-            color: #718096;
-            font-size: 14px;
+            margin-top: 24px;
+            color: peru;
+            font-size: 13px;
         }
         
         .loader {
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-top: 3px solid #fff;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid #fff;
             border-radius: 50%;
             animation: spin 1s linear infinite;
-            display: inline-block;
-            margin-right: 8px;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
         }
         
         .hidden {
@@ -420,18 +435,18 @@ if (!isset($_SESSION['login_ip'])) {
             position: relative;
             height: 100%;
             overflow: hidden;
-            border-radius: 12px;
+            border-radius: var(--radius-sm);
         }
         
         .slider {
             display: flex;
-            transition: transform 0.5s ease-in-out;
+            transition: transform 0.4s ease-in-out;
             height: 100%;
         }
         
         .slide {
             min-width: 100%;
-            padding: 20px;
+            padding: 16px;
             text-align: center;
             display: flex;
             flex-direction: column;
@@ -440,47 +455,48 @@ if (!isset($_SESSION['login_ip'])) {
         }
         
         .slide-icon {
-            font-size: 48px;
-            margin-bottom: 20px;
+            font-size: 36px;
+            margin-bottom: 16px;
             background: rgba(255, 255, 255, 0.15);
-            width: 90px;
-            height: 90px;
+            width: 70px;
+            height: 70px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
         
         .slide h3 {
-            font-size: 24px;
-            margin-bottom: 15px;
+            font-size: 18px;
+            margin-bottom: 12px;
             font-weight: 600;
         }
         
         .slide p {
-            font-size: 16px;
-            line-height: 1.6;
-            max-width: 300px;
+            font-size: 14px;
+            line-height: 1.5;
+            max-width: 260px;
+            opacity: 0.9;
         }
         
         .slider-indicators {
             position: absolute;
-            bottom: 20px;
+            bottom: 16px;
             left: 0;
             right: 0;
             display: flex;
             justify-content: center;
-            gap: 8px;
+            gap: 6px;
         }
         
         .indicator {
-            width: 10px;
-            height: 10px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.4);
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: var(--transition);
         }
         
         .indicator.active {
@@ -491,10 +507,19 @@ if (!isset($_SESSION['login_ip'])) {
         .text-button {
             background: none;
             border: none;
-            color: #4361ee;
+            color: var(--primary-color);
             cursor: pointer;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: var(--transition);
+            padding: 4px;
+        }
+        
+        .text-button:hover {
+            color: var(--primary-dark);
         }
         
         .blocked-overlay {
@@ -504,34 +529,58 @@ if (!isset($_SESSION['login_ip'])) {
             right: 0;
             bottom: 0;
             background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(8px);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            border-radius: 12px;
+            border-radius: var(--radius);
             z-index: 20;
-            padding: 2rem;
+            padding: 24px;
+            text-align: center;
         }
         
         .blocked-icon {
-            font-size: 48px;
-            color: #e53e3e;
-            margin-bottom: 16px;
+            font-size: 36px;
+            color: var(--error-color);
+            margin-bottom: 12px;
         }
         
         .countdown {
-            font-size: 32px;
+            font-size: 24px;
             font-weight: bold;
-            color: #e53e3e;
+            color: var(--error-color);
             font-family: 'Courier New', monospace;
-            margin: 16px 0;
+            margin: 12px 0;
         }
         
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-12px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-4px); }
+            75% { transform: translateX(4px); }
+        }
+        
+        /* Responsive Design */
         @media (max-width: 768px) {
             .container {
                 flex-direction: column;
-                max-width: 450px;
+                max-width: 400px;
             }
             
             .login-section, .slider-section {
@@ -540,21 +589,124 @@ if (!isset($_SESSION['login_ip'])) {
             
             .slider-section {
                 order: -1;
-                min-height: 300px;
+                min-height: 200px;
+                padding: 24px;
+            }
+            
+            .login-section {
+                padding: 24px;
+            }
+            
+            .slide-icon {
+                width: 60px;
+                height: 60px;
+                font-size: 28px;
+                margin-bottom: 16px;
+            }
+            
+            .slide h3 {
+                font-size: 16px;
+            }
+            
+            .slide p {
+                font-size: 13px;
             }
         }
         
         @media (max-width: 480px) {
+            .container {
+                border-radius: var(--radius-sm);
+            }
+            
             .login-section {
-                padding: 25px;
+                padding: 20px;
+            }
+            
+            .slider-section {
+                padding: 20px;
+                min-height: 180px;
             }
             
             .login-header h1 {
-                font-size: 22px;
+                font-size: 18px;
             }
             
             .form-input {
-                padding: 12px 14px;
+                padding: 10px 12px;
+                font-size: 14px;
+            }
+            
+            .input-icon .form-input {
+                padding-left: 36px;
+            }
+            
+            .input-icon i {
+                font-size: 14px;
+                left: 12px;
+            }
+            
+            .btn-login {
+                padding: 10px;
+                font-size: 14px;
+            }
+            
+            .slide-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 24px;
+            }
+            
+            .slide h3 {
+                font-size: 15px;
+            }
+            
+            .slide p {
+                font-size: 12px;
+                max-width: 220px;
+            }
+        }
+        
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --text-primary: #f3f4f6;
+                --text-secondary: #d1d5db;
+                --text-light: #9ca3af;
+                --bg-light: #111827;
+                --bg-white: #1f2937;
+                --border-color: #374151;
+            }
+            
+            .login-section {
+                background: var(--bg-white);
+            }
+            
+            .form-input {
+                background: #374151;
+                color: var(--text-primary);
+                border-color: var(--border-color);
+            }
+            
+            .security-notice {
+                background: #1e3a8a;
+                border-color: #1d4ed8;
+                color: #dbeafe;
+            }
+            
+            .error-message {
+                background: #7f1d1d;
+                border-color: #b91c1c;
+                color: #fecaca;
+            }
+            
+            .warning-message {
+                background: #78350f;
+                border-color: #b45309;
+                color: #fde68a;
+            }
+            
+            .captcha-container {
+                background: var(--bg-light);
             }
         }
     </style>
@@ -575,7 +727,10 @@ if (!isset($_SESSION['login_ip'])) {
             <?php endif; ?>
             
             <div class="login-header">
-                <div class="logo">MONSTER STORE </div>
+                <div class="logo">
+                    <i class="fas fa-dragon logo-icon"></i>
+                    <span>MONSTER STORE</span>
+                </div>
                 <h1>Admin Portal</h1>
                 <p>Sign in to access your dashboard</p>
             </div>
@@ -642,13 +797,13 @@ if (!isset($_SESSION['login_ip'])) {
             <i class="fas fa-redo"></i> Refresh
         </button>
     </div>
-    <div class="captcha-code" id="captchaDisplay" oncontextmenu="return false" onmousedown="return false" onselectstart="return false">
+    <div class="captcha-code" id="captchaDisplay">
         <?php echo $_SESSION['captcha_code']; ?>
     </div>
     <div class="form-group">
         <input type="text" id="captcha" name="captcha" class="form-input" placeholder="Enter CAPTCHA code" required
                autocomplete="off"
-               pattern="[A-Z0-9]{6}"
+               pattern="[A-Z0-9@#&]{6}"
                title="Please enter the 6-character code shown above">
     </div>
 </div>
@@ -665,7 +820,7 @@ if (!isset($_SESSION['login_ip'])) {
             </form>
             
             <div class="footer">
-                <p>&copy; 2025 Monster Store.| Secure Admin Portal by eTwin Technology</p>
+                <p>&copy; 2025 Monster Store | Secure Admin Portal by eTwin Technology</p>
             </div>
         </div>
         
@@ -710,11 +865,13 @@ if (!isset($_SESSION['login_ip'])) {
             const refreshCaptchaBtn = document.getElementById('refreshCaptcha');
             const loginForm = document.getElementById('loginForm');
             const submitButton = document.getElementById('submitButton');
+            const captchaDisplay = document.getElementById('captchaDisplay');
             
             // Slider functionality
             const slider = document.getElementById('slider');
             const indicators = document.querySelectorAll('.indicator');
             let currentSlide = 0;
+            let slideInterval;
             
             // Set up slider
             function showSlide(index) {
@@ -732,18 +889,36 @@ if (!isset($_SESSION['login_ip'])) {
                 currentSlide = index;
             }
             
-            // Auto slide
-            setInterval(() => {
-                let nextSlide = (currentSlide + 1) % indicators.length;
-                showSlide(nextSlide);
-            }, 5000);
+            // Start auto slide
+            function startSlider() {
+                slideInterval = setInterval(() => {
+                    let nextSlide = (currentSlide + 1) % indicators.length;
+                    showSlide(nextSlide);
+                }, 4500);
+            }
+            
+            // Stop auto slide
+            function stopSlider() {
+                clearInterval(slideInterval);
+            }
+            
+            // Initialize slider
+            startSlider();
             
             // Set up indicator clicks
             indicators.forEach((indicator, index) => {
                 indicator.addEventListener('click', () => {
+                    stopSlider();
                     showSlide(index);
+                    startSlider();
                 });
             });
+            
+            // Pause slider on hover
+            if (slider) {
+                slider.addEventListener('mouseenter', stopSlider);
+                slider.addEventListener('mouseleave', startSlider);
+            }
             
             // Toggle password visibility
             if (passwordToggle && passwordInput) {
@@ -826,40 +1001,38 @@ if (!isset($_SESSION['login_ip'])) {
             if (window.history.replaceState) {
                 window.history.replaceState(null, null, window.location.href);
             }
+            
+            // CAPTCHA protection
+            if (captchaDisplay) {
+                // Prevent right-click context menu
+                captchaDisplay.addEventListener('contextmenu', function(e) {
+                    e.preventDefault();
+                    return false;
+                });
+                
+                // Prevent text selection
+                captchaDisplay.addEventListener('mousedown', function(e) {
+                    if (e.button === 0) {
+                        e.preventDefault();
+                        return false;
+                    }
+                });
+                
+                // Prevent drag starting
+                captchaDisplay.addEventListener('dragstart', function(e) {
+                    e.preventDefault();
+                    return false;
+                });
+                
+                // Add visual feedback when user tries to select
+                captchaDisplay.addEventListener('mousedown', function() {
+                    this.style.backgroundColor = 'rgba(0,0,0,0.05)';
+                    setTimeout(() => {
+                        this.style.backgroundColor = '';
+                    }, 200);
+                });
+            }
         });
     </script>
-    <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const captchaDisplay = document.getElementById('captchaDisplay');
-    
-    // Prevent right-click context menu
-    captchaDisplay.addEventListener('contextmenu', function(e) {
-        e.preventDefault();
-        return false;
-    });
-    
-    // Prevent text selection
-    captchaDisplay.addEventListener('mousedown', function(e) {
-        if (e.button === 0) { // Left mouse button
-            e.preventDefault();
-            return false;
-        }
-    });
-    
-    // Prevent drag starting
-    captchaDisplay.addEventListener('dragstart', function(e) {
-        e.preventDefault();
-        return false;
-    });
-    
-    // Add visual feedback when user tries to select
-    captchaDisplay.addEventListener('mousedown', function() {
-        this.style.backgroundColor = 'rgba(0,0,0,0.05)';
-        setTimeout(() => {
-            this.style.backgroundColor = '';
-        }, 200);
-    });
-});
-</script>
 </body>
 </html>

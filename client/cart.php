@@ -789,10 +789,9 @@ if (isset($_SESSION['error'])) {
                                 <span class="font-semibold"><?php echo number_format($cartTotal, 2); ?> DH</span>
                             </div>
                             
-                            <div class="summary-item text-green-600">
-                                <span>Livraison  Gratuite </span>
+                            <div class="summary-item text-green-600" style="margin-bottom: 1rem;">
+                                <span>Livraison Gratuite</span>
                             </div>
-                            
                             <div class="summary-total dark:text" style="display: flex; justify-content: space-between; gap: 2rem;">
                                 <span>Total</span>
                                 <span><?php echo number_format($cartTotal, 2); ?> DH</span>

@@ -638,7 +638,7 @@ $availableProducts = array_filter($products, function($product) {
                 </div>
             </div>
 
-            <h2 class="text-2xl font-bold mb-6 mt-8 text-gray-800 dark:text-white" id="products">Nos Produits</h2>
+            <h2 class="text-2xl font-bold mb-6 mt-8 text--800 dark:text" id="products">Nos Produits</h2>
             
             <?php if (empty($availableProducts)): ?>
                 <div class="text-center py-12">

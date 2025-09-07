@@ -3,12 +3,12 @@ session_start();
 require_once '../../config/db.php';
 require_once '../../controllers/AdminController.php';
 require_once '../../controllers/OrderController.php';
-
-// Check if admin is logged in
+// Vérifier si l'admin est connecté
 if (!isset($_SESSION['admin_logged_in'])) {
     header('Location: login.php');
     exit();
 }
+
 
 $db = new Database();
 $pdo = $db->connect();

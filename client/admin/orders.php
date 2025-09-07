@@ -749,7 +749,7 @@ $whatsappNumber = '+212724893110';
                                                         $contactNumber = !empty($order['customer_whatsapp']) ? $order['customer_whatsapp'] : $order['customer_phone'];
                                                         $contactNumber = preg_replace('/\D/', '', $contactNumber);
                                                     ?>
-         <a href="https://wa.me/<?php echo $contactNumber; ?>?text=<?php echo urlencode("Bonjour " . $order['customer_name'] . ",\nMerci pour votre commande (Code: " . $order['order_code'] . ") sur Monster Store.\nNous allons traiter votre commande et vous contacterons bientôt pour la livraison.\nSi vous avez des questions, n'hésitez pas à répondre à ce message."); ?>"
+         <a href="https://wa.me/+212<?php echo $contactNumber; ?>?text=<?php echo urlencode("Bonjour " . $order['customer_name'] . ",\nMerci pour votre commande (Code: " . $order['order_code'] . ") sur Monster Store.\nNous allons traiter votre commande et vous contacterons bientôt pour la livraison.\nSi vous avez des questions, n'hésitez pas à répondre à ce message."); ?>"
    target="_blank"
    class="btn-icon bg-green-100 text-green-600 hover:bg-green-200 transition-colors"
    title="Contacter sur WhatsApp">

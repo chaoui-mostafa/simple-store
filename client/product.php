@@ -113,27 +113,213 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             overflow-x: hidden;
         }
 
-        /* Fix for text colors - ensure proper contrast in both modes */
-        .text-light-dark {
+        .product-container {
+            max-width: 1280px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        @media (min-width: 1024px) {
+            .product-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .product-image-container {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px var(--shadow-color);
+            background: var(--bg-primary);
+        }
+
+        .product-main-image {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .product-thumbnails {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .product-thumbnail {
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .product-thumbnail.active {
+            border-color: var(--primary-color);
+        }
+
+        .product-thumbnail img {
+            width: 100%;
+            height: 80px;
+            object-fit: cover;
+        }
+
+        .product-details {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px var(--shadow-color);
+        }
+
+        .product-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
             color: var(--text-primary);
         }
-        
-        .text-secondary-light-dark {
+
+        .product-price {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .product-description {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        .stock-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .in-stock {
+            background: linear-gradient(135deg, #D1FAE5, #A7F3D0);
+            color: #065F46;
+        }
+
+        .low-stock {
+            background: linear-gradient(135deg, #FEF3C7, #FDE68A);
+            color: #92400E;
+        }
+
+        .out-of-stock {
+            background: linear-gradient(135deg, #FEE2E2, #FECACA);
+            color: #B91C1C;
+        }
+
+        .quantity-selector {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .quantity-btn {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--input-bg);
+            border: 1px solid var(--border);
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        .quantity-input {
+            width: 60px;
+            height: 40px;
+            text-align: center;
+            border: 1px solid var(--border);
+            background: var(--input-bg);
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (min-width: 640px) {
+            .action-buttons {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, var(--success-color), #059669);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .product-features {
+            border-top: 1px solid var(--border);
+            padding-top: 2rem;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.75rem;
             color: var(--text-secondary);
         }
 
-        .product-card {
-            background: var(--card-bg);
-            border-radius: 20px;
-            box-shadow: 0 10px 40px var(--shadow-color);
-            overflow: hidden;
-            transition: all 0.3s ease;
-            margin: 1rem;
-        }
-
-        .product-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 50px var(--shadow-hover);
+        .feature-icon {
+            color: var(--success-color);
+            margin-right: 0.75rem;
         }
 
         .notification {
@@ -162,292 +348,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             background: linear-gradient(135deg, var(--error-color), #DC2626);
         }
 
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: var(--bg-primary);
-            padding: 1rem;
-            box-shadow: 0 -10px 30px var(--shadow-color);
-            z-index: 100;
-            display: flex;
-            justify-content: space-around;
-            border-top: 1px solid var(--border);
-        }
-        
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-decoration: none;
-            color: var(--text-secondary);
-            font-size: 0.8rem;
-            padding: 0.75rem;
-            border-radius: 16px;
-            transition: all 0.3s ease;
-        }
-        
-        .nav-item.active {
-            color: var(--primary-color);
-            background: rgba(59, 130, 246, 0.15);
-            transform: translateY(-2px);
-        }
-        
-        .nav-item:hover {
-            color: var(--primary-color);
-            transform: translateY(-2px);
-        }
-
-        .cart-badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: linear-gradient(135deg, var(--error-color), #DC2626);
-            color: white;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            font-size: 0.7rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
-        }
-
-        .sticky-header {
-            position: sticky;
-            top: 0;
-            z-index: 50;
-            backdrop-filter: blur(20px);
-            background: rgba(255, 255, 255, 0.95);
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-        }
-
-        [data-theme="dark"] .sticky-header {
-            background: rgba(17, 24, 39, 0.95);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .quantity-input {
-            width: 100px;
-            text-align: center;
-            border: 2px solid var(--border);
-            border-radius: 12px;
-            padding: 0.75rem;
-            background: var(--input-bg);
-            color: var(--text-primary);
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .quantity-input:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-            outline: none;
-        }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 1.25rem 2rem;
-            border-radius: 16px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            border: none;
-            text-decoration: none;
-            font-size: 1rem;
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
-            color: white;
-            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
-        }
-        
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
-        }
-
-        .btn-checkout {
-            background: linear-gradient(135deg, var(--success-color), #059669);
-            color: white;
-            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
-        }
-        
-        .btn-checkout:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
-        }
-
-        .stock-indicator {
-            font-size: 0.9rem;
-            padding: 0.5rem 1rem;
-            border-radius: 12px;
-            display: inline-flex;
-            align-items: center;
-            font-weight: 500;
-        }
-        
-        .in-stock {
-            background: linear-gradient(135deg, #D1FAE5, #A7F3D0);
-            color: #065F46;
-        }
-        
-        .low-stock {
-            background: linear-gradient(135deg, #FEF3C7, #FDE68A);
-            color: #92400E;
-        }
-        
-        .out-of-stock {
-            background: linear-gradient(135deg, #FEE2E2, #FECACA);
-            color: #B91C1C;
-        }
-
-        /* Image Gallery Styles */
-        .product-gallery {
-            position: relative;
-        }
-
-        .main-image-container {
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            background: var(--bg-primary);
-        }
-
-        .main-product-image {
-            width: 100%;
-            height: 400px;
-            object-fit: cover;
-            transition: transform 0.3s ease;
-            cursor: zoom-in;
-        }
-
-        .main-product-image:hover {
-            transform: scale(1.05);
-        }
-
-        .thumbnail-container {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1rem;
-            margin-top: 1.5rem;
-            overflow-x: auto;
-            padding-bottom: 0.5rem;
-        }
-
-        .thumbnail {
-            border-radius: 12px;
-            overflow: hidden;
-            cursor: pointer;
-            border: 2px solid transparent;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            min-width: 80px;
-        }
-
-        .thumbnail:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-        }
-
-        .thumbnail.active {
-            border-color: var(--primary-color);
-            transform: scale(1.05);
-        }
-
-        .thumbnail img {
-            width: 100%;
-            height: 80px;
-            object-fit: cover;
-        }
-
-        .image-overlay {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            z-index: 10;
-        }
-
-        .stock-badge {
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
-        
-        .stock-high {
-            background: linear-gradient(135deg, #10B981, #059669);
-            color: white;
-        }
-        
-        .stock-medium {
-            background: linear-gradient(135deg, #F59E0B, #D97706);
-            color: white;
-        }
-        
-        .stock-low {
-            background: linear-gradient(135deg, #EF4444, #DC2626);
-            color: white;
-        }
-
-        /* Animations */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .animate-fade-in-up {
-            animation: fadeInUp 0.8s ease-out forwards;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(-30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        .theme-toggle {
-            background: var(--input-bg);
-            border-radius: 50%;
-            width: 45px;
-            height: 45px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            border: 2px solid var(--border);
-            transition: all 0.3s ease;
-        }
-
-        .theme-toggle:hover {
-            transform: rotate(180deg);
-            border-color: var(--primary-color);
-        }
-
-        /* Desktop Navigation Styles */
+        /* Desktop Navigation */
         .desktop-nav {
-            display: none;
             background: var(--bg-primary);
             box-shadow: 0 4px 20px var(--shadow-color);
-            padding: 0.75rem 2rem;
+            padding: 1rem 2rem;
             position: sticky;
             top: 0;
             z-index: 100;
@@ -455,7 +360,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         
         .desktop-nav-container {
-            max-width: 1200px;
+            max-width: 1280px;
             margin: 0 auto;
             display: flex;
             align-items: center;
@@ -528,204 +433,135 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             color: var(--primary-color);
         }
         
-     
-        .modern-section-title {
-            font-size: 1.875rem;
-            font-weight: 700;
-            margin-bottom: 2rem;
-            position: relative;
-            display: inline-block;
-        }
-        
-        .modern-section-title::after {
-            content: '';
+        .cart-badge {
             position: absolute;
-            bottom: -10px;
+            top: -5px;
+            right: -5px;
+            background: linear-gradient(135deg, var(--error-color), #DC2626);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .theme-toggle {
+            background: var(--input-bg);
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: 2px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            transform: rotate(180deg);
+            border-color: var(--primary-color);
+        }
+
+        /* Mobile Navigation */
+        .mobile-nav {
+            position: fixed;
+            bottom: 0;
             left: 0;
-            width: 50px;
-            height: 4px;
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
-            border-radius: 2px;
+            right: 0;
+            background: var(--bg-primary);
+            padding: 1rem;
+            box-shadow: 0 -10px 30px var(--shadow-color);
+            z-index: 100;
+            display: flex;
+            justify-content: space-around;
+            border-top: 1px solid var(--border);
         }
         
-        .modern-card {
-            background: var(--card-bg);
+        .mobile-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            padding: 0.75rem;
             border-radius: 16px;
-            padding: 1.5rem;
-            box-shadow: 0 10px 30px var(--shadow-color);
             transition: all 0.3s ease;
         }
         
-        .modern-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px var(--shadow-hover);
+        .mobile-nav-item.active {
+            color: var(--primary-color);
+            background: rgba(59, 130, 246, 0.15);
         }
         
-        /* Responsive Design */
-        @media (min-width: 769px) {
-            .desktop-nav {
-                display: block;
-            }
-            
-            .bottom-nav {
-                display: none;
-            }
-            
-            .floating-cart-btn {
-                display: none;
-            }
+        .mobile-nav-item:hover {
+            color: var(--primary-color);
         }
 
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        /* Responsive adjustments */
         @media (max-width: 768px) {
-            .product-card {
-                margin: 0.5rem;
-                border-radius: 16px;
+            .product-container {
+                margin: 1rem auto;
+                padding: 0 0.5rem;
             }
             
-            .main-product-image {
+            .product-main-image {
                 height: 300px;
             }
             
-            .thumbnail-container {
+            .product-thumbnails {
                 grid-template-columns: repeat(3, 1fr);
-                gap: 0.75rem;
             }
             
-            .thumbnail img {
-                height: 60px;
+            .product-title {
+                font-size: 1.75rem;
             }
             
-            .btn {
-                padding: 1rem 1.5rem;
-                font-size: 0.9rem;
+            .product-price {
+                font-size: 2rem;
             }
             
-            .quantity-input {
-                width: 80px;
-                padding: 0.5rem;
+            .desktop-nav {
+                padding: 1rem;
             }
             
-            .product-card > .md\:flex {
-                flex-direction: column;
-            }
-            
-            .md\:w-1\/2 {
-                width: 100%;
+            .desktop-nav-menu {
+                gap: 1rem;
             }
         }
 
-        @media (max-width: 480px) {
-            .thumbnail-container {
+        @media (max-width: 640px) {
+            .product-thumbnails {
                 grid-template-columns: repeat(2, 1fr);
             }
             
-            .main-product-image {
+            .product-main-image {
                 height: 250px;
             }
             
-            .product-card {
-                margin: 0.25rem;
+            .desktop-nav {
+                flex-direction: column;
+                gap: 1rem;
             }
             
-            .btn {
-                padding: 0.875rem 1.25rem;
-                font-size: 0.85rem;
-            }
-            
-            h1.text-4xl {
-                font-size: 1.875rem;
-            }
-        }
-
-        /* Utility Classes */
-        .text-gradient {
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .hover-lift {
-            transition: transform 0.3s ease;
-        }
-
-        .hover-lift:hover {
-            transform: translateY(-3px);
-        }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: var(--bg-secondary);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--border);
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--text-secondary);
-        }
-        
-        /* Mobile-specific fixes */
-        @media (max-width: 640px) {
-            body {
-                padding-bottom: 80px; /* Space for bottom nav */
-            }
-            
-            .container {
-                padding-left: 0.5rem;
-                padding-right: 0.5rem;
-            }
-            
-            .px-4 {
-                padding-left: 1rem;
-                padding-right: 1rem;
-            }
-            
-            .py-8 {
-                padding-top: 1.5rem;
-                padding-bottom: 1.5rem;
-            }
-            
-            .main-image-container {
-                border-radius: 16px;
-            }
-            
-            .thumbnail-container {
-                grid-template-columns: repeat(4, 80px);
-                overflow-x: auto;
-                display: flex;
-                flex-wrap: nowrap;
-                gap: 0.5rem;
-                padding-bottom: 1rem;
-            }
-            
-            .thumbnail {
-                flex: 0 0 auto;
-            }
-        }
-        
-        /* Prevent horizontal scrolling */
-        html, body {
-            max-width: 100%;
-            overflow-x: hidden;
-        }
-        
-        /* Smooth scrolling for the whole page */
-        html {
-            scroll-behavior: smooth;
-        }
-        
-        /* Fix for iOS Safari viewport */
-        @supports (-webkit-touch-callout: none) {
-            .min-h-screen {
-                min-height: -webkit-fill-available;
+            .desktop-nav-menu {
+                flex-wrap: wrap;
+                justify-content: center;
             }
         }
     </style>
@@ -733,29 +569,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body class="antialiased">
     <div class="min-h-screen flex flex-col">
         <!-- Desktop Navigation -->
-        <nav class="desktop-nav sticky-header">
+        <nav class="desktop-nav">
             <div class="desktop-nav-container">
                 <a href="index.php" class="desktop-nav-logo">
                     <img src="../assets/images/logo/logo.jpg" alt="Monster Store Logo">
                     Monster Store
                 </a>
                 
-                <div class="desktop-nav-menu">
-                    <a href="index.php" class="desktop-nav-link">Accueil</a>
-                    <a href="orders.php" class="desktop-nav-link">Mes commandes</a>
-                    <a href="checkout.php" class="desktop-nav-link">Checkout</a>
-                    <!-- <a href="about.php" class="desktop-nav-link">À propos</a> -->
-                    <!-- <a href="contact.php" class="desktop-nav-link">Contact</a> -->
-                </div>
                 
                 <div class="desktop-nav-actions">
                     <div class="theme-toggle" id="theme-toggle">
                         <i class="fas fa-moon" id="theme-icon"></i>
                     </div>
-                    
-                 
-                    
-                   
                     
                     <a href="cart.php" class="desktop-nav-icon">
                         <i class="fas fa-shopping-cart"></i>
@@ -768,168 +593,143 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </nav>
 
         <!-- Main Content -->
-        <main class="flex-grow container mx-auto px-4 py-8">
-            <?php if (isset($_SESSION['success_msg'])): ?>
-                <div class="notification success show animate-fade-in-up">
-                    <i class="fas fa-check-circle mr-2"></i> <?php echo $_SESSION['success_msg']; unset($_SESSION['success_msg']); ?>
-                </div>
-            <?php endif; ?>
-            
-            <?php if (isset($_SESSION['error_msg'])): ?>
-                <div class="notification error show animate-fade-in-up">
-                    <i class="fas fa-exclamation-circle mr-2"></i> <?php echo $_SESSION['error_msg']; unset($_SESSION['error_msg']); ?>
-                </div>
-            <?php endif; ?>
+        <main class="flex-grow">
+            <div class="product-container">
+                <?php if (isset($_SESSION['success_msg'])): ?>
+                    <div class="notification success show animate-fade-in">
+                        <i class="fas fa-check-circle mr-2"></i> <?php echo $_SESSION['success_msg']; unset($_SESSION['success_msg']); ?>
+                    </div>
+                <?php endif; ?>
+                
+                <?php if (isset($_SESSION['error_msg'])): ?>
+                    <div class="notification error show animate-fade-in">
+                        <i class="fas fa-exclamation-circle mr-2"></i> <?php echo $_SESSION['error_msg']; unset($_SESSION['error_msg']); ?>
+                    </div>
+                <?php endif; ?>
 
-            <div class="product-card max-w-6xl mx-auto animate-fade-in-up">
-                <div class="md:flex">
-                    <!-- Product Image Gallery -->
-                    <div class="md:w-1/2 p-4 md:p-8">
-                        <div class="product-gallery">
-                            <div class="main-image-container">
-                                <?php
-                                // Get the main image path from database - FIXED PATH
-                                $mainImage = !empty($product['image']) ? "../assets/images/" . htmlspecialchars($product['image']) : '../assets/images/placeholder.jpg';
-                                ?>
-                                <img id="main-product-image" src="<?php echo $mainImage; ?>" 
-                                     alt="<?php echo htmlspecialchars($product['name']); ?>" 
-                                     class="main-product-image"
-                                     onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIyNSIgdmlld0JveD0iMCAwIDMwMCAyMjUiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjI1IiBmaWxsPSIjRjBGMEYwIi8+CjxwYXRoIGQ9Ik0xMTIuNSA4NC41QzExMi41IDc4LjAyODQgMTE3Ljc4MiA3Mi43NSAxMjQuMjUgNzIuNzVDMTMwLjcxOCA3Mi43NSAxMzYgNzguMDI4NCAxMzYgODQuNUMxMzYgOTAuOTcxNiAxMzAuNzE4IDk2LjI1IDEyNC4yNSA5Ni4yNUMxMTcuNzgyIDk2LjI1IDExMi41IDkwLjk3MTYgMTEyLjUgODQuNVoiIGZpbGw9IiNEOEQ4RDgiLz4KPHBhdGggZD0iTTE4NSA5NEgxNjMuNUMxNjEuMDEzIDk4IDE1OSA5Ni4wMTM0IDE1OSA5OC41VjEzN0MxNTkgMTM5LjQ4NyAxNjEuMDEzIDE0MS41IDE2My41IDE0MS41SDE4NUMxODcuNDg3IDE0MS41IDE5MCAxMzkuNDg3IDE5MCAxMzdWOTguNUMxOTAgOTYuMDEzNCAxODcuNDg3IDk0IDE4NSA5NFoiIGZpbGw9IiNEOEQ4RDgiLz4KPC9zdmc+Cg=='">
-                                
-                                <div class="image-overlay">
-                                    <span class="stock-badge <?php 
-                                        if ($product['quantity'] > 10) echo 'stock-high';
-                                        elseif ($product['quantity'] > 0) echo 'stock-medium';
-                                        else echo 'stock-low';
-                                    ?>">
-                                        <?php echo $product['quantity']; ?> en stock
-                                    </span>
-                                </div>
+                <div class="product-grid animate-fade-in">
+                    <!-- Product Images -->
+                    <div class="product-images">
+                        <div class="product-image-container">
+                            <?php
+                            // Get the main image path from database
+                            $mainImage = !empty($product['image']) ? "../assets/images/" . htmlspecialchars($product['image']) : '../assets/images/placeholder.jpg';
+                            ?>
+                            <img id="main-product-image" src="<?php echo $mainImage; ?>" 
+                                 alt="<?php echo htmlspecialchars($product['name']); ?>" 
+                                 class="product-main-image"
+                                 onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIyNSIgdmlld0JveD0iMCAwIDMwMCAyMjUiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjI1IiBmaWxsPSIjRjBGMEYwIi8+CjxwYXRoIGQ9Ik0xMTIuNSA4NC41QzExMi41IDc4LjAyODQgMTE3Ljc4MiA3Mi43NSAxMjQuMjUgNzIuNzVDMTMwLjcxOCA3Mi43NSAxMzYgNzguMDI4NCAxMzYgODQuNUMxMzYgOTAuOTcxNiAxMzAuNzE4IDk2LjI1IDEyNC4yNSA5Ni4yNUMxMTcuNzgyIDk2LjI1IDExMi41IDkwLjk3MTYgMTEyLjUgODQuNVoiIGZpbGw9IiNEOEQ4RDgiLz4KPHBhdGggZD0iTTE4NSA5NEgxNjMuNUMxNjEuMDEzIDk4IDE1OSA5Ni4wMTM0IDE1OSA5OC41VjEzN0MxNTkgMTM5LjQ4NyAxNjEuMDEzIDE0MS41IDE2My41IDE0MS41SDE4NUMxODcuNDg3IDE0MS41IDE5MCAxMzkuNDg3IDE5MCAxMzdWOTguNUMxOTAgOTYuMDEzNCAxODcuNDg3IDk0IDE4NSA5NFoiIGZpbGw9IiNEOEQ4RDgiLz4KPC9zdmc+Cg=='">
+                            
+                            <div class="absolute top-4 right-4">
+                                <span class="stock-badge <?php 
+                                    if ($product['quantity'] > 10) echo 'in-stock';
+                                    elseif ($product['quantity'] > 0) echo 'low-stock';
+                                    else echo 'out-of-stock';
+                                ?>">
+                                    <?php echo $product['quantity']; ?> en stock
+                                </span>
                             </div>
+                        </div>
 
-                            <div class="thumbnail-container">
-                                <!-- Main product image thumbnail -->
-                                <div class="thumbnail active" onclick="changeImage('<?php echo $mainImage; ?>')">
-                                    <img src="<?php echo $mainImage; ?>" alt="Image principale">
-                                </div>
-                                
-                                <?php
-                                // Display additional images from database if available - FIXED PATH
-                                $additionalImages = $productController->getProductImages($product['id']);
-                                
-                                if (!empty($additionalImages)) {
-                                    foreach ($additionalImages as $index => $image) {
-                                        // CORRECTED PATH: Removed extra slash
-                                        $fullImagePath = "../assets/images/product_images/" . htmlspecialchars($image['image_path']);
-                                        echo '<div class="thumbnail" onclick="changeImage(\'' . $fullImagePath . '\')">';
-                                        echo '<img src="' . $fullImagePath . '" alt="Image produit ' . ($index + 1) . '" onerror="this.parentElement.style.display=\'none\'">';
-                                        echo '</div>';
-                                    }
-                                } else {
-                                    // Fallback to sample images if no additional images in database
-                                    $sampleImages = [
-                                        'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80',
-                                        'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80',
-                                        'https://images.unsplash.com/photo-1556306535-0f09a537f0a3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80'
-                                    ];
-                                    
-                                    foreach ($sampleImages as $index => $imageUrl) {
-                                        echo '<div class="thumbnail" onclick="changeImage(\'' . $imageUrl . '\')">';
-                                        echo '<img src="' . $imageUrl . '" alt="Image exemple ' . ($index + 1) . '">';
-                                        echo '</div>';
-                                    }
+                        <div class="product-thumbnails">
+                            <!-- Main product image thumbnail -->
+                            <div class="product-thumbnail active" onclick="changeImage('<?php echo $mainImage; ?>')">
+                                <img src="<?php echo $mainImage; ?>" alt="Image principale">
+                            </div>
+                            
+                            <?php
+                            // Display additional images from database if available
+                            $additionalImages = $productController->getProductImages($product['id']);
+                            
+                            if (!empty($additionalImages)) {
+                                foreach ($additionalImages as $index => $image) {
+                                    $fullImagePath = "../assets/images/product_images/" . htmlspecialchars($image['image_path']);
+                                    echo '<div class="product-thumbnail" onclick="changeImage(\'' . $fullImagePath . '\')">';
+                                    echo '<img src="' . $fullImagePath . '" alt="Image produit ' . ($index + 1) . '" onerror="this.parentElement.style.display=\'none\'">';
+                                    echo '</div>';
                                 }
-                                ?>
-                            </div>
+                            } else {
+                                // Fallback to sample images if no additional images in database
+                                $sampleImages = [
+                                    'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80',
+                                    'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80',
+                                    'https://images.unsplash.com/photo-1556306535-0f09a537f0a3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80'
+                                ];
+                                
+                                foreach ($sampleImages as $index => $imageUrl) {
+                                    echo '<div class="product-thumbnail" onclick="changeImage(\'' . $imageUrl . '\')">';
+                                    echo '<img src="' . $imageUrl . '" alt="Image exemple ' . ($index + 1) . '">';
+                                    echo '</div>';
+                                }
+                            }
+                            ?>
                         </div>
                     </div>
                     
                     <!-- Product Details -->
-                    <div class="md:w-1/2 p-4 md:p-8">
-                        <div class="mb-6 md:mb-8">
-                            <h1 class="text-3xl md:text-4xl font-bold text-light-dark mb-4"><?php echo htmlspecialchars($product['name']); ?></h1>
-                            
-                            <div class="flex items-center justify-between mb-6">
-                                <p class="text-2xl md:text-3xl font-bold text-gradient"><?php echo number_format($product['price'], 2); ?> DH</p>
-                                <button class="p-3 md:p-4 rounded-full bg-gray-100 text-red-500 hover:bg-gray-200 transition-colors dark:bg-gray-700 dark:hover:bg-gray-600 hover-lift">
-                                    <i class="fas fa-heart text-lg md:text-xl"></i>
-                                </button>
-                            </div>
-                            
-                            <!-- Stock indicator -->
-                            <div class="mb-6">
-                                <?php if ($product['quantity'] > 10): ?>
-                                    <span class="stock-indicator in-stock">
-                                        <i class="fas fa-check-circle mr-2"></i> En stock
-                                    </span>
-                                <?php elseif ($product['quantity'] > 0): ?>
-                                    <span class="stock-indicator low-stock">
-                                        <i class="fas fa-exclamation-circle mr-2"></i> Plus que <?php echo $product['quantity']; ?> disponible(s)
-                                    </span>
-                                <?php else: ?>
-                                    <span class="stock-indicator out-of-stock">
-                                        <i class="fas fa-times-circle mr-2"></i> Rupture de stock
-                                    </span>
-                                <?php endif; ?>
-                            </div>
-                            
-                            <p class="text-secondary-light-dark leading-relaxed text-base md:text-lg mb-6"><?php echo htmlspecialchars($product['description']); ?></p>
-                        </div>
+                    <div class="product-details">
+                        <h1 class="product-title"><?php echo htmlspecialchars($product['name']); ?></h1>
+                        
+                        <div class="product-price"><?php echo number_format($product['price'], 2); ?> DH</div>
+                        
+                        <p class="product-description"><?php echo htmlspecialchars($product['description']); ?></p>
                         
                         <!-- Add to Cart Form -->
-                        <form action="" method="POST" class="space-y-6">
+                        <form action="" method="POST">
                             <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
                             <input type="hidden" name="product_id" value="<?php echo $product['id']; ?>">
                             
-                            <div class="flex items-center space-x-4">
-                                <label for="quantity" class="text-base md:text-lg font-medium text-light-dark">Quantité :</label>
+                            <div class="quantity-selector">
+                                <label for="quantity" class="mr-3 font-medium">Quantité :</label>
+                                <button type="button" class="quantity-btn rounded-l-md" onclick="decrementQuantity()">-</button>
                                 <input type="number" id="quantity" name="quantity" min="1" 
                                        max="<?php echo $product['quantity']; ?>" value="1" 
-                                       class="quantity-input focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                       class="quantity-input">
+                                <button type="button" class="quantity-btn rounded-r-md" onclick="incrementQuantity()">+</button>
                             </div>
 
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="action-buttons">
                                 <button type="submit" name="add_to_cart" 
-                                        class="btn btn-primary w-full" 
+                                        class="btn btn-primary" 
                                         <?php echo $product['quantity'] <= 0 ? 'disabled' : ''; ?>>
                                     <i class="fas fa-cart-plus mr-3"></i> Ajouter au panier
                                 </button>
                                 
                                 <button type="submit" name="buy_now" 
-                                        class="btn btn-checkout w-full"
+                                        class="btn btn-secondary"
                                         <?php echo $product['quantity'] <= 0 ? 'disabled' : ''; ?>>
                                     <i class="fas fa-bolt mr-3"></i> Acheter maintenant
                                 </button>
                             </div>
                             
                             <?php if ($product['quantity'] <= 0): ?>
-                                <p class="text-red-500 text-base md:text-lg text-center font-medium">Ce produit est actuellement en rupture de stock.</p>
+                                <p class="text-center text-red-500 font-medium">Ce produit est actuellement en rupture de stock.</p>
                             <?php endif; ?>
                         </form>
                         
                         <!-- Product features -->
-                        <div class="mt-8 md:mt-10 pt-6 md:pt-8 border-t border-gray-200 dark:border-gray-700">
-                            <h3 class="font-semibold text-xl md:text-2xl text-light-dark mb-4 md:mb-6">Caractéristiques :</h3>
-                            <ul class="space-y-3 md:space-y-4">
-                                <li class="flex items-center text-base md:text-lg">
-                                    <i class="fas fa-check text-green-500 mr-3 md:mr-4 text-lg md:text-xl"></i>
-                                    <span class="text-secondary-light-dark">Matériaux de qualité premium</span>
+                        <div class="product-features">
+                            <h3 class="font-semibold text-xl mb-4">Caractéristiques :</h3>
+                            <ul class="feature-list">
+                                <li class="feature-item">
+                                    <i class="fas fa-check feature-icon"></i>
+                                    <span>Matériaux de qualité premium</span>
                                 </li>
-                                <li class="flex items-center text-base md:text-lg">
-                                    <i class="fas fa-check text-green-500 mr-3 md:mr-4 text-lg md:text-xl"></i>
-                                    <span class="text-secondary-light-dark">Garantie satisfait ou remboursé 7 jours</span>
+                                <li class="feature-item">
+                                    <i class="fas fa-check feature-icon"></i>
+                                    <span>Garantie satisfait ou remboursé 7 jours</span>
                                 </li>
-                                <li class="flex items-center text-base md:text-lg">
-                                    <i class="fas fa-check text-green-500 mr-3 md:mr-4 text-lg md:text-xl"></i>
-                                    <span class="text-secondary-light-dark">Livraison gratuite au Maroc</span>
+                                <li class="feature-item">
+                                    <i class="fas fa-check feature-icon"></i>
+                                    <span>Livraison gratuite au Maroc</span>
                                 </li>
-                                <li class="flex items-center text-base md:text-lg">
-                                    <i class="fas fa-check text-green-500 mr-3 md:mr-4 text-lg md:text-xl"></i>
-                                    <span class="text-secondary-light-dark">Paiement sécurisé</span>
+                                <li class="feature-item">
+                                    <i class="fas fa-check feature-icon"></i>
+                                    <span>Paiement sécurisé</span>
                                 </li>
-                                <li class="flex items-center text-base md:text-lg">
-                                    <i class="fas fa-check text-green-500 mr-3 md:mr-4 text-lg md:text-xl"></i>
-                                    <span class="text-secondary-light-dark">Support client 24/7</span>
+                                <li class="feature-item">
+                                    <i class="fas fa-check feature-icon"></i>
+                                    <span>Support client 24/7</span>
                                 </li>
                             </ul>
                         </div>
@@ -938,14 +738,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         </main>
 
-        <!-- Floating Cart Button (Mobile) -->
-        <?php include"../assets/part/floatingCart.php" ?>
+        <!-- Mobile Navigation -->
+  <?php include '../assets/part/nav-mobil.php'; ?>
+  <?php include '../assets/part/floatingCart.php'; ?>
 
-        <!-- Bottom Navigation (Mobile) -->
-        <?php include '../assets/part/nav-mobil.php' ?>
-        
+
     </div>
-   
 
     <script>
         // Theme management
@@ -974,40 +772,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             const quantityInput = document.getElementById('quantity');
             if (quantityInput) {
                 quantityInput.addEventListener('change', function() {
-                    const max = parseInt(this.getAttribute('max'));
-                    const value = parseInt(this.value);
-                    
-                    if (value > max) {
-                        this.value = max;
-                        showToast('Quantité maximale disponible : ' + max, 'warning');
-                    } else if (value < 1) {
-                        this.value = 1;
-                    }
+                    validateQuantity();
                 });
-            }
-
-            // Image loading animation
-            const productImage = document.querySelector('.main-product-image');
-            if (productImage) {
-                productImage.addEventListener('load', function() {
-                    this.style.opacity = '1';
-                    this.style.transition = 'opacity 0.5s ease';
-                });
-                
-                productImage.addEventListener('error', function() {
-                    this.style.opacity = '1';
-                });
-            }
-            
-            // Mobile-specific adjustments
-            if (window.innerWidth <= 768) {
-                // Make thumbnails horizontally scrollable on mobile
-                const thumbnailContainer = document.querySelector('.thumbnail-container');
-                if (thumbnailContainer) {
-                    thumbnailContainer.style.overflowX = 'auto';
-                    thumbnailContainer.style.flexWrap = 'nowrap';
-                    thumbnailContainer.style.paddingBottom = '0.5rem';
-                }
             }
         });
 
@@ -1018,8 +784,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             document.documentElement.setAttribute('data-theme', newTheme);
             localStorage.setItem('theme', newTheme);
             updateThemeIcon(newTheme);
-            
-            showToast(`Mode ${newTheme === 'light' ? 'clair' : 'sombre'} activé`, 'success');
         }
 
         function updateThemeIcon(theme) {
@@ -1031,7 +795,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         function changeImage(src) {
             const mainImage = document.getElementById('main-product-image');
-            const thumbnails = document.querySelectorAll('.thumbnail');
+            const thumbnails = document.querySelectorAll('.product-thumbnail');
             
             // Update main image with fade effect
             mainImage.style.opacity = '0';
@@ -1043,6 +807,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Update active thumbnail
             thumbnails.forEach(thumb => thumb.classList.remove('active'));
             event.currentTarget.classList.add('active');
+        }
+
+        function incrementQuantity() {
+            const quantityInput = document.getElementById('quantity');
+            const max = parseInt(quantityInput.getAttribute('max'));
+            let value = parseInt(quantityInput.value);
+            
+            if (value < max) {
+                quantityInput.value = value + 1;
+            } else {
+                showToast('Quantité maximale disponible : ' + max, 'warning');
+            }
+        }
+
+        function decrementQuantity() {
+            const quantityInput = document.getElementById('quantity');
+            let value = parseInt(quantityInput.value);
+            
+            if (value > 1) {
+                quantityInput.value = value - 1;
+            }
+        }
+
+        function validateQuantity() {
+            const quantityInput = document.getElementById('quantity');
+            const max = parseInt(quantityInput.getAttribute('max'));
+            let value = parseInt(quantityInput.value);
+            
+            if (isNaN(value) || value < 1) {
+                quantityInput.value = 1;
+            } else if (value > max) {
+                quantityInput.value = max;
+                showToast('Quantité maximale disponible : ' + max, 'warning');
+            }
         }
 
         function showToast(message, type = 'info') {
@@ -1067,23 +865,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 setTimeout(() => toast.remove(), 300);
             }, 3000);
         }
-        
-        // Handle window resize for responsive adjustments
-        window.addEventListener('resize', function() {
-            if (window.innerWidth <= 768) {
-                const thumbnailContainer = document.querySelector('.thumbnail-container');
-                if (thumbnailContainer) {
-                    thumbnailContainer.style.overflowX = 'auto';
-                    thumbnailContainer.style.flexWrap = 'nowrap';
-                }
-            } else {
-                const thumbnailContainer = document.querySelector('.thumbnail-container');
-                if (thumbnailContainer) {
-                    thumbnailContainer.style.overflowX = 'visible';
-                    thumbnailContainer.style.flexWrap = 'wrap';
-                }
-            }
-        });
     </script>
 </body>
 </html>

@@ -39,14 +39,16 @@ class OrderController {
             $customer_address  = trim($data['customer_address'] ?? '');
             $customer_notes    = trim($data['customer_notes'] ?? '');
 
-            // Validate required fields
-            $required = [$customer_name, $customer_email, $customer_phone, $customer_city, $customer_state, $customer_zipcode, $customer_country, $customer_address];
-            if (in_array('', $required, true)) {
-                return ['success' => false, 'message' => 'Please fill in all required fields.'];
+            // Validate required fields (allow 0 for zipcode, allow phone/whatsapp to be optional)
+            $required = [$customer_name, $customer_city, $customer_country, $customer_address];
+            foreach ($required as $field) {
+                if ($field === '') {
+                    return ['success' => false, 'message' => 'Please fill in all required fields.'];
+                }
             }
-            if (!filter_var($customer_email, FILTER_VALIDATE_EMAIL)) {
-                return ['success' => false, 'message' => 'Please provide a valid email address.'];
-            }
+            // if (!filter_var($customer_email, FILTER_VALIDATE_EMAIL)) {
+            //     return ['success' => false, 'message' => 'Please provide a valid email address.'];
+            // }
 
             $productController = new ProductController($this->conn);
             $this->conn->beginTransaction();

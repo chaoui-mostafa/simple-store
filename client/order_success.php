@@ -50,6 +50,7 @@ $customerPhone = $order['customer_phone'] ?? '';
 $orderTotal    = isset($order['product_price'], $order['quantity']) 
                  ? ($order['product_price'] * $order['quantity']) 
                  : 0;
+$address       = $order['customer_address'] ?? 'N/A';
 
 // ✅ Contact support WhatsApp
 $whatsappNumber = '+212724893110';
@@ -527,9 +528,9 @@ unset($_SESSION['order_success']);
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div class="animate-slide-in-up delay-300">
                         <p class="text-sm text-gray-600 mb-1 flex items-center">
-                            <i class="fas fa-envelope mr-2 text-indigo-500"></i>Email du Client
+                            <i class="fas fa-envelope mr-2 text-indigo-500"></i>Adresse de Livraison
                         </p>
-                        <p class="font-semibold text-gray-800"><?php echo htmlspecialchars($customerEmail); ?></p>
+                        <p class="font-semibold text-gray-800"><?php echo htmlspecialchars($address); ?></p>
                     </div>
                     <div class="animate-slide-in-up delay-400">
                         <p class="text-sm text-gray-600 mb-1 flex items-center">

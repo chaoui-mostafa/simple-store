@@ -42,14 +42,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 
+    // Validate and sanitize all required fields
+    $required_fields = [
+        'customer_name', 'customer_phone', 
+        'customer_city', 'customer_country', 'customer_address'
+    ];
+    
+    $missing_fields = [];
+    foreach ($required_fields as $field) {
+        if (empty($_POST[$field])) {
+            $missing_fields[] = $field;
+        }
+    }
+    
+    if (!empty($missing_fields)) {
+        $_SESSION['error'] = "Veuillez remplir tous les champs obligatoires.";
+        $_SESSION['checkout_form_data'] = $_POST;
+        header('Location: checkout.php');
+        exit();
+    }
+
     $_SESSION['checkout_form_data'] = [
         'customer_name' => $_POST['customer_name'],
-        'customer_email' => $_POST['customer_email'],
+        // 'customer_email' => $_POST['customer_email'],
         'customer_phone' => $_POST['customer_phone'],
         'customer_whatsapp' => $_POST['customer_whatsapp'] ?? '',
         'customer_city' => $_POST['customer_city'],
-        'customer_state' => $_POST['customer_state'],
-        'customer_zipcode' => $_POST['customer_zipcode'],
+        // 'customer_state' => $_POST['customer_state'] ?? '',
+        // 'customer_zipcode' => $_POST['customer_zipcode'] ?? '',
         'customer_country' => $_POST['customer_country'],
         'customer_address' => $_POST['customer_address'],
         'customer_notes' => $_POST['customer_notes'] ?? ''
@@ -63,12 +83,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'product_id' => $item['product_id'],
             'quantity' => $item['quantity'],
             'customer_name' => htmlspecialchars($_POST['customer_name'], ENT_QUOTES, 'UTF-8'),
-            'customer_email' => filter_var($_POST['customer_email'], FILTER_SANITIZE_EMAIL),
+            // 'customer_email' => filter_var($_POST['customer_email'], FILTER_SANITIZE_EMAIL),
             'customer_phone' => htmlspecialchars($_POST['customer_phone'], ENT_QUOTES, 'UTF-8'),
             'customer_whatsapp' => isset($_POST['customer_whatsapp']) ? htmlspecialchars($_POST['customer_whatsapp'], ENT_QUOTES, 'UTF-8') : '',
             'customer_city' => htmlspecialchars($_POST['customer_city'], ENT_QUOTES, 'UTF-8'),
-            'customer_state' => htmlspecialchars($_POST['customer_state'], ENT_QUOTES, 'UTF-8'),
-            'customer_zipcode' => htmlspecialchars($_POST['customer_zipcode'], ENT_QUOTES, 'UTF-8'),
+            // 'customer_state' => isset($_POST['customer_state']) ? htmlspecialchars($_POST['customer_state'], ENT_QUOTES, 'UTF-8') : '',
+            // 'customer_zipcode' => isset($_POST['customer_zipcode']) ? htmlspecialchars($_POST['customer_zipcode'], ENT_QUOTES, 'UTF-8') : '',
             'customer_country' => htmlspecialchars($_POST['customer_country'], ENT_QUOTES, 'UTF-8'),
             'customer_address' => htmlspecialchars($_POST['customer_address'], ENT_QUOTES, 'UTF-8'),
             'customer_notes' => isset($_POST['customer_notes']) ? htmlspecialchars($_POST['customer_notes'], ENT_QUOTES, 'UTF-8') : ''
@@ -111,12 +131,12 @@ if (isset($_SESSION['error'])) {
 
 $formData = $_SESSION['checkout_form_data'] ?? [
     'customer_name' => '',
-    'customer_email' => '',
+    // 'customer_email' => '',
     'customer_phone' => '',
     'customer_whatsapp' => '',
     'customer_city' => '',
-    'customer_state' => '',
-    'customer_zipcode' => '',
+    // 'customer_state' => '',
+    // 'customer_zipcode' => '',
     'customer_country' => '',
     'customer_address' => '',
     'customer_notes' => ''
@@ -747,16 +767,7 @@ function generateCaptcha($length = 6)
                                     value="<?php echo htmlspecialchars($formData['customer_city']); ?>">
                             </div>
 
-                            <!-- <div class="form-group">
-                                <label class="form-label dark:text" for="customer_email">
-                                    <i class="fas fa-envelope"></i> Adresse Email *
-                                </label>
-                                <input type="email" id="customer_email" name="customer_email" class="form-input" required
-                                    value="<?php echo htmlspecialchars($formData['customer_email']); ?>">
-                                <div class="input-hint">
-                                    <i class="fas fa-info-circle"></i> Nous enverrons la confirmation ici
-                                </div>
-                            </div> -->
+                       
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -786,21 +797,6 @@ function generateCaptcha($length = 6)
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             
 
-                            <!-- <div class="form-group">
-                                <label class="form-label dark:text" for="customer_state">
-                                    <i class="fas fa-map-marked"></i> Région/Province *
-                                </label>
-                                <input type="text" id="customer_state" name="customer_state" class="form-input" required placeholder="Fès-Meknès"
-                                    value="<?php echo htmlspecialchars($formData['customer_state']); ?>">
-                            </div> -->
-
-                            <!-- <div class="form-group">
-                                <label class="form-label dark:text" for="customer_zipcode">
-                                    <i class="fas fa-mail-bulk"></i> Code Postal (Optionnel)
-                                </label>
-                                <input type="text" id="customer_zipcode" name="customer_zipcode" class="form-input" placeholder="30000"
-                                    value="<?php echo htmlspecialchars($formData['customer_zipcode']); ?>">
-                            </div> -->
                         </div>
 
                         <div class="form-group">
@@ -822,42 +818,9 @@ function generateCaptcha($length = 6)
                                     <option value="Niger" <?= ($formData['customer_country'] ?? '') === 'Niger' ? 'selected' : '' ?>>🇳🇪 Niger</option>
                                     <option value="Guinée" <?= ($formData['customer_country'] ?? '') === 'Guinée' ? 'selected' : '' ?>>🇬🇳 Guinée</option>
                                 </optgroup>
-                                <optgroup label="Moyen-Orient">
-                                    <option value="Arabie Saoudite" <?= ($formData['customer_country'] ?? '') === 'Arabie Saoudite' ? 'selected' : '' ?>>🇸🇦 Arabie Saoudite</option>
-                                    <option value="Émirats Arabes Unis" <?= ($formData['customer_country'] ?? '') === 'Émirats Arabes Unis' ? 'selected' : '' ?>>🇦🇪 Émirats Arabes Unis</option>
-                                    <option value="Koweït" <?= ($formData['customer_country'] ?? '') === 'Koweït' ? 'selected' : '' ?>>🇰🇼 Koweït</option>
-                                    <option value="Qatar" <?= ($formData['customer_country'] ?? '') === 'Qatar' ? 'selected' : '' ?>>🇶🇦 Qatar</option>
-                                    <option value="Bahreïn" <?= ($formData['customer_country'] ?? '') === 'Bahreïn' ? 'selected' : '' ?>>🇧🇭 Bahreïn</option>
-                                    <option value="Oman" <?= ($formData['customer_country'] ?? '') === 'Oman' ? 'selected' : '' ?>>🇴🇲 Oman</option>
-                                    <option value="Jordanie" <?= ($formData['customer_country'] ?? '') === 'Jordanie' ? 'selected' : '' ?>>🇯🇴 Jordanie</option>
-                                    <option value="Liban" <?= ($formData['customer_country'] ?? '') === 'Liban' ? 'selected' : '' ?>>🇱🇧 Liban</option>
-                                    <option value="Syrie" <?= ($formData['customer_country'] ?? '') === 'Syrie' ? 'selected' : '' ?>>🇸🇾 Syrie</option>
-                                    <option value="Irak" <?= ($formData['customer_country'] ?? '') === 'Irak' ? 'selected' : '' ?>>🇮🇶 Irak</option>
-                                </optgroup>
-                                <optgroup label="Europe">
-                                    <option value="France" <?= ($formData['customer_country'] ?? '') === 'France' ? 'selected' : '' ?>>🇫🇷 France</option>
-                                    <option value="Belgique" <?= ($formData['customer_country'] ?? '') === 'Belgique' ? 'selected' : '' ?>>🇧🇪 Belgique</option>
-                                    <option value="Canada" <?= ($formData['customer_country'] ?? '') === 'Canada' ? 'selected' : '' ?>>🇨🇦 Canada</option>
-                                    <option value="Suisse" <?= ($formData['customer_country'] ?? '') === 'Suisse' ? 'selected' : '' ?>>🇨🇭 Suisse</option>
-                                    <option value="Allemagne" <?= ($formData['customer_country'] ?? '') === 'Allemagne' ? 'selected' : '' ?>>🇩🇪 Allemagne</option>
-                                    <option value="Royaume-Uni" <?= ($formData['customer_country'] ?? '') === 'Royaume-Uni' ? 'selected' : '' ?>>🇬🇧 Royaume-Uni</option>
-                                    <option value="Espagne" <?= ($formData['customer_country'] ?? '') === 'Espagne' ? 'selected' : '' ?>>🇪🇸 Espagne</option>
-                                    <option value="Italie" <?= ($formData['customer_country'] ?? '') === 'Italie' ? 'selected' : '' ?>>🇮🇹 Italie</option>
-                                    <option value="Pays-Bas" <?= ($formData['customer_country'] ?? '') === 'Pays-Bas' ? 'selected' : '' ?>>🇳🇱 Pays-Bas</option>
-                                    <option value="Autre" <?= ($formData['customer_country'] ?? '') === 'Autre' ? 'selected' : '' ?>><i class="fas fa-info-circle"></i> Autre</option>
-                                </optgroup>
-                                <optgroup label="Asie">
-                                    <option value="Inde" <?= ($formData['customer_country'] ?? '') === 'Inde' ? 'selected' : '' ?>>🇮🇳 Inde</option>
-                                    <option value="Pakistan" <?= ($formData['customer_country'] ?? '') === 'Pakistan' ? 'selected' : '' ?>>🇵🇰 Pakistan</option>
-                                    <option value="Bangladesh" <?= ($formData['customer_country'] ?? '') === 'Bangladesh' ? 'selected' : '' ?>>🇧🇩 Bangladesh</option>
-                                    <option value="Sri Lanka" <?= ($formData['customer_country'] ?? '') === 'Sri Lanka' ? 'selected' : '' ?>>🇱🇰 Sri Lanka</option>
-                                    <option value="Chine" <?= ($formData['customer_country'] ?? '') === 'Chine' ? 'selected' : '' ?>>🇨🇳 Chine</option>
-                                    <option value="Japon" <?= ($formData['customer_country'] ?? '') === 'Japon' ? 'selected' : '' ?>>🇯🇵 Japon</option>
-                                    <option value="Corée du Sud" <?= ($formData['customer_country'] ?? '') === 'Corée du Sud' ? 'selected' : '' ?>>🇰🇷 Corée du Sud</option>
-                                    <option value="Indonésie" <?= ($formData['customer_country'] ?? '') === 'Indonésie' ? 'selected' : '' ?>>🇮🇩 Indonésie</option>
-                                    <option value="Malaisie" <?= ($formData['customer_country'] ?? '') === 'Malaisie' ? 'selected' : '' ?>>🇲🇾 Malaisie</option>
-                                    <option value="Autre" <?= ($formData['customer_country'] ?? '') === 'Autre' ? 'selected' : '' ?>><i class="fas fa-info-circle"></i> Autre</option>
-                                </optgroup>
+                                
+                                
+                               
                             </select>
                         </div>
 

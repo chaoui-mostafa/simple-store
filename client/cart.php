@@ -658,32 +658,36 @@ if (isset($_SESSION['error'])) {
 
  <!-- Header -->
 <header class="sticky-header">
-    <div class="container">
-        <div class="flex items-center justify-between py-4">
+    <div class="container mx-auto px-4">
+        <div class="flex items-center justify-between py-3 md:py-4">
+            <!-- Logo + Title -->
             <div class="flex items-center">
-                <a href="index.php" class="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center mr-3 overflow-hidden">
+                <a href="index.php" class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-blue-600 flex items-center justify-center mr-2 sm:mr-3 overflow-hidden">
                     <img src="../assets/images/logo/logo.jpg" 
                          alt="Logo" 
                          class="w-full h-full object-cover" 
                          onerror="this.style.display='none'; this.parentElement.querySelector('span').style.display='flex';">
-                    <span class="text-white font-bold text-xl hidden">M</span>
+                    <span class="text-white font-bold text-sm sm:text-xl hidden">M</span>
                 </a>
-                <h1 class="text-xl font-bold dark:text">Monster Store</h1>
+                <h1 class="text-sm sm:text-base md:text-xl font-bold dark:text">Monster Store</h1>
             </div>
 
-            <div class="flex items-center gap-4">
-                <button id="theme-toggle" class="theme-toggle">
-                    <i id="theme-icon" class="fas fa-moon"></i>
+            <!-- Actions -->
+            <div class="flex items-center gap-2 sm:gap-4">
+                <!-- Theme toggle إذا بغيت تعود تفعيل -->
+                <!--
+                <button id="theme-toggle" class="theme-toggle p-1 sm:p-2 rounded">
+                    <i id="theme-icon" class="fas fa-moon text-xs sm:text-sm"></i>
                 </button>
+                -->
 
-                <a href="index.php" class="text-blue-600 hover:text-blue-800 flex items-center text-sm dark:text-blue-400 dark:hover:text-blue-300">
-                    <i class="fas fa-arrow-left mr-2"></i> Continuer les achats
+                <a href="index.php" class="text-blue-600 hover:text-blue-800 flex items-center text-xs sm:text-sm dark:text-blue-400 dark:hover:text-blue-300">
+                    <i class="fas fa-arrow-left mr-1 sm:mr-2 text-xs sm:text-sm"></i> Continuer les achats
                 </a>
             </div>
         </div>
     </div>
 </header>
-
 
     <!-- Main Content -->
     <main class="main-content">
@@ -780,17 +784,16 @@ if (isset($_SESSION['error'])) {
                         <h3 class="text-lg font-bold mb-4 dark:text">Résumé de la commande</h3>
                         
                         <div class="space-y-3">
-                            <div class="summary-item dark:text">
+                            <div class="summary-item dark:text" style="display: flex; justify-content: space-between; gap: 2rem;">
                                 <span>Sous-total (<?php echo $cartCount; ?> articles)</span>
                                 <span class="font-semibold"><?php echo number_format($cartTotal, 2); ?> DH</span>
                             </div>
                             
                             <div class="summary-item text-green-600">
                                 <span>Livraison  Gratuite </span>
-                            
                             </div>
                             
-                            <div class="summary-total dark:text">
+                            <div class="summary-total dark:text" style="display: flex; justify-content: space-between; gap: 2rem;">
                                 <span>Total</span>
                                 <span><?php echo number_format($cartTotal, 2); ?> DH</span>
                             </div>
@@ -815,6 +818,7 @@ if (isset($_SESSION['error'])) {
 
     <!-- Desktop Footer -->
     <?php include '../assets/part/footer.php'  ?>
+    
 
     <!-- Bottom Navigation (Mobile) -->
     <?php include '../assets/part/nav-mobil.php'; ?>

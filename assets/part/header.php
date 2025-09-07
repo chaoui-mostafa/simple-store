@@ -45,6 +45,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['search'])) {
         }
     }
 }
+
+// Check current theme
+$currentTheme = 'light';
+if (isset($_COOKIE['theme'])) {
+    $currentTheme = $_COOKIE['theme'];
+} elseif (isset($_SESSION['theme'])) {
+    $currentTheme = $_SESSION['theme'];
+}
 ?>
 
 <header class="sticky-header">
@@ -69,6 +77,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['search'])) {
                 <a href="index.php" class="text-secondary-light-dark hover:text-primary-color transition-colors">Accueil</a>
                 <a href="checkout.php" class="text-secondary-light-dark hover:text-primary-color transition-colors">Checkout</a>
                 <a href="orders.php" class="text-secondary-light-dark hover:text-primary-color transition-colors">Mes Commandes</a>
+                
+                <!-- Theme Toggle -->
+                <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    <i class="fas <?php echo $currentTheme === 'dark' ? 'fa-sun' : 'fa-moon'; ?> text-xl text-secondary-light-dark"></i>
+                </button>
             </div>
             
             <!-- Cart -->
@@ -153,26 +166,112 @@ document.addEventListener('DOMContentLoaded', function() {
         // Add search hint
         searchInput.setAttribute('title', 'Appuyez sur / pour rechercher');
     }
+    
+    // Theme toggle functionality
+    const themeToggle = document.getElementById('theme-toggle');
+    if (themeToggle) {
+        themeToggle.addEventListener('click', () => {
+            const html = document.documentElement;
+            const isDark = html.classList.contains('dark');
+            const themeIcon = themeToggle.querySelector('i');
+            
+            if (isDark) {
+                html.classList.remove('dark');
+                document.body.classList.remove('dark');
+                themeIcon.classList.remove('fa-sun');
+                themeIcon.classList.add('fa-moon');
+                setTheme('light');
+            } else {
+                html.classList.add('dark');
+                document.body.classList.add('dark');
+                themeIcon.classList.remove('fa-moon');
+                themeIcon.classList.add('fa-sun');
+                setTheme('dark');
+            }
+        });
+    }
+    
+    // Set theme preference
+    function setTheme(theme) {
+        // Save to session
+        fetch('set_theme.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'theme=' + theme
+        });
+        
+        // Save to cookie
+        document.cookie = 'theme=' + theme + '; path=/; max-age=' + (365 * 24 * 60 * 60);
+    }
+    
+    // Initialize theme
+    function initTheme() {
+        const savedTheme = getCookie('theme') || 'light';
+        const html = document.documentElement;
+        const themeToggle = document.getElementById('theme-toggle');
+        
+        if (savedTheme === 'dark') {
+            html.classList.add('dark');
+            document.body.classList.add('dark');
+            if (themeToggle) {
+                const themeIcon = themeToggle.querySelector('i');
+                themeIcon.classList.remove('fa-moon');
+                themeIcon.classList.add('fa-sun');
+            }
+        }
+    }
+    
+    // Get cookie value
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+    
+    // Initialize theme on page load
+    initTheme();
 });
 </script>
 
 <style>
 .bg-input-bg {
-    background-color: var(--input-bg);
+    background-color: var(--input-bg, #f9fafb);
 }
 .border-color {
-    border-color: var(--border);
+    border-color: var(--border, #e5e7eb);
 }
 .text-primary-color {
-    color: var(--primary-color);
+    color: var(--primary-color, #3b82f6);
 }
 .text-secondary-light-dark {
-    color: var(--text-secondary);
+    color: var(--text-secondary, #6b7280);
 }
 .text-light-dark {
-    color: var(--text-primary);
+    color: var(--text-primary, #1f2937);
 }
 .bg-card-bg {
-    background-color: var(--card-bg);
+    background-color: var(--card-bg, #ffffff);
+}
+
+/* Dark mode styles */
+.dark .bg-input-bg {
+    background-color: #374151;
+}
+.dark .border-color {
+    border-color: #4b5563;
+}
+.dark .text-secondary-light-dark {
+    color: #d1d5db;
+}
+.dark .text-light-dark {
+    color: #f9fafb;
+}
+.dark .bg-card-bg {
+    background-color: #1f2937;
+}
+.dark .hover\:bg-gray-100:hover {
+    background-color: #374151;
 }
 </style>

@@ -5,54 +5,43 @@ require_once '../controllers/CartController.php';
 require_once '../controllers/OrderController.php';
 require_once '../controllers/ProductController.php';
 
-// Créer la connexion à la base de données
 $db = new Database();
 $pdo = $db->connect();
 
-// Créer les contrôleurs
 $cartController = new CartController();
 $orderController = new OrderController();
 $productController = new ProductController($pdo);
 
-// Obtenir l'ID de session et les articles du panier
 $session_id = session_id();
 $cartItems = $cartController->getCartItems();
 $cartTotal = $cartController->getCartTotal();
 $cartCount = $cartController->getCartCount();
 
-// Rediriger si le panier est vide
 if (empty($cartItems)) {
     header('Location: cart.php');
     exit();
 }
 
-// Générer un token CSRF s'il n'existe pas
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
-// Générer CAPTCHA s'il n'existe pas
 if (empty($_SESSION['captcha'])) {
     $_SESSION['captcha'] = generateCaptcha();
 }
 
-// Gérer la soumission du formulaire
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Valider le token CSRF
     if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
         die('Token CSRF invalide');
     }
 
-    // Valider CAPTCHA
     if (!isset($_POST['captcha']) || $_POST['captcha'] !== $_SESSION['captcha']) {
         $_SESSION['error'] = "Code CAPTCHA incorrect. Veuillez réessayer.";
-        // Sauvegarder les données du formulaire pour les réafficher
         $_SESSION['checkout_form_data'] = $_POST;
         header('Location: checkout.php');
         exit();
     }
 
-    // Sauvegarder les données du formulaire pour les réafficher
     $_SESSION['checkout_form_data'] = [
         'customer_name' => $_POST['customer_name'],
         'customer_email' => $_POST['customer_email'],
@@ -66,7 +55,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'customer_notes' => $_POST['customer_notes'] ?? ''
     ];
 
-    // Traiter chaque article du panier comme une commande séparée
     $successCount = 0;
     $errorMessages = [];
 
@@ -95,24 +83,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // Vider le panier si toutes les commandes ont réussi
     if ($successCount === count($cartItems)) {
         $cartController->clearCart();
-        unset($_SESSION['checkout_form_data']); // Effacer les données sauvegardées
-        unset($_SESSION['captcha']); // Effacer CAPTCHA
+        unset($_SESSION['checkout_form_data']);
+        unset($_SESSION['captcha']);
         $_SESSION['order_success'] = true;
         $_SESSION['order_count'] = $successCount;
         header('Location: order_success.php');
         exit();
     } else {
-        // Certaines commandes ont échoué
         $_SESSION['error'] = implode('<br>', $errorMessages);
         header('Location: checkout.php');
         exit();
     }
 }
 
-// Afficher les messages de succès/erreur
 $successMessage = '';
 $errorMessage = '';
 if (isset($_SESSION['success'])) {
@@ -124,7 +109,6 @@ if (isset($_SESSION['error'])) {
     unset($_SESSION['error']);
 }
 
-// Obtenir les données sauvegardées du formulaire si disponibles
 $formData = $_SESSION['checkout_form_data'] ?? [
     'customer_name' => '',
     'customer_email' => '',
@@ -138,17 +122,14 @@ $formData = $_SESSION['checkout_form_data'] ?? [
     'customer_notes' => ''
 ];
 
-// Fonction de génération CAPTCHA sécurisée
 function generateCaptcha($length = 6)
 {
-    // Jeu de caractères : lettres majuscules, minuscules, chiffres, et quelques symboles
     $chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789qwertyuiopasdfghjklzxcvbnm#@&';
     $captcha = '';
 
     $maxIndex = strlen($chars) - 1;
 
     for ($i = 0; $i < $length; $i++) {
-        // Utilisation de random_int pour plus de sécurité
         $captcha .= $chars[random_int(0, $maxIndex)];
     }
 
@@ -164,10 +145,8 @@ function generateCaptcha($length = 6)
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Paiement - Monster Store</title>
-      <link rel="icon" href="../assets/images/logo/logo.jpg" type="image/x-icon">
-    <!-- Tailwind CSS CDN -->
+    <link rel="icon" href="../assets/images/logo/logo.jpg" type="image/x-icon">
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/6.6.6/css/flag-icons.min.css">
 
@@ -220,7 +199,6 @@ function generateCaptcha($length = 6)
             transition: background-color 0.3s, color 0.3s;
         }
 
-        /* Mobile-first checkout layout */
         .checkout-container {
             display: flex;
             flex-direction: column;
@@ -255,7 +233,6 @@ function generateCaptcha($length = 6)
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            
         }
 
         .form-input {
@@ -408,7 +385,6 @@ function generateCaptcha($length = 6)
             gap: 0.25rem;
         }
 
-        /* Header styles */
         .sticky-header {
             position: sticky;
             top: 0;
@@ -417,7 +393,6 @@ function generateCaptcha($length = 6)
             box-shadow: 0 2px 10px var(--shadow-color);
         }
 
-        /* Bottom navigation */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -449,7 +424,6 @@ function generateCaptcha($length = 6)
             margin-bottom: 0.25rem;
         }
 
-        /* Desktop Footer */
         .desktop-footer {
             background: var(--footer-bg);
             border-top: 1px solid var(--gray-border);
@@ -519,7 +493,6 @@ function generateCaptcha($length = 6)
             font-size: 0.875rem;
         }
 
-        /* Mobile styles */
         @media (max-width: 768px) {
             .mobile-sticky-footer {
                 position: fixed;
@@ -550,7 +523,6 @@ function generateCaptcha($length = 6)
             }
         }
 
-        /* Desktop styles */
         @media (min-width: 1024px) {
             .checkout-container {
                 display: grid;
@@ -569,7 +541,6 @@ function generateCaptcha($length = 6)
             }
         }
 
-        /* Utilities */
         .container {
             width: 100%;
             max-width: 1200px;
@@ -579,10 +550,8 @@ function generateCaptcha($length = 6)
 
         .main-content {
             padding-bottom: 80px;
-            /* Space for bottom nav */
         }
 
-        /* Responsive footer columns */
         @media (max-width: 1024px) {
             .footer-section {
                 grid-template-columns: repeat(2, 1fr);
@@ -606,7 +575,6 @@ function generateCaptcha($length = 6)
             }
         }
 
-        /* Animation for elements */
         @keyframes fadeIn {
             from {
                 opacity: 0;
@@ -623,7 +591,6 @@ function generateCaptcha($length = 6)
             animation: fadeIn 0.5s ease-in-out;
         }
 
-        /* Badge for stock */
         .stock-badge {
             padding: 4px 8px;
             border-radius: 9999px;
@@ -647,7 +614,6 @@ function generateCaptcha($length = 6)
             color: #B91C1C;
         }
 
-        /* Animation for new elements */
         @keyframes slideInUp {
             from {
                 opacity: 0;
@@ -664,7 +630,6 @@ function generateCaptcha($length = 6)
             animation: slideInUp 0.6s ease-out forwards;
         }
 
-        /* Shake animation for errors */
         .shake {
             animation: shake 0.5s ease-in-out;
         }
@@ -697,7 +662,6 @@ function generateCaptcha($length = 6)
             border: 1px solid var(--gray-border);
         }
 
-        /* Fix for paragraph display in white mode */
         p, span, label, h1, h2, h3, h4, h5, h6 {
             color: var(--text-primary);
         }
@@ -705,7 +669,6 @@ function generateCaptcha($length = 6)
 </head>
 
 <body class="antialiased">
-    <!-- Notification Messages -->
     <?php if ($successMessage): ?>
         <div class="notification success" id="success-notification">
             <i class="fas fa-check-circle"></i>
@@ -719,34 +682,30 @@ function generateCaptcha($length = 6)
             <span><?php echo $errorMessage; ?></span>
         </div>
     <?php endif; ?>
-
-<!-- Header -->
 <header class="sticky-header">
-    <div class="container">
-        <div class="flex items-center justify-between py-4">
+    <div class="container mx-auto px-4">
+        <div class="flex items-center justify-between py-3 md:py-4">
+            <!-- Logo + Title -->
             <div class="flex items-center">
-                <a href="index.php" class="mr-3">
-                    <div class="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center overflow-hidden">
+                <a href="index.php" class="mr-2 sm:mr-3">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-blue-600 flex items-center justify-center overflow-hidden">
                         <img src="../assets/images/logo/logo.jpg" 
                              alt="Logo" 
                              class="w-full h-full object-cover" 
                              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                        <span class="text-white font-bold text-xl hidden">M</span>
+                        <span class="text-white font-bold text-sm sm:text-xl hidden">M</span>
                     </div>
                 </a>
-                <h1 class="text-xl font-bold dark:text">Finaliser la Commande</h1>
+                <h1 class="text-sm sm:text-base md:text-xl font-bold dark:text">Finaliser la Commande</h1>
             </div>
 
-            <div class="flex items-center gap-4">
-                <button id="theme-toggle" class="theme-toggle">
-                    <i id="theme-icon" class="fas fa-moon"></i>
-                </button>
-                
+            <!-- Actions -->
+            <div class="flex items-center gap-2 sm:gap-4">
                 <a href="cart.php" 
                    class="text-blue-600 hover:text-blue-800 flex items-center 
-                          text-sm sm:text-base md:text-lg 
-                          dark:text-blue-400 dark:hover:text-blue-300 mb-3">
-                    <i class="fas fa-arrow-left mr-2 text-xs sm:text-sm"></i> 
+                          text-xs sm:text-sm md:text-base 
+                          dark:text-blue-400 dark:hover:text-blue-300">
+                    <i class="fas fa-arrow-left mr-1 sm:mr-2 text-xs sm:text-sm"></i> 
                     Retour au panier
                 </a>
             </div>
@@ -754,11 +713,10 @@ function generateCaptcha($length = 6)
     </div>
 </header>
 
-    <!-- Main Content -->
+
     <main class="main-content">
         <div class="container">
             <div class="checkout-container">
-                <!-- Formulaire d'information client -->
                 <div class="card animate-slide-in-up">
                     <div class="flex items-center mb-6">
                         <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3 dark:bg-blue-900">
@@ -781,8 +739,15 @@ function generateCaptcha($length = 6)
                                     <i class="fas fa-info-circle"></i> Entrez votre nom complet
                                 </div>
                             </div>
-
                             <div class="form-group">
+                                <label class="form-label dark:text" for="customer_city">
+                                    <i class="fas fa-city"></i> Ville *
+                                </label>
+                                <input type="text" id="customer_city" name="customer_city" class="form-input" required placeholder="Fes"
+                                    value="<?php echo htmlspecialchars($formData['customer_city']); ?>">
+                            </div>
+
+                            <!-- <div class="form-group">
                                 <label class="form-label dark:text" for="customer_email">
                                     <i class="fas fa-envelope"></i> Adresse Email *
                                 </label>
@@ -791,7 +756,7 @@ function generateCaptcha($length = 6)
                                 <div class="input-hint">
                                     <i class="fas fa-info-circle"></i> Nous enverrons la confirmation ici
                                 </div>
-                            </div>
+                            </div> -->
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -819,29 +784,23 @@ function generateCaptcha($length = 6)
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div class="form-group">
-                                <label class="form-label dark:text" for="customer_city">
-                                    <i class="fas fa-city"></i> Ville *
-                                </label>
-                                <input type="text" id="customer_city" name="customer_city" class="form-input" required placeholder="Fes"
-                                    value="<?php echo htmlspecialchars($formData['customer_city']); ?>">
-                            </div>
+                            
 
-                            <div class="form-group">
+                            <!-- <div class="form-group">
                                 <label class="form-label dark:text" for="customer_state">
                                     <i class="fas fa-map-marked"></i> Région/Province *
                                 </label>
                                 <input type="text" id="customer_state" name="customer_state" class="form-input" required placeholder="Fès-Meknès"
                                     value="<?php echo htmlspecialchars($formData['customer_state']); ?>">
-                            </div>
+                            </div> -->
 
-                            <div class="form-group">
+                            <!-- <div class="form-group">
                                 <label class="form-label dark:text" for="customer_zipcode">
                                     <i class="fas fa-mail-bulk"></i> Code Postal (Optionnel)
                                 </label>
                                 <input type="text" id="customer_zipcode" name="customer_zipcode" class="form-input" placeholder="30000"
                                     value="<?php echo htmlspecialchars($formData['customer_zipcode']); ?>">
-                            </div>
+                            </div> -->
                         </div>
 
                         <div class="form-group">
@@ -849,149 +808,58 @@ function generateCaptcha($length = 6)
                                 <i class="fas fa-globe"></i> Pays *
                             </label>
                             <select id="customer_country" name="customer_country" class="form-input" required>
-                                <option value=""> Sélectionnez un pays</option>
-
-                                <!-- 🌍 Afrique / إفريقيا -->
-                                <optgroup label="Afrique / إفريقيا">
-                                    <option value="Maroc" <?= ($formData['customer_country'] ?? '') === 'Maroc' ? 'selected' : '' ?>>
-                                        🇲🇦 Maroc
-                                    </option>
-                                    <option value="Algérie" <?= ($formData['customer_country'] ?? '') === 'Algérie' ? 'selected' : '' ?>>
-                                        🇩🇿 Algérie
-                                    </option>
-                                    <option value="Tunisie" <?= ($formData['customer_country'] ?? '') === 'Tunisie' ? 'selected' : '' ?>>
-                                        🇹🇳 Tunisie
-                                    </option>
-                                    <option value="Libye" <?= ($formData['customer_country'] ?? '') === 'Libye' ? 'selected' : '' ?>>
-                                        🇱🇾 Libye
-                                    </option>
-                                    <option value="Égypte" <?= ($formData['customer_country'] ?? '') === 'Égypte' ? 'selected' : '' ?>>
-                                        🇪🇬 Égypte
-                                    </option>
-                                    <option value="Sénégal" <?= ($formData['customer_country'] ?? '') === 'Sénégal' ? 'selected' : '' ?>>
-                                        🇸🇳 Sénégal
-                                    </option>
-                                    <option value="Côte d'Ivoire" <?= ($formData['customer_country'] ?? '') === "Côte d'Ivoire" ? 'selected' : '' ?>>
-                                        🇨🇮 Côte d'Ivoire
-                                    </option>
-                                    <option value="Mali" <?= ($formData['customer_country'] ?? '') === 'Mali' ? 'selected' : '' ?>>
-                                        🇲🇱 Mali
-                                    </option>
-                                    <option value="Burkina Faso" <?= ($formData['customer_country'] ?? '') === 'Burkina Faso' ? 'selected' : '' ?>>
-                                        🇧🇫 Burkina Faso
-                                    </option>
-                                    <option value="Niger" <?= ($formData['customer_country'] ?? '') === 'Niger' ? 'selected' : '' ?>>
-                                        🇳🇪 Niger
-                                    </option>
-                                    <option value="Guinée" <?= ($formData['customer_country'] ?? '') === 'Guinée' ? 'selected' : '' ?>>
-                                        🇬🇳 Guinée
-                                    </option>
+                                <option value="">Sélectionnez un pays</option>
+                                <optgroup label="Afrique">
+                                    <option value="Maroc" <?= ($formData['customer_country'] ?? '') === 'Maroc' ? 'selected' : '' ?>>🇲🇦 Maroc</option>
+                                    <option value="Algérie" <?= ($formData['customer_country'] ?? '') === 'Algérie' ? 'selected' : '' ?>>🇩🇿 Algérie</option>
+                                    <option value="Tunisie" <?= ($formData['customer_country'] ?? '') === 'Tunisie' ? 'selected' : '' ?>>🇹🇳 Tunisie</option>
+                                    <option value="Libye" <?= ($formData['customer_country'] ?? '') === 'Libye' ? 'selected' : '' ?>>🇱🇾 Libye</option>
+                                    <option value="Égypte" <?= ($formData['customer_country'] ?? '') === 'Égypte' ? 'selected' : '' ?>>🇪🇬 Égypte</option>
+                                    <option value="Sénégal" <?= ($formData['customer_country'] ?? '') === 'Sénégal' ? 'selected' : '' ?>>🇸🇳 Sénégal</option>
+                                    <option value="Côte d'Ivoire" <?= ($formData['customer_country'] ?? '') === "Côte d'Ivoire" ? 'selected' : '' ?>>🇨🇮 Côte d'Ivoire</option>
+                                    <option value="Mali" <?= ($formData['customer_country'] ?? '') === 'Mali' ? 'selected' : '' ?>>🇲🇱 Mali</option>
+                                    <option value="Burkina Faso" <?= ($formData['customer_country'] ?? '') === 'Burkina Faso' ? 'selected' : '' ?>>🇧🇫 Burkina Faso</option>
+                                    <option value="Niger" <?= ($formData['customer_country'] ?? '') === 'Niger' ? 'selected' : '' ?>>🇳🇪 Niger</option>
+                                    <option value="Guinée" <?= ($formData['customer_country'] ?? '') === 'Guinée' ? 'selected' : '' ?>>🇬🇳 Guinée</option>
                                 </optgroup>
-
-                                <!-- 🌍 Moyen-Orient / الشرق الأوسط -->
-                                <optgroup label=" Moyen-Orient / الشرق الأوسط">
-                                    <option value="Saudi Arabie Saoudite" <?= ($formData['customer_country'] ?? '') === 'Saudi Arabie Saoudite' ? 'selected' : '' ?>>
-                                        🇸🇦 Arabie Saoudite
-                                    </option>
-                                    <option value="Émirats Arabes Unis" <?= ($formData['customer_country'] ?? '') === 'Émirats Arabes Unis' ? 'selected' : '' ?>>
-                                        🇦🇪 Émirats Arabes Unis
-                                    </option>
-                                    <option value="Koweït" <?= ($formData['customer_country'] ?? '') === 'Koweït' ? 'selected' : '' ?>>
-                                        🇰🇼 Koweït
-                                    </option>
-                                    <option value="Qatar" <?= ($formData['customer_country'] ?? '') === 'Qatar' ? 'selected' : '' ?>>
-                                        🇶🇦 Qatar
-                                    </option>
-                                    <option value="Bahreïn" <?= ($formData['customer_country'] ?? '') === 'Bahreïn' ? 'selected' : '' ?>>
-                                        🇧🇭 Bahreïn
-                                    </option>
-                                    <option value="Oman" <?= ($formData['customer_country'] ?? '') === 'Oman' ? 'selected' : '' ?>>
-                                        🇴🇲 Oman
-                                    </option>
-                                    <option value="Jordanie" <?= ($formData['customer_country'] ?? '') === 'Jordanie' ? 'selected' : '' ?>>
-                                        🇯🇴 Jordanie
-                                    </option>
-                                    <option value="Liban" <?= ($formData['customer_country'] ?? '') === 'Liban' ? 'selected' : '' ?>>
-                                        🇱🇧 Liban
-                                    </option>
-                                    <option value="Syrie" <?= ($formData['customer_country'] ?? '') === 'Syrie' ? 'selected' : '' ?>>
-                                        🇸🇾 Syrie
-                                    </option>
-                                    <option value="Irak" <?= ($formData['customer_country'] ?? '') === 'Irak' ? 'selected' : '' ?>>
-                                        🇮🇶 Irak
-                                    </option>
+                                <optgroup label="Moyen-Orient">
+                                    <option value="Arabie Saoudite" <?= ($formData['customer_country'] ?? '') === 'Arabie Saoudite' ? 'selected' : '' ?>>🇸🇦 Arabie Saoudite</option>
+                                    <option value="Émirats Arabes Unis" <?= ($formData['customer_country'] ?? '') === 'Émirats Arabes Unis' ? 'selected' : '' ?>>🇦🇪 Émirats Arabes Unis</option>
+                                    <option value="Koweït" <?= ($formData['customer_country'] ?? '') === 'Koweït' ? 'selected' : '' ?>>🇰🇼 Koweït</option>
+                                    <option value="Qatar" <?= ($formData['customer_country'] ?? '') === 'Qatar' ? 'selected' : '' ?>>🇶🇦 Qatar</option>
+                                    <option value="Bahreïn" <?= ($formData['customer_country'] ?? '') === 'Bahreïn' ? 'selected' : '' ?>>🇧🇭 Bahreïn</option>
+                                    <option value="Oman" <?= ($formData['customer_country'] ?? '') === 'Oman' ? 'selected' : '' ?>>🇴🇲 Oman</option>
+                                    <option value="Jordanie" <?= ($formData['customer_country'] ?? '') === 'Jordanie' ? 'selected' : '' ?>>🇯🇴 Jordanie</option>
+                                    <option value="Liban" <?= ($formData['customer_country'] ?? '') === 'Liban' ? 'selected' : '' ?>>🇱🇧 Liban</option>
+                                    <option value="Syrie" <?= ($formData['customer_country'] ?? '') === 'Syrie' ? 'selected' : '' ?>>🇸🇾 Syrie</option>
+                                    <option value="Irak" <?= ($formData['customer_country'] ?? '') === 'Irak' ? 'selected' : '' ?>>🇮🇶 Irak</option>
                                 </optgroup>
-
-                                <!-- 🌍 Europe / آخرين -->
-                                <optgroup label=" Europe / آخرين">
-                                    <option value="France" <?= ($formData['customer_country'] ?? '') === 'France' ? 'selected' : '' ?>>
-                                        🇫🇷 France
-                                    </option>
-                                    <option value="Belgique" <?= ($formData['customer_country'] ?? '') === 'Belgique' ? 'selected' : '' ?>>
-                                        🇧🇪 Belgique
-                                    </option>
-                                    <option value="Canada" <?= ($formData['customer_country'] ?? '') === 'Canada' ? 'selected' : '' ?>>
-                                        🇨🇦 Canada
-                                    </option>
-                                    <option value="Suisse" <?= ($formData['customer_country'] ?? '') === 'Suisse' ? 'selected' : '' ?>>
-                                        🇨🇭 Suisse
-                                    </option>
-                                    <option value="Allemagne" <?= ($formData['customer_country'] ?? '') === 'Allemagne' ? 'selected' : '' ?>>
-                                        🇩🇪 Allemagne
-                                    </option>
-                                    <option value="Royaume-Uni" <?= ($formData['customer_country'] ?? '') === 'Royaume-Uni' ? 'selected' : '' ?>>
-                                        🇬🇧 Royaume-Uni
-                                    </option>
-                                    <option value="Espagne" <?= ($formData['customer_country'] ?? '') === 'Espagne' ? 'selected' : '' ?>>
-                                        🇪🇸 Espagne
-                                    </option>
-                                    <option value="Italie" <?= ($formData['customer_country'] ?? '') === 'Italie' ? 'selected' : '' ?>>
-                                        🇮🇹 Italie
-                                    </option>
-                                    <option value="Pays-Bas" <?= ($formData['customer_country'] ?? '') === 'Pays-Bas' ? 'selected' : '' ?>>
-                                        🇳🇱 Pays-Bas
-                                    </option>
-                                    <option value="Autre" <?= ($formData['customer_country'] ?? '') === 'Autre' ? 'selected' : '' ?>>
-                                        <i class="fas fa-info-circle"></i> Autre
-                                    </option>
+                                <optgroup label="Europe">
+                                    <option value="France" <?= ($formData['customer_country'] ?? '') === 'France' ? 'selected' : '' ?>>🇫🇷 France</option>
+                                    <option value="Belgique" <?= ($formData['customer_country'] ?? '') === 'Belgique' ? 'selected' : '' ?>>🇧🇪 Belgique</option>
+                                    <option value="Canada" <?= ($formData['customer_country'] ?? '') === 'Canada' ? 'selected' : '' ?>>🇨🇦 Canada</option>
+                                    <option value="Suisse" <?= ($formData['customer_country'] ?? '') === 'Suisse' ? 'selected' : '' ?>>🇨🇭 Suisse</option>
+                                    <option value="Allemagne" <?= ($formData['customer_country'] ?? '') === 'Allemagne' ? 'selected' : '' ?>>🇩🇪 Allemagne</option>
+                                    <option value="Royaume-Uni" <?= ($formData['customer_country'] ?? '') === 'Royaume-Uni' ? 'selected' : '' ?>>🇬🇧 Royaume-Uni</option>
+                                    <option value="Espagne" <?= ($formData['customer_country'] ?? '') === 'Espagne' ? 'selected' : '' ?>>🇪🇸 Espagne</option>
+                                    <option value="Italie" <?= ($formData['customer_country'] ?? '') === 'Italie' ? 'selected' : '' ?>>🇮🇹 Italie</option>
+                                    <option value="Pays-Bas" <?= ($formData['customer_country'] ?? '') === 'Pays-Bas' ? 'selected' : '' ?>>🇳🇱 Pays-Bas</option>
+                                    <option value="Autre" <?= ($formData['customer_country'] ?? '') === 'Autre' ? 'selected' : '' ?>><i class="fas fa-info-circle"></i> Autre</option>
                                 </optgroup>
-
-                                <!-- 🌍 Asie /  -->
-                                <optgroup label=" Asie /  ">
-                                    <option value="Inde" <?= ($formData['customer_country'] ?? '') === 'Inde' ? 'selected' : '' ?>>
-                                        🇮🇳 Inde
-                                    </option>
-                                    <option value="Pakistan" <?= ($formData['customer_country'] ?? '') === 'Pakistan' ? 'selected' : '' ?>>
-                                        🇵🇰 Pakistan
-                                    </option>
-                                    <option value="Bangladesh" <?= ($formData['customer_country'] ?? '') === 'Bangladesh' ? 'selected' : '' ?>>
-                                        🇧🇩 Bangladesh
-                                    </option>
-                                    <option value="Sri Lanka" <?= ($formData['customer_country'] ?? '') === 'Sri Lanka' ? 'selected' : '' ?>>
-                                        🇱🇰 Sri Lanka
-                                    </option>
-                                    <option value="Chine" <?= ($formData['customer_country'] ?? '') === 'Chine' ? 'selected' : '' ?>>
-                                        🇨🇳 Chine
-                                    </option>
-                                    <option value="Japon" <?= ($formData['customer_country'] ?? '') === 'Japon' ? 'selected' : '' ?>>
-                                        🇯🇵 Japon
-                                    </option>
-                                    <option value="Corée du Sud" <?= ($formData['customer_country'] ?? '') === 'Corée du Sud' ? 'selected' : '' ?>>
-                                        🇰🇷 Corée du Sud
-                                    </option>
-                                    <option value="Indonésie" <?= ($formData['customer_country'] ?? '') === 'Indonésie' ? 'selected' : '' ?>>
-                                        🇮🇩 Indonésie
-                                    </option>
-                                    <option value="Malaisie" <?= ($formData['customer_country'] ?? '') === 'Malaisie' ? 'selected' : '' ?>>
-                                        🇲🇾 Malaisie
-                                    </option>
-                                    <option value="Autre" <?= ($formData['customer_country'] ?? '') === 'Autre' ? 'selected' : '' ?>>
-                                        <i class="fas fa-info-circle"></i> Autre
-                                    </option>
+                                <optgroup label="Asie">
+                                    <option value="Inde" <?= ($formData['customer_country'] ?? '') === 'Inde' ? 'selected' : '' ?>>🇮🇳 Inde</option>
+                                    <option value="Pakistan" <?= ($formData['customer_country'] ?? '') === 'Pakistan' ? 'selected' : '' ?>>🇵🇰 Pakistan</option>
+                                    <option value="Bangladesh" <?= ($formData['customer_country'] ?? '') === 'Bangladesh' ? 'selected' : '' ?>>🇧🇩 Bangladesh</option>
+                                    <option value="Sri Lanka" <?= ($formData['customer_country'] ?? '') === 'Sri Lanka' ? 'selected' : '' ?>>🇱🇰 Sri Lanka</option>
+                                    <option value="Chine" <?= ($formData['customer_country'] ?? '') === 'Chine' ? 'selected' : '' ?>>🇨🇳 Chine</option>
+                                    <option value="Japon" <?= ($formData['customer_country'] ?? '') === 'Japon' ? 'selected' : '' ?>>🇯🇵 Japon</option>
+                                    <option value="Corée du Sud" <?= ($formData['customer_country'] ?? '') === 'Corée du Sud' ? 'selected' : '' ?>>🇰🇷 Corée du Sud</option>
+                                    <option value="Indonésie" <?= ($formData['customer_country'] ?? '') === 'Indonésie' ? 'selected' : '' ?>>🇮🇩 Indonésie</option>
+                                    <option value="Malaisie" <?= ($formData['customer_country'] ?? '') === 'Malaisie' ? 'selected' : '' ?>>🇲🇾 Malaisie</option>
+                                    <option value="Autre" <?= ($formData['customer_country'] ?? '') === 'Autre' ? 'selected' : '' ?>><i class="fas fa-info-circle"></i> Autre</option>
                                 </optgroup>
                             </select>
                         </div>
-
 
                         <div class="form-group">
                             <label class="form-label dark:text" for="customer_address">
@@ -1010,7 +878,6 @@ function generateCaptcha($length = 6)
                             <textarea id="customer_notes" name="customer_notes" rows="2" class="form-input" placeholder="Instructions spéciales pour la livraison "><?php echo htmlspecialchars($formData['customer_notes']); ?></textarea>
                         </div>
 
-                        <!-- Section CAPTCHA -->
                         <div class="form-group">
                             <label class="form-label dark:text">
                                 <i class="fas fa-shield-alt"></i> Vérification de Sécurité *
@@ -1031,7 +898,6 @@ function generateCaptcha($length = 6)
                     </form>
                 </div>
 
-                <!-- Récapitulatif de la commande -->
                 <div class="order-summary card animate-slide-in-up" style="animation-delay: 0.1s;">
                     <div class="flex items-center mb-6">
                         <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center mr-3 dark:bg-green-900">
@@ -1056,7 +922,7 @@ function generateCaptcha($length = 6)
                                     <img src="../assets/images/<?php echo htmlspecialchars($item['image']); ?>"
                                         alt="<?php echo htmlspecialchars($item['name']); ?>"
                                         class="order-item-image"
-                                        onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIyNSIgdmlld0JveD0iMCAwIDMwMCAyMjUiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjI1IiBmaWxsPSIjRjBGMEYwIi8+CjxwYXRoIGQ9Ik0xMTIuNSA4NC41QzExMi41IDc4LjAyODQgMTE3Ljc4MiA3Mi43NSAxMjQuMjUgNzIuNzVDMTMwLjcxOCA3Mi43NSAxMzYgNzguMDI4NCAxMzYgODQuNUMxMzYgOTAuOTcxNiAxMzAuNzE4IDk2LjI5IDEyNC4yNSA5Ni4yNUMxMTcuNzgyIDk2LjI1IDExMi41IDkwLjk3MTYgMTEyLjUgODQuNVoiIGZpbGw9IiNEOEQ4RDgiLz4KPHBhdGggZD0iTTE4NSA5NEgxNjMuNUMxNjEuMDEzIDk0IDE1OSA5Ni4wMTM0IDE1OSA5OC41VjEzN0MxNTkgMTM5LjQ4NyAxNjEuMDEzIDE0MS41IDE2My41IDE0MS41SDE4NUMxODcuNDg3IDE0MS41IDE5MCAxMzkuNDg3IDE5MCAxMzdWOTguNUMxOTAgOTYuMDEzNCAxODcuNDg3IDk0IDE4NSA5NFoiIGZpbGw9IiNEOEQ4RDgiLz4KPC9zdmc+Cg=='">
+                                        onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIyNSIgdmlld0JveD0iMCAwIDMwMCAyMjUiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iIyBGMUYxRjEiLz4KPHBhdGggZD0iTTExMi41IDg0LjVDMTEyLjUgNzguMDI4NCAxMTcuNzgyIDcyLjc1IDEyNC4yNSA3Mi43NUMxMzAuNzE4IDcyLjc1IDEzNiA3OC4wMjg0IDEzNiA4NC41QzEzNiA5MC45NzE2IDEzMC43MTggOTYuMjUgMTI0LjI1IDk2LjI1QzExNy43ODIgOTYuMjUgMTEyLjUgOTAuOTcxNiAxMTIuNSA4NC41WiIgZmlsbD0iI0Q4RDhEOCIvPgo8cGF0aCBkPSJNMTg1IDk0SDE2My41QzE2MS4wMTMgOTQgMTU5IDk2LjAxMzQgMTU5IDk4LjVWMTM3QzE1OSAxMzkuNDg3IDE2MS4wMTMgMTQxLjUgMTYzLjUgMTQxLjVIMTg1QzE4Ny40ODcgMTQxLjUgMTkwIDEzOS40ODcgMTkwIDEzN1Y5OC41QzE5MCA5Ni4wMTM0IDE4Ny40ODcgOTQgMTg1IDk0WiIgZmlsbD0iI0Q4RDhEOCIvPgo8L3N2Zz4K'">
                                 </div>
                                 <div class="flex-grow">
                                     <p class="font-medium text-sm dark:text"><?php echo htmlspecialchars($item['name']); ?></p>
@@ -1103,22 +969,16 @@ function generateCaptcha($length = 6)
         </div>
     </main>
 
-    <!-- Desktop Footer -->
-    <?php include '../assets/part/footer.php'  ?>
-   
-
-    <!-- Bottom Navigation (Mobile) -->
-    <?php include '../assets/part/nav-mobil.php'  ?>
+    <?php include '../assets/part/footer.php' ?>
+    <?php include "../assets/part/floatingCart.php" ?>
+    <?php include '../assets/part/nav-mobil.php' ?>
 
     <script>
-        // Theme management
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize theme
             const savedTheme = localStorage.getItem('theme') || 'light';
             document.documentElement.setAttribute('data-theme', savedTheme);
             updateThemeIcon(savedTheme);
             
-            // Theme toggle functionality
             const themeToggle = document.getElementById('theme-toggle');
             if (themeToggle) {
                 themeToggle.addEventListener('click', toggleTheme);
@@ -1149,7 +1009,6 @@ function generateCaptcha($length = 6)
                     let isValid = true;
                     const requiredFields = this.querySelectorAll('input[required], select[required], textarea[required]');
 
-                    // Validation basique
                     requiredFields.forEach(field => {
                         if (!field.value.trim()) {
                             isValid = false;
@@ -1162,7 +1021,6 @@ function generateCaptcha($length = 6)
                                 field.parentNode.appendChild(errorMsg);
                             }
 
-                            // Ajouter une animation de secousse
                             field.classList.add('shake');
                             setTimeout(() => field.classList.remove('shake'), 500);
                         } else {
@@ -1172,7 +1030,6 @@ function generateCaptcha($length = 6)
                         }
                     });
 
-                    // Validation email
                     const emailField = this.querySelector('input[type="email"]');
                     if (emailField && emailField.value) {
                         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -1198,7 +1055,6 @@ function generateCaptcha($length = 6)
 
                     if (!isValid) {
                         e.preventDefault();
-                        // Défiler vers la première erreur
                         const firstError = this.querySelector('.error');
                         if (firstError) {
                             firstError.scrollIntoView({
@@ -1211,13 +1067,11 @@ function generateCaptcha($length = 6)
                 });
             }
 
-            // Formatage automatique des numéros de téléphone
             const phoneInputs = document.querySelectorAll('input[type="tel"]');
             phoneInputs.forEach(input => {
                 input.addEventListener('input', function(e) {
                     let value = e.target.value.replace(/\D/g, '');
 
-                    // Formater selon la longueur
                     if (value.length > 10) {
                         value = value.substring(0, 10);
                     }
@@ -1251,12 +1105,10 @@ function generateCaptcha($length = 6)
             }
         }
 
-        // Fonction de rafraîchissement CAPTCHA
         function refreshCaptcha() {
             const captchaDisplay = document.getElementById('captchaDisplay');
             const refreshBtn = document.querySelector('.captcha-refresh');
 
-            // Animation de chargement
             refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
             captchaDisplay.style.opacity = '0.5';
 

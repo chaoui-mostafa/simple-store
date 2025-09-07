@@ -8,6 +8,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const themeToggle = document.getElementById('theme-toggle');
     if (themeToggle) {
         themeToggle.addEventListener('click', toggleTheme);
+        themeToggle.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                toggleTheme();
+            }
+        });
     }
     
     // Search functionality
@@ -162,21 +168,21 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-function toggleTheme() {
-    const currentTheme = document.documentElement.getAttribute('data-theme');
-    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+// function toggleTheme() {
+//     const currentTheme = document.documentElement.getAttribute('data-theme');
+//     const newTheme = currentTheme === 'light' ? 'dark' : 'light';
     
-    document.documentElement.setAttribute('data-theme', newTheme);
-    localStorage.setItem('theme', newTheme);
-    updateThemeIcon(newTheme);
-}
+//     document.documentElement.setAttribute('data-theme', newTheme);
+//     localStorage.setItem('theme', newTheme);
+//     updateThemeIcon(newTheme);
+// }
 
-function updateThemeIcon(theme) {
-    const themeIcon = document.getElementById('theme-icon');
-    if (themeIcon) {
-        themeIcon.className = theme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
-    }
-}
+// function updateThemeIcon(theme) {
+//     const themeIcon = document.getElementById('theme-icon');
+//     if (themeIcon) {
+//         themeIcon.className = theme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
+//     }
+// }
 
 function handleSearch() {
     const searchTerm = this.value.toLowerCase();
@@ -235,3 +241,5 @@ function decrementQuantity(button) {
         input.value = value - 1;
     }
 }
+
+// tailwind.config.js

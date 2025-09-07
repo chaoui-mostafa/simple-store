@@ -2,7 +2,10 @@
 // Check if user is admin for admin link
 $isAdmin = isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin';
 ?>
-
+<?php
+// Check current theme from global variable or default to light
+$currentTheme = isset($GLOBALS['currentTheme']) ? $GLOBALS['currentTheme'] : 'light';
+?>
 <!-- Header -->
 <header class="sticky-header">
     <div class="container">

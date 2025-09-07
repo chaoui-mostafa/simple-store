@@ -550,36 +550,37 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 'order_details' && isset($_GET['ord
     <!-- Header -->
 <!-- Header -->
 <header class="sticky-header">
-    <div class="container">
-        <div class="flex items-center justify-between py-4">
+    <div class="container mx-auto px-4">
+        <div class="flex items-center justify-between py-3 md:py-4">
             
             <!-- Logo + Title -->
             <div class="flex items-center">
-                <a href="index.php" class="mr-3">
-                    <div class="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center overflow-hidden">
+                <a href="index.php" class="mr-2 md:mr-3">
+                    <div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-blue-600 flex items-center justify-center overflow-hidden">
                         <img src="../assets/images/logo/logo.jpg" 
                              alt="Logo" 
                              class="w-full h-full object-cover"
                              onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');">
-                        <span class="text-white font-bold text-xl hidden">M</span>
+                        <span class="text-white font-bold text-lg md:text-xl hidden">M</span>
                     </div>
                 </a>
-                <h1 class="text-xl font-bold dark:text">Mes Commandes</h1>
+                <h1 class="text-sm sm:text-base md:text-xl font-bold dark:text">Mes Commandes</h1>
             </div>
             
             <!-- Actions -->
-            <div class="flex items-center gap-4">
-                <button id="theme-toggle" class="theme-toggle">
-                    <i id="theme-icon" class="fas fa-moon"></i>
+            <div class="flex items-center gap-2 sm:gap-4">
+                <button id="theme-toggle" class="theme-toggle p-1 sm:p-2 rounded">
+                    <i id="theme-icon" class="fas fa-moon text-sm sm:text-base"></i>
                 </button>
                 
-                <a href="index.php" class="text-blue-600 hover:text-blue-800 flex items-center text-sm dark:text-blue-400 dark:hover:text-blue-300">
-                    <i class="fas fa-home mr-2"></i> boutique
+                <a href="index.php" class="text-blue-600 hover:text-blue-800 text-xs sm:text-sm flex items-center dark:text-blue-400 dark:hover:text-blue-300">
+                    <i class="fas fa-home mr-1 sm:mr-2 text-xs sm:text-sm"></i> boutique
                 </a>
             </div>
         </div>
     </div>
 </header>
+
 
 
     <!-- Main Content -->

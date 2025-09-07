@@ -65,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo htmlspecialchars($product['name']); ?> - Monster Store</title>
-      <link rel="icon" href="../assets/images/logo/logo.jpg" type="image/x-icon">
+    <link rel="icon" href="../assets/images/logo/logo.jpg" type="image/x-icon">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -442,7 +442,140 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             border-color: var(--primary-color);
         }
 
+        /* Desktop Navigation Styles */
+        .desktop-nav {
+            display: none;
+            background: var(--bg-primary);
+            box-shadow: 0 4px 20px var(--shadow-color);
+            padding: 0.75rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .desktop-nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .desktop-nav-logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+        
+        .desktop-nav-logo img {
+            height: 40px;
+            margin-right: 10px;
+            border-radius: 8px;
+        }
+        
+        .desktop-nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+        
+        .desktop-nav-link {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            position: relative;
+            padding: 0.5rem 0;
+        }
+        
+        .desktop-nav-link:hover {
+            color: var(--primary-color);
+        }
+        
+        .desktop-nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary-color);
+            transition: width 0.3s ease;
+        }
+        
+        .desktop-nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .desktop-nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        
+        .desktop-nav-icon {
+            position: relative;
+            color: var(--text-primary);
+            transition: color 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .desktop-nav-icon:hover {
+            color: var(--primary-color);
+        }
+        
+     
+        .modern-section-title {
+            font-size: 1.875rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .modern-section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 50px;
+            height: 4px;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+            border-radius: 2px;
+        }
+        
+        .modern-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 30px var(--shadow-color);
+            transition: all 0.3s ease;
+        }
+        
+        .modern-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px var(--shadow-hover);
+        }
+        
         /* Responsive Design */
+        @media (min-width: 769px) {
+            .desktop-nav {
+                display: block;
+            }
+            
+            .bottom-nav {
+                display: none;
+            }
+            
+            .floating-cart-btn {
+                display: none;
+            }
+        }
+
         @media (max-width: 768px) {
             .product-card {
                 margin: 0.5rem;
@@ -599,8 +732,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body class="antialiased">
     <div class="min-h-screen flex flex-col">
-        <!-- Header -->
-        <!-- Your header content here -->
+        <!-- Desktop Navigation -->
+        <nav class="desktop-nav">
+            <div class="desktop-nav-container">
+                <a href="index.php" class="desktop-nav-logo">
+                    <img src="../assets/images/logo/logo.jpg" alt="Monster Store Logo">
+                    Monster Store
+                </a>
+                
+                <div class="desktop-nav-menu">
+                    <a href="index.php" class="desktop-nav-link">Accueil</a>
+                    <a href="products.php" class="desktop-nav-link">Produits</a>
+                    <a href="categories.php" class="desktop-nav-link">Catégories</a>
+                    <a href="about.php" class="desktop-nav-link">À propos</a>
+                    <a href="contact.php" class="desktop-nav-link">Contact</a>
+                </div>
+                
+                <div class="desktop-nav-actions">
+                    <div class="theme-toggle" id="theme-toggle">
+                        <i class="fas fa-moon" id="theme-icon"></i>
+                    </div>
+                    
+                    <a href="search.php" class="desktop-nav-icon">
+                        <i class="fas fa-search"></i>
+                    </a>
+                    
+                    <a href="profile.php" class="desktop-nav-icon">
+                        <i class="fas fa-user"></i>
+                    </a>
+                    
+                    <a href="cart.php" class="desktop-nav-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                        <?php if ($cartCount > 0): ?>
+                            <span class="cart-badge"><?php echo $cartCount; ?></span>
+                        <?php endif; ?>
+                    </a>
+                </div>
+            </div>
+        </nav>
 
         <!-- Main Content -->
         <main class="flex-grow container mx-auto px-4 py-8">
@@ -772,6 +941,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             </div>
         </main>
+
+        <!-- Floating Cart Button (Mobile) -->
+        <?php include"../assets/part/floatingCart.php" ?>
 
         <!-- Bottom Navigation (Mobile) -->
         <?php include '../assets/part/nav-mobil.php' ?>

@@ -75,6 +75,7 @@ class OrderController {
             ");
             $session_id = session_id();
             $stmt->execute([
+                
                 ':session_id' => $session_id,
                 ':product_id' => $product_id,
                 ':quantity' => $quantity,

@@ -26,7 +26,15 @@ if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
-if (empty($_SESSION['captcha'])) {
+// Initialize order count if not set
+if (!isset($_SESSION['order_count'])) {
+    $_SESSION['order_count'] = 0;
+}
+
+// Only show CAPTCHA after 3 orders
+$showCaptcha = $_SESSION['order_count'] >= 3;
+
+if ($showCaptcha && empty($_SESSION['captcha'])) {
     $_SESSION['captcha'] = generateCaptcha();
 }
 
@@ -35,11 +43,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         die('Token CSRF invalide');
     }
 
-    if (!isset($_POST['captcha']) || $_POST['captcha'] !== $_SESSION['captcha']) {
-        $_SESSION['error'] = "Code CAPTCHA incorrect. Veuillez réessayer.";
+    // Additional security: Rate limiting
+    if (!isset($_SESSION['last_order_time'])) {
+        $_SESSION['last_order_time'] = 0;
+    }
+    
+    $currentTime = time();
+    $timeSinceLastOrder = $currentTime - $_SESSION['last_order_time'];
+    
+    // Prevent too many orders in a short time (at least 30 seconds between orders)
+    if ($timeSinceLastOrder < 30) {
+        $_SESSION['error'] = "Trop de commandes en peu de temps. Veuillez patienter avant de réessayer.";
         $_SESSION['checkout_form_data'] = $_POST;
         header('Location: checkout.php');
         exit();
+    }
+
+    // Validate CAPTCHA only if required (after 3 orders)
+    if ($showCaptcha) {
+        if (!isset($_POST['captcha']) || $_POST['captcha'] !== $_SESSION['captcha']) {
+            $_SESSION['error'] = "Code CAPTCHA incorrect. Veuillez réessayer.";
+            $_SESSION['checkout_form_data'] = $_POST;
+            header('Location: checkout.php');
+            exit();
+        }
     }
 
     // Validate and sanitize all required fields
@@ -62,14 +89,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 
+    // Additional security: Validate phone number format
+    $phone = $_POST['customer_phone'];
+    $cleanPhone = preg_replace('/[^0-9]/', '', $phone);
+    if (strlen($cleanPhone) < 10) {
+        $_SESSION['error'] = "Numéro de téléphone invalide.";
+        $_SESSION['checkout_form_data'] = $_POST;
+        header('Location: checkout.php');
+        exit();
+    }
+
     $_SESSION['checkout_form_data'] = [
         'customer_name' => $_POST['customer_name'],
-        // 'customer_email' => $_POST['customer_email'],
         'customer_phone' => $_POST['customer_phone'],
         'customer_whatsapp' => $_POST['customer_whatsapp'] ?? '',
         'customer_city' => $_POST['customer_city'],
-        // 'customer_state' => $_POST['customer_state'] ?? '',
-        // 'customer_zipcode' => $_POST['customer_zipcode'] ?? '',
         'customer_country' => $_POST['customer_country'],
         'customer_address' => $_POST['customer_address'],
         'customer_notes' => $_POST['customer_notes'] ?? ''
@@ -83,12 +117,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'product_id' => $item['product_id'],
             'quantity' => $item['quantity'],
             'customer_name' => htmlspecialchars($_POST['customer_name'], ENT_QUOTES, 'UTF-8'),
-            // 'customer_email' => filter_var($_POST['customer_email'], FILTER_SANITIZE_EMAIL),
             'customer_phone' => htmlspecialchars($_POST['customer_phone'], ENT_QUOTES, 'UTF-8'),
             'customer_whatsapp' => isset($_POST['customer_whatsapp']) ? htmlspecialchars($_POST['customer_whatsapp'], ENT_QUOTES, 'UTF-8') : '',
             'customer_city' => htmlspecialchars($_POST['customer_city'], ENT_QUOTES, 'UTF-8'),
-            // 'customer_state' => isset($_POST['customer_state']) ? htmlspecialchars($_POST['customer_state'], ENT_QUOTES, 'UTF-8') : '',
-            // 'customer_zipcode' => isset($_POST['customer_zipcode']) ? htmlspecialchars($_POST['customer_zipcode'], ENT_QUOTES, 'UTF-8') : '',
             'customer_country' => htmlspecialchars($_POST['customer_country'], ENT_QUOTES, 'UTF-8'),
             'customer_address' => htmlspecialchars($_POST['customer_address'], ENT_QUOTES, 'UTF-8'),
             'customer_notes' => isset($_POST['customer_notes']) ? htmlspecialchars($_POST['customer_notes'], ENT_QUOTES, 'UTF-8') : ''
@@ -104,9 +135,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if ($successCount === count($cartItems)) {
+        // Increment order count and update last order time
+        $_SESSION['order_count']++;
+        $_SESSION['last_order_time'] = time();
+        
         $cartController->clearCart();
         unset($_SESSION['checkout_form_data']);
-        unset($_SESSION['captcha']);
+        if ($showCaptcha) {
+            unset($_SESSION['captcha']);
+        }
         $_SESSION['order_success'] = true;
         $_SESSION['order_count'] = $successCount;
         header('Location: order_success.php');
@@ -131,12 +168,9 @@ if (isset($_SESSION['error'])) {
 
 $formData = $_SESSION['checkout_form_data'] ?? [
     'customer_name' => '',
-    // 'customer_email' => '',
     'customer_phone' => '',
     'customer_whatsapp' => '',
     'customer_city' => '',
-    // 'customer_state' => '',
-    // 'customer_zipcode' => '',
     'customer_country' => '',
     'customer_address' => '',
     'customer_notes' => ''
@@ -171,6 +205,7 @@ function generateCaptcha($length = 6)
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/6.6.6/css/flag-icons.min.css">
 
     <style>
+        /* Your existing CSS styles remain the same */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
         :root {
@@ -685,6 +720,19 @@ function generateCaptcha($length = 6)
         p, span, label, h1, h2, h3, h4, h5, h6 {
             color: var(--text-primary);
         }
+        
+        .security-info {
+            background-color: #e6f7ff;
+            border-left: 4px solid #1890ff;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        
+        .security-info.dark {
+            background-color: #111b26;
+            border-left-color: #177ddc;
+        }
     </style>
 </head>
 
@@ -736,6 +784,13 @@ function generateCaptcha($length = 6)
 
     <main class="main-content">
         <div class="container">
+            <?php if ($showCaptcha): ?>
+            <div class="security-info dark:security-info dark">
+                <i class="fas fa-shield-alt mr-2"></i>
+                <span>Pour votre sécurité, une vérification CAPTCHA est requise après plusieurs commandes.</span>
+            </div>
+            <?php endif; ?>
+            
             <div class="checkout-container">
                 <div class="card animate-slide-in-up">
                     <div class="flex items-center mb-6">
@@ -782,16 +837,7 @@ function generateCaptcha($length = 6)
                                 </div>
                             </div>
 
-                            <div class="form-group">
-                                <label class="form-label dark:text" for="customer_whatsapp">
-                                    <i class="fab fa-whatsapp"></i> Numéro WhatsApp (Optionnel)
-                                </label>
-                                <input type="tel" id="customer_whatsapp" name="customer_whatsapp" class="form-input" placeholder="06 123 45 67 89"
-                                    value="<?php echo htmlspecialchars($formData['customer_whatsapp']); ?>">
-                                <div class="input-hint text-green-600">
-                                    <i class="fab fa-whatsapp"></i> Recevez les mises à jour sur WhatsApp
-                                </div>
-                            </div>
+                            
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -841,6 +887,7 @@ function generateCaptcha($length = 6)
                             <textarea id="customer_notes" name="customer_notes" rows="2" class="form-input" placeholder="Instructions spéciales pour la livraison "><?php echo htmlspecialchars($formData['customer_notes']); ?></textarea>
                         </div>
 
+                        <?php if ($showCaptcha): ?>
                         <div class="form-group">
                             <label class="form-label dark:text">
                                 <i class="fas fa-shield-alt"></i> Vérification de Sécurité *
@@ -858,6 +905,7 @@ function generateCaptcha($length = 6)
                                 <i class="fas fa-shield-alt"></i> Cela aide à prévenir les soumissions automatisées
                             </div>
                         </div>
+                        <?php endif; ?>
                     </form>
                 </div>
 

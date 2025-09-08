@@ -44,16 +44,20 @@ $currentTheme = isset($GLOBALS['currentTheme']) ? $GLOBALS['currentTheme'] : 'li
                     <?php endif; ?>
                 </a>
 
-                <!-- <?php if (isset($_SESSION['user_id'])): ?>
-                <a href="profile.php" class="hidden md:block">
-                    <i class="fas fa-user-circle text-xl dark:text-black-300"></i>
-                </a>
+                <?php if (isset($_SESSION['user_id'])): ?>
+                    <a href="profile.php" class="hidden md:block"></a>
+                        <i class="fas fa-user-circle text-xl dark:text-black-300"></i>
+                    </a>
+                    <?php if ($isAdmin): ?>
+                        <a href="admin" class="hidden md:block">
+                            <i class="fas fa-user-shield text-xl text-blue-600"></i>
+                        </a>
+                    <?php endif; ?>
                 <?php else: ?>
-                <a href="login.php" class="hidden md:block">
-                    <i class="fas fa-sign-in-alt text-xl dark:text-black-300"></i>
-                </a>
+                    <a href="admin" class="hidden md:block">
+                        <i class="fas fa-sign-in-alt text-xl dark:text-black-300"></i>
+                    </a>
                 <?php endif; ?>
-                 -->
                 <!-- <button class="md:hidden p-2 rounded-full hover:bg-black-100 dark:hover:bg-black-700" id="mobile-menu-button">
                     <i class="fas fa-bars text-black-700 dark:text-black-300"></i>
                 </button> -->

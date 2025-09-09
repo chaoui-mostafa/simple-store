@@ -1,0 +1,17 @@
+{
+    "name": "pc/simple_store",
+    "autoload": {
+        "psr-4": {
+            "Pc\\SimpleStore\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "chaoui-mostafa",
+            "email": "chaouid050@gmail.com"
+        }
+    ],
+    "require": {
+        "vlucas/phpdotenv": "^5.6"
+    }
+}

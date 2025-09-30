@@ -104,6 +104,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             --shadow-hover: rgba(0, 0, 0, 0.3);
         }
 
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             font-family: 'Inter', sans-serif;
             background: var(--bg-secondary);
@@ -111,46 +120,81 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             color: var(--text-primary);
             transition: background-color 0.3s, color 0.3s;
             overflow-x: hidden;
+            padding-bottom: 80px; /* Space for mobile nav */
         }
 
+        /* Mobile-first responsive design */
         .product-container {
             max-width: 1280px;
-            margin: 2rem auto;
+            margin: 1rem auto;
             padding: 0 1rem;
+        }
+
+        @media (min-width: 768px) {
+            .product-container {
+                margin: 2rem auto;
+                padding: 0 2rem;
+            }
+            body {
+                padding-bottom: 0;
+            }
         }
 
         .product-grid {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 2rem;
+            gap: 1.5rem;
         }
 
         @media (min-width: 1024px) {
             .product-grid {
                 grid-template-columns: 1fr 1fr;
+                gap: 3rem;
             }
         }
 
+        /* Product Images - Mobile Optimized */
         .product-image-container {
             position: relative;
-            border-radius: 16px;
+            border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 10px 30px var(--shadow-color);
+            box-shadow: 0 4px 20px var(--shadow-color);
             background: var(--bg-primary);
+            touch-action: pan-y;
         }
 
         .product-main-image {
             width: 100%;
-            height: 400px;
+            height: 300px;
             object-fit: cover;
             transition: transform 0.3s ease;
         }
 
+        @media (min-width: 640px) {
+            .product-main-image {
+                height: 400px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .product-main-image {
+                height: 500px;
+            }
+        }
+
         .product-thumbnails {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 0.75rem;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 0.5rem;
             margin-top: 1rem;
+            overflow-x: auto;
+            padding-bottom: 0.5rem;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+
+        .product-thumbnails::-webkit-scrollbar {
+            display: none;
         }
 
         .product-thumbnail {
@@ -159,6 +203,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             cursor: pointer;
             border: 2px solid transparent;
             transition: all 0.3s ease;
+            flex-shrink: 0;
+            min-width: 80px;
         }
 
         .product-thumbnail.active {
@@ -171,39 +217,64 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             object-fit: cover;
         }
 
+        /* Product Details - Mobile Optimized */
         .product-details {
             background: var(--card-bg);
-            border-radius: 16px;
-            padding: 2rem;
-            box-shadow: 0 10px 30px var(--shadow-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px var(--shadow-color);
+            position: sticky;
+            top: 1rem;
+        }
+
+        @media (min-width: 768px) {
+            .product-details {
+                padding: 2rem;
+            }
         }
 
         .product-title {
-            font-size: 2rem;
+            font-size: 1.5rem;
             font-weight: 700;
             margin-bottom: 1rem;
             color: var(--text-primary);
+            line-height: 1.3;
+        }
+
+        @media (min-width: 768px) {
+            .product-title {
+                font-size: 2rem;
+            }
         }
 
         .product-price {
-            font-size: 2.5rem;
+            font-size: 2rem;
             font-weight: 700;
             color: var(--primary-color);
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        @media (min-width: 768px) {
+            .product-price {
+                font-size: 2.5rem;
+            }
         }
 
         .product-description {
             color: var(--text-secondary);
             line-height: 1.6;
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
         }
 
+        /* Stock Badge */
         .stock-badge {
             display: inline-block;
             padding: 0.5rem 1rem;
             border-radius: 20px;
             font-weight: 600;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
         }
 
         .in-stock {
@@ -221,15 +292,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             color: #B91C1C;
         }
 
+        /* Quantity Selector - Touch Friendly */
         .quantity-selector {
             display: flex;
             align-items: center;
             margin-bottom: 1.5rem;
+            gap: 0.5rem;
         }
 
         .quantity-btn {
-            width: 40px;
-            height: 40px;
+            width: 44px;
+            height: 44px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -237,18 +310,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             border: 1px solid var(--border);
             font-size: 1.2rem;
             cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            touch-action: manipulation;
+        }
+
+        .quantity-btn:active {
+            transform: scale(0.95);
+            background: var(--primary-color);
+            color: white;
         }
 
         .quantity-input {
-            width: 60px;
-            height: 40px;
+            width: 70px;
+            height: 44px;
             text-align: center;
             border: 1px solid var(--border);
             background: var(--input-bg);
             color: var(--text-primary);
             font-weight: 600;
+            border-radius: 8px;
+            font-size: 1rem;
+            -webkit-appearance: none;
+            -moz-appearance: textfield;
         }
 
+        .quantity-input::-webkit-outer-spin-button,
+        .quantity-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        /* Action Buttons - Mobile Optimized */
         .action-buttons {
             display: grid;
             grid-template-columns: 1fr;
@@ -266,13 +359,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            padding: 1rem 2rem;
+            padding: 1rem 1.5rem;
             border-radius: 12px;
             font-weight: 600;
             transition: all 0.3s ease;
             cursor: pointer;
             border: none;
             text-decoration: none;
+            font-size: 1rem;
+            min-height: 54px;
+            touch-action: manipulation;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
         }
 
         .btn-primary {
@@ -298,16 +398,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .btn:disabled {
             opacity: 0.6;
             cursor: not-allowed;
+            transform: none !important;
         }
 
+        /* Product Features */
         .product-features {
             border-top: 1px solid var(--border);
-            padding-top: 2rem;
+            padding-top: 1.5rem;
         }
 
         .feature-list {
             list-style: none;
             padding: 0;
+            margin: 0;
         }
 
         .feature-item {
@@ -315,13 +418,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             align-items: center;
             margin-bottom: 0.75rem;
             color: var(--text-secondary);
+            font-size: 0.9rem;
         }
 
         .feature-icon {
             color: var(--success-color);
             margin-right: 0.75rem;
+            font-size: 0.875rem;
         }
 
+        /* Notifications */
         .notification {
             position: fixed;
             top: 20px;
@@ -334,6 +440,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             transform: translateX(100%);
             transition: transform 0.3s ease;
+            max-width: calc(100vw - 40px);
         }
         
         .notification.show {
@@ -352,11 +459,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .desktop-nav {
             background: var(--bg-primary);
             box-shadow: 0 4px 20px var(--shadow-color);
-            padding: 1rem 2rem;
+            padding: 1rem;
             position: sticky;
             top: 0;
             z-index: 100;
             border-bottom: 1px solid var(--border);
+        }
+        
+        @media (min-width: 768px) {
+            .desktop-nav {
+                padding: 1rem 2rem;
+            }
         }
         
         .desktop-nav-container {
@@ -369,57 +482,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         .desktop-nav-logo {
             font-weight: 700;
-            font-size: 1.5rem;
+            font-size: 1.25rem;
             color: var(--primary-color);
             text-decoration: none;
             display: flex;
             align-items: center;
+        }
+        
+        @media (min-width: 768px) {
+            .desktop-nav-logo {
+                font-size: 1.5rem;
+            }
         }
         
         .desktop-nav-logo img {
-            height: 40px;
+            height: 35px;
             margin-right: 10px;
             border-radius: 8px;
-        }
-        
-        .desktop-nav-menu {
-            display: flex;
-            align-items: center;
-            gap: 2rem;
-        }
-        
-        .desktop-nav-link {
-            color: var(--text-primary);
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s ease;
-            position: relative;
-            padding: 0.5rem 0;
-        }
-        
-        .desktop-nav-link:hover {
-            color: var(--primary-color);
-        }
-        
-        .desktop-nav-link::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: var(--primary-color);
-            transition: width 0.3s ease;
-        }
-        
-        .desktop-nav-link:hover::after {
-            width: 100%;
         }
         
         .desktop-nav-actions {
             display: flex;
             align-items: center;
-            gap: 1.5rem;
+            gap: 1rem;
+        }
+        
+        @media (min-width: 768px) {
+            .desktop-nav-actions {
+                gap: 1.5rem;
+            }
         }
         
         .desktop-nav-icon {
@@ -427,6 +518,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             color: var(--text-primary);
             transition: color 0.3s ease;
             cursor: pointer;
+            padding: 0.5rem;
         }
         
         .desktop-nav-icon:hover {
@@ -435,13 +527,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         .cart-badge {
             position: absolute;
-            top: -5px;
-            right: -5px;
+            top: -2px;
+            right: -2px;
             background: linear-gradient(135deg, var(--error-color), #DC2626);
             color: white;
             border-radius: 50%;
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             font-size: 0.7rem;
             display: flex;
             align-items: center;
@@ -452,19 +544,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .theme-toggle {
             background: var(--input-bg);
             border-radius: 50%;
-            width: 45px;
-            height: 45px;
+            width: 40px;
+            height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             border: 2px solid var(--border);
             transition: all 0.3s ease;
+            touch-action: manipulation;
         }
 
-        .theme-toggle:hover {
-            transform: rotate(180deg);
-            border-color: var(--primary-color);
+        .theme-toggle:active {
+            transform: scale(0.95);
         }
 
         /* Mobile Navigation */
@@ -474,12 +566,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             left: 0;
             right: 0;
             background: var(--bg-primary);
-            padding: 1rem;
+            padding: 0.75rem;
             box-shadow: 0 -10px 30px var(--shadow-color);
             z-index: 100;
             display: flex;
             justify-content: space-around;
             border-top: 1px solid var(--border);
+            backdrop-filter: blur(10px);
         }
         
         .mobile-nav-item {
@@ -488,10 +581,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             align-items: center;
             text-decoration: none;
             color: var(--text-secondary);
-            font-size: 0.8rem;
-            padding: 0.75rem;
-            border-radius: 16px;
+            font-size: 0.75rem;
+            padding: 0.5rem;
+            border-radius: 12px;
             transition: all 0.3s ease;
+            min-width: 60px;
+            touch-action: manipulation;
         }
         
         .mobile-nav-item.active {
@@ -499,70 +594,124 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             background: rgba(59, 130, 246, 0.15);
         }
         
-        .mobile-nav-item:hover {
-            color: var(--primary-color);
+        .mobile-nav-item:active {
+            transform: scale(0.95);
+        }
+
+        .mobile-nav-icon {
+            font-size: 1.25rem;
+            margin-bottom: 0.25rem;
+        }
+
+        /* Image Zoom for Mobile */
+        .image-zoom-container {
+            position: relative;
+            overflow: hidden;
+            cursor: zoom-in;
+        }
+
+        .image-zoom-container.zoomed {
+            cursor: zoom-out;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .image-zoom-container.zoomed .product-main-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            cursor: zoom-out;
+        }
+
+        /* Smooth scrolling */
+        .smooth-scroll {
+            scroll-behavior: smooth;
+        }
+
+        /* Loading states */
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        /* Back to top button */
+        .back-to-top {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            background: var(--primary-color);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            z-index: 99;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .back-to-top.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .back-to-top:active {
+            transform: scale(0.95);
         }
 
         /* Animations */
         @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
         }
 
         .animate-fade-in {
-            animation: fadeIn 0.5s ease-out forwards;
+            animation: fadeIn 0.6s ease-out forwards;
         }
 
-        /* Responsive adjustments */
+        .animate-slide-in {
+            animation: slideIn 0.3s ease-out forwards;
+        }
+
+        /* Prevent horizontal scroll on mobile */
+        body {
+            overflow-x: hidden;
+            width: 100%;
+        }
+
+        /* Improved touch targets */
         @media (max-width: 768px) {
-            .product-container {
-                margin: 1rem auto;
-                padding: 0 0.5rem;
-            }
-            
-            .product-main-image {
-                height: 300px;
-            }
-            
-            .product-thumbnails {
-                grid-template-columns: repeat(3, 1fr);
-            }
-            
-            .product-title {
-                font-size: 1.75rem;
-            }
-            
-            .product-price {
-                font-size: 2rem;
-            }
-            
-            .desktop-nav {
-                padding: 1rem;
-            }
-            
-            .desktop-nav-menu {
-                gap: 1rem;
+            .btn, .quantity-btn, .theme-toggle, .mobile-nav-item {
+                min-height: 44px; /* Minimum touch target size */
             }
         }
 
-        @media (max-width: 640px) {
-            .product-thumbnails {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .product-main-image {
-                height: 250px;
-            }
-            
-            .desktop-nav {
-                flex-direction: column;
-                gap: 1rem;
-            }
-            
-            .desktop-nav-menu {
-                flex-wrap: wrap;
-                justify-content: center;
-            }
+        /* Performance optimizations */
+        .will-change-transform {
+            will-change: transform;
+        }
+
+        .will-change-opacity {
+            will-change: opacity;
         }
     </style>
 </head>
@@ -573,9 +722,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="desktop-nav-container">
                 <a href="index.php" class="desktop-nav-logo">
                     <img src="../assets/images/logo/logo.jpg" alt="Monster Store Logo">
-                    Monster Store
+                    <span class="hidden sm:inline">Monster Store</span>
+                    <span class="sm:hidden">MS</span>
                 </a>
-                
                 
                 <div class="desktop-nav-actions">
                     <div class="theme-toggle" id="theme-toggle">
@@ -592,17 +741,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         </nav>
 
+        <!-- Back to Top Button -->
+        <div class="back-to-top" id="back-to-top" onclick="scrollToTop()">
+            <i class="fas fa-chevron-up"></i>
+        </div>
+
         <!-- Main Content -->
         <main class="flex-grow">
             <div class="product-container">
                 <?php if (isset($_SESSION['success_msg'])): ?>
-                    <div class="notification success show animate-fade-in">
+                    <div class="notification success show animate-slide-in">
                         <i class="fas fa-check-circle mr-2"></i> <?php echo $_SESSION['success_msg']; unset($_SESSION['success_msg']); ?>
                     </div>
                 <?php endif; ?>
                 
                 <?php if (isset($_SESSION['error_msg'])): ?>
-                    <div class="notification error show animate-fade-in">
+                    <div class="notification error show animate-slide-in">
                         <i class="fas fa-exclamation-circle mr-2"></i> <?php echo $_SESSION['error_msg']; unset($_SESSION['error_msg']); ?>
                     </div>
                 <?php endif; ?>
@@ -610,22 +764,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="product-grid animate-fade-in">
                     <!-- Product Images -->
                     <div class="product-images">
-                        <div class="product-image-container">
+                        <div class="product-image-container image-zoom-container" id="image-zoom-container">
                             <?php
-                            // Get the main image path from database
                             $mainImage = !empty($product['image']) ? "../assets/images/" . htmlspecialchars($product['image']) : '../assets/images/placeholder.jpg';
                             ?>
                             <img id="main-product-image" src="<?php echo $mainImage; ?>" 
                                  alt="<?php echo htmlspecialchars($product['name']); ?>" 
-                                 class="product-main-image"
+                                 class="product-main-image will-change-transform"
                                  onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIyNSIgdmlld0JveD0iMCAwIDMwMCAyMjUiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjI1IiBmaWxsPSIjRjBGMEYwIi8+CjxwYXRoIGQ9Ik0xMTIuNSA4NC41QzExMi41IDc4LjAyODQgMTE3Ljc4MiA3Mi43NSAxMjQuMjUgNzIuNzVDMTMwLjcxOCA3Mi43NSAxMzYgNzguMDI4NCAxMzYgODQuNUMxMzYgOTAuOTcxNiAxMzAuNzE4IDk2LjI1IDEyNC4yNSA5Ni4yNUMxMTcuNzgyIDk2LjI1IDExMi41IDkwLjk3MTYgMTEyLjUgODQuNVoiIGZpbGw9IiNEOEQ4RDgiLz4KPHBhdGggZD0iTTE4NSA5NEgxNjMuNUMxNjEuMDEzIDk4IDE1OSA5Ni4wMTM0IDE1OSA5OC41VjEzN0MxNTkgMTM5LjQ4NyAxNjEuMDEzIDE0MS41IDE2My41IDE0MS41SDE4NUMxODcuNDg3IDE0MS41IDE5MCAxMzkuNDg3IDE5MCAxMzdWOTguNUMxOTAgOTYuMDEzNCAxODcuNDg3IDk0IDE4NSA5NFoiIGZpbGw9IiNEOEQ4RDgiLz4KPC9zdmc+Cg=='">
                             
-                            <div class="absolute top-4 right-4">
+                            <div class="absolute top-3 right-3">
                                 <span class="stock-badge <?php 
                                     if ($product['quantity'] > 10) echo 'in-stock';
                                     elseif ($product['quantity'] > 0) echo 'low-stock';
                                     else echo 'out-of-stock';
                                 ?>">
+                                    <i class="fas fa-<?php 
+                                        if ($product['quantity'] > 10) echo 'check';
+                                        elseif ($product['quantity'] > 0) echo 'exclamation-triangle';
+                                        else echo 'times';
+                                    ?> mr-1"></i>
                                     <?php echo $product['quantity']; ?> en stock
                                 </span>
                             </div>
@@ -638,7 +796,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </div>
                             
                             <?php
-                            // Display additional images from database if available
                             $additionalImages = $productController->getProductImages($product['id']);
                             
                             if (!empty($additionalImages)) {
@@ -649,16 +806,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     echo '</div>';
                                 }
                             } else {
-                                // Fallback to sample images if no additional images in database
                                 $sampleImages = [
-                                    'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80',
-                                    'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80',
-                                    'https://images.unsplash.com/photo-1556306535-0f09a537f0a3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80'
+                                    'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80',
+                                    'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80',
+                                    'https://images.unsplash.com/photo-1556306535-0f09a537f0a3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80'
                                 ];
                                 
                                 foreach ($sampleImages as $index => $imageUrl) {
                                     echo '<div class="product-thumbnail" onclick="changeImage(\'' . $imageUrl . '\')">';
-                                    echo '<img src="' . $imageUrl . '" alt="Image exemple ' . ($index + 1) . '">';
+                                    echo '<img src="' . $imageUrl . '" alt="Image exemple ' . ($index + 1) . '" loading="lazy">';
                                     echo '</div>';
                                 }
                             }
@@ -670,46 +826,65 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="product-details">
                         <h1 class="product-title"><?php echo htmlspecialchars($product['name']); ?></h1>
                         
-                        <div class="product-price"><?php echo number_format($product['price'], 2); ?> DH</div>
+                        <div class="product-price">
+                            <i class="fas fa-tag mr-2"></i>
+                            <?php echo number_format($product['price'], 2); ?> DH
+                        </div>
                         
                         <p class="product-description"><?php echo htmlspecialchars($product['description']); ?></p>
                         
                         <!-- Add to Cart Form -->
-                        <form action="" method="POST">
+                        <form action="" method="POST" id="cart-form">
                             <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
                             <input type="hidden" name="product_id" value="<?php echo $product['id']; ?>">
                             
                             <div class="quantity-selector">
-                                <label for="quantity" class="mr-3 font-medium">Quantité :</label>
-                                <button type="button" class="quantity-btn rounded-l-md" onclick="decrementQuantity()">-</button>
+                                <label for="quantity" class="font-medium text-sm sm:text-base">
+                                    <i class="fas fa-cubes mr-2"></i>Quantité :
+                                </label>
+                                <button type="button" class="quantity-btn" onclick="decrementQuantity()">
+                                    <i class="fas fa-minus"></i>
+                                </button>
                                 <input type="number" id="quantity" name="quantity" min="1" 
                                        max="<?php echo $product['quantity']; ?>" value="1" 
                                        class="quantity-input">
-                                <button type="button" class="quantity-btn rounded-r-md" onclick="incrementQuantity()">+</button>
+                                <button type="button" class="quantity-btn" onclick="incrementQuantity()">
+                                    <i class="fas fa-plus"></i>
+                                </button>
                             </div>
 
                             <div class="action-buttons">
                                 <button type="submit" name="add_to_cart" 
-                                        class="btn btn-primary" 
+                                        class="btn btn-primary will-change-transform" 
                                         <?php echo $product['quantity'] <= 0 ? 'disabled' : ''; ?>>
-                                    <i class="fas fa-cart-plus mr-3"></i> Ajouter au panier
+                                    <i class="fas fa-cart-plus mr-3"></i> 
+                                    <span class="hidden sm:inline">Ajouter au panier</span>
+                                    <span class="sm:hidden">Panier</span>
                                 </button>
                                 
                                 <button type="submit" name="buy_now" 
-                                        class="btn btn-secondary"
+                                        class="btn btn-secondary will-change-transform"
                                         <?php echo $product['quantity'] <= 0 ? 'disabled' : ''; ?>>
-                                    <i class="fas fa-bolt mr-3"></i> Acheter maintenant
+                                    <i class="fas fa-bolt mr-3"></i> 
+                                    <span class="hidden sm:inline">Acheter maintenant</span>
+                                    <span class="sm:hidden">Acheter</span>
                                 </button>
                             </div>
                             
                             <?php if ($product['quantity'] <= 0): ?>
-                                <p class="text-center text-red-500 font-medium">Ce produit est actuellement en rupture de stock.</p>
+                                <p class="text-center text-red-500 font-medium text-sm">
+                                    <i class="fas fa-times-circle mr-2"></i>
+                                    Ce produit est actuellement en rupture de stock.
+                                </p>
                             <?php endif; ?>
                         </form>
                         
                         <!-- Product features -->
                         <div class="product-features">
-                            <h3 class="font-semibold text-xl mb-4">Caractéristiques :</h3>
+                            <h3 class="font-semibold text-lg mb-3">
+                                <i class="fas fa-star mr-2 text-yellow-500"></i>
+                                Caractéristiques :
+                            </h3>
                             <ul class="feature-list">
                                 <li class="feature-item">
                                     <i class="fas fa-check feature-icon"></i>
@@ -739,27 +914,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </main>
 
         <!-- Mobile Navigation -->
-  <?php include '../assets/part/nav-mobil.php'; ?>
-  <?php include '../assets/part/floatingCart.php'; ?>
-
-
+        <?php include '../assets/part/nav-mobil.php'; ?>
+        <?php include '../assets/part/floatingCart.php'; ?>
     </div>
 
     <script>
-        // Theme management
+        // Enhanced mobile support with smooth scrolling
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize theme
+            initializeTheme();
+            setupEventListeners();
+            setupSmoothScrolling();
+            setupImageZoom();
+            setupBackToTop();
+        });
+
+        function initializeTheme() {
             const savedTheme = localStorage.getItem('theme') || 'light';
             document.documentElement.setAttribute('data-theme', savedTheme);
             updateThemeIcon(savedTheme);
-            
-            // Theme toggle functionality
+        }
+
+        function setupEventListeners() {
+            // Theme toggle
             const themeToggle = document.getElementById('theme-toggle');
             if (themeToggle) {
                 themeToggle.addEventListener('click', toggleTheme);
+                themeToggle.addEventListener('touchstart', function(e) {
+                    e.preventDefault();
+                    toggleTheme();
+                }, { passive: false });
             }
             
-            // Auto-hide notifications
+            // Notifications auto-hide
             const notifications = document.querySelectorAll('.notification');
             notifications.forEach(notif => {
                 setTimeout(() => {
@@ -768,14 +954,101 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }, 4000);
             });
 
-            // Quantity validation
+            // Quantity input validation
             const quantityInput = document.getElementById('quantity');
             if (quantityInput) {
-                quantityInput.addEventListener('change', function() {
-                    validateQuantity();
+                quantityInput.addEventListener('change', validateQuantity);
+                quantityInput.addEventListener('blur', validateQuantity);
+            }
+
+            // Form submission loading state
+            const cartForm = document.getElementById('cart-form');
+            if (cartForm) {
+                cartForm.addEventListener('submit', function(e) {
+                    const buttons = this.querySelectorAll('button[type="submit"]');
+                    buttons.forEach(btn => {
+                        btn.classList.add('loading');
+                        btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Chargement...';
+                    });
                 });
             }
-        });
+        }
+
+        function setupSmoothScrolling() {
+            // Smooth scroll for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+
+            // Prevent rubber-band scrolling on iOS
+            document.body.addEventListener('touchmove', function(e) {
+                if (e.target.classList.contains('product-thumbnails')) {
+                    return;
+                }
+                if (document.body.scrollHeight <= window.innerHeight) {
+                    e.preventDefault();
+                }
+            }, { passive: false });
+        }
+
+        function setupImageZoom() {
+            const zoomContainer = document.getElementById('image-zoom-container');
+            const mainImage = document.getElementById('main-product-image');
+            
+            if (zoomContainer && mainImage) {
+                let isZoomed = false;
+                
+                zoomContainer.addEventListener('click', function() {
+                    if (window.innerWidth < 768) { // Only on mobile
+                        isZoomed = !isZoomed;
+                        if (isZoomed) {
+                            zoomContainer.classList.add('zoomed');
+                            document.body.style.overflow = 'hidden';
+                        } else {
+                            zoomContainer.classList.remove('zoomed');
+                            document.body.style.overflow = '';
+                        }
+                    }
+                });
+
+                // Close zoom on escape key
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape' && isZoomed) {
+                        zoomContainer.classList.remove('zoomed');
+                        document.body.style.overflow = '';
+                        isZoomed = false;
+                    }
+                });
+            }
+        }
+
+        function setupBackToTop() {
+            const backToTop = document.getElementById('back-to-top');
+            
+            window.addEventListener('scroll', function() {
+                if (window.pageYOffset > 300) {
+                    backToTop.classList.add('visible');
+                } else {
+                    backToTop.classList.remove('visible');
+                }
+            });
+        }
+
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
 
         function toggleTheme() {
             const currentTheme = document.documentElement.getAttribute('data-theme');
@@ -798,11 +1071,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             const thumbnails = document.querySelectorAll('.product-thumbnail');
             
             // Update main image with fade effect
-            mainImage.style.opacity = '0';
+            mainImage.style.opacity = '0.5';
             setTimeout(() => {
                 mainImage.src = src;
                 mainImage.style.opacity = '1';
-            }, 200);
+            }, 150);
             
             // Update active thumbnail
             thumbnails.forEach(thumb => thumb.classList.remove('active'));
@@ -844,27 +1117,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         function showToast(message, type = 'info') {
-            // Toast notification implementation
             const toast = document.createElement('div');
-            toast.className = `fixed top-4 right-4 z-50 px-6 py-3 rounded-lg text-white font-medium shadow-lg transform transition-transform duration-300 ${
+            toast.className = `fixed top-4 left-1/2 transform -translate-x-1/2 z-50 px-6 py-3 rounded-lg text-white font-medium shadow-lg transition-all duration-300 ${
                 type === 'success' ? 'bg-green-500' : 
                 type === 'error' ? 'bg-red-500' : 
                 type === 'warning' ? 'bg-yellow-500' : 'bg-blue-500'
             }`;
             toast.textContent = message;
-            toast.style.transform = 'translateX(100%)';
+            toast.style.opacity = '0';
+            toast.style.transform = 'translate(-50%, -20px)';
             
             document.body.appendChild(toast);
             
             setTimeout(() => {
-                toast.style.transform = 'translateX(0)';
+                toast.style.opacity = '1';
+                toast.style.transform = 'translate(-50%, 0)';
             }, 100);
             
             setTimeout(() => {
-                toast.style.transform = 'translateX(100%)';
+                toast.style.opacity = '0';
+                toast.style.transform = 'translate(-50%, -20px)';
                 setTimeout(() => toast.remove(), 300);
             }, 3000);
         }
+
+        // Handle orientation change
+        window.addEventListener('orientationchange', function() {
+            setTimeout(() => {
+                window.scrollTo(0, 0);
+            }, 100);
+        });
+
+        // Prevent zoom on double tap (iOS)
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function (event) {
+            const now = (new Date()).getTime();
+            if (now - lastTouchEnd <= 300) {
+                event.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
     </script>
 </body>
 </html>

@@ -2,6 +2,7 @@
 session_start();
 require_once '../config/db.php';
 require_once '../controllers/OrderController.php';
+
 require_once '../vendor/autoload.php';
 
 use TCPDF as TCPDF;
@@ -28,90 +29,129 @@ $lang = isset($_GET['lang']) && $_GET['lang'] === 'en' ? 'en' : 'fr';
 
 $translations = [
     'fr' => [
-        'invoice' => 'FACTURE',
-        'invoice_number' => 'Facture N°',
-        'date' => 'Date',
+        'invoice' => 'FACTURE PRO FORMA',
+        'invoice_number' => 'Reference Commande',
+        'date' => 'Date emission',
         'time' => 'Heure',
-        'bill_to' => 'Facturé à',
+        'bill_to' => 'Client',
         'description' => 'Description',
-        'quantity' => 'Quantité',
-        'unit_price' => 'Prix unitaire',
+        'quantity' => 'Quantite',
+        'unit_price' => 'Prix Unitaire',
         'total' => 'Total',
         'subtotal' => 'Sous-total',
-        'tax' => 'Taxe',
-        'thank_you' => 'Merci pour votre commande!',
-        'contact_info' => 'Pour toute question concernant cette facture, veuillez nous contacter.',
-        'phone' => 'Tél',
+        'shipping' => 'Frais Livraison',
+        'discount' => 'Remise',
+        'grand_total' => 'Total General',
+        'thank_you' => 'Merci pour votre confiance',
+        'contact_info' => 'Pour toute question concernant votre commande',
+        'phone' => 'Telephone',
         'email' => 'Email',
         'website' => 'Site web',
-        'order_total' => 'Total de la commande',
-        'invoice_date' => 'Date de facturation',
-        'order_date' => 'Date de commande',
-        'nom_prenom' => 'Nom et Prénom',
-        'telephone' => 'Téléphone',
+        'order_total' => 'Total a Payer',
+        'invoice_date' => 'Date facturation',
+        'order_date' => 'Date commande',
+        'nom_prenom' => 'Nom et Prenom',
+        'telephone' => 'Telephone',
         'adresse' => 'Adresse',
-        'payment_terms' => 'Paiement à réception de facture.'
+        'payment_terms' => 'Conditions Paiement',
+        'company_info' => 'MONSTER STORE SARL',
+        'legal_info' => 'Capital Social: 200.000 DH | RC: 12345 | IF: 123456789',
+        'bank_info' => 'Banque: BMCE | RIB: 123 456 789 123456789123 12',
+        'delivery_info' => 'Livraison',
+        'payment_methods' => 'Moyens Paiement',
+        'return_policy' => 'Retour sous 14 jours',
+        'free_shipping' => 'Livraison Offerte',
+        'order_summary' => 'Recapitulatif Commande',
+        'products_total' => 'Total Produits',
+        'shipping_fees' => 'Frais Expedition',
+        'order_details' => 'Details Commande'
     ],
     'en' => [
-        'invoice' => 'INVOICE',
-        'invoice_number' => 'Invoice #',
-        'date' => 'Date',
+        'invoice' => 'PRO FORMA INVOICE',
+        'invoice_number' => 'Order Reference',
+        'date' => 'Issue Date',
         'time' => 'Time',
-        'bill_to' => 'Bill To',
+        'bill_to' => 'Client',
         'description' => 'Description',
         'quantity' => 'Quantity',
         'unit_price' => 'Unit Price',
         'total' => 'Total',
         'subtotal' => 'Subtotal',
-        'tax' => 'Tax',
-        'thank_you' => 'Thank you for your order!',
-        'contact_info' => 'If you have any questions about this invoice, please contact us.',
+        'shipping' => 'Shipping Fees',
+        'discount' => 'Discount',
+        'grand_total' => 'Grand Total',
+        'thank_you' => 'Thank you for your trust',
+        'contact_info' => 'For any questions regarding your order',
         'phone' => 'Phone',
         'email' => 'Email',
         'website' => 'Website',
-        'order_total' => 'Order Total',
+        'order_total' => 'Total Due',
         'invoice_date' => 'Invoice Date',
         'order_date' => 'Order Date',
         'nom_prenom' => 'Full Name',
         'telephone' => 'Phone',
         'adresse' => 'Address',
-        'payment_terms' => 'Payment due upon receipt.'
+        'payment_terms' => 'Payment Terms',
+        'company_info' => 'MONSTER STORE LLC',
+        'legal_info' => 'Share Capital: 200.000 DH | RC: 12345 | Tax ID: 123456789',
+        'bank_info' => 'Bank: BMCE | Account: 123 456 789 123456789123 12',
+        'delivery_info' => 'Delivery',
+        'payment_methods' => 'Payment Methods',
+        'return_policy' => '14-day returns',
+        'free_shipping' => 'Free Shipping',
+        'order_summary' => 'Order Summary',
+        'products_total' => 'Products Total',
+        'shipping_fees' => 'Shipping Fees',
+        'order_details' => 'Order Details'
     ],
     'ar' => [
-        'invoice' => 'فاتورة',
-        'invoice_number' => 'رقم الفاتورة',
-        'date' => 'التاريخ',
+        'invoice' => 'فاتورة اولية',
+        'invoice_number' => 'رقم المرجع',
+        'date' => 'تاريخ الاصدار',
         'time' => 'الوقت',
-        'bill_to' => 'المُرسل إليه',
+        'bill_to' => 'العميل',
         'description' => 'الوصف',
         'quantity' => 'الكمية',
         'unit_price' => 'سعر الوحدة',
         'total' => 'المجموع',
         'subtotal' => 'المجموع الفرعي',
-        'tax' => 'الضريبة',
-        'thank_you' => 'شكراً لطلبك!',
-        'contact_info' => 'إذا كان لديك أي أسئلة حول هذه الفاتورة، يرجى الاتصال بنا.',
+        'shipping' => 'رسوم التوصيل',
+        'discount' => 'الخصم',
+        'grand_total' => 'المجموع الاجمالي',
+        'thank_you' => 'شكرا لثقتكم',
+        'contact_info' => 'لأي استفسارات بخصوص طلبك',
         'phone' => 'الهاتف',
-        'email' => 'البريد الإلكتروني',
-        'website' => 'الموقع الإلكتروني',
-        'order_total' => 'إجمالي الطلب',
+        'email' => 'البريد الالكتروني',
+        'website' => 'الموقع الالكتروني',
+        'order_total' => 'المبلغ المستحق',
         'invoice_date' => 'تاريخ الفاتورة',
         'order_date' => 'تاريخ الطلب',
         'nom_prenom' => 'الاسم الكامل',
         'telephone' => 'الهاتف',
         'adresse' => 'العنوان',
-        'payment_terms' => ' '
+        'payment_terms' => 'شروط الدفع',
+        'company_info' => 'متجر مونستر ش.ذ.م.م',
+        'legal_info' => 'رأس المال: 200.000 درهم | السجل التجاري: 12345 | الرقم الضريبي: 123456789',
+        'bank_info' => 'البنك: BMCE | الحساب: 123 456 789 123456789123 12',
+        'delivery_info' => 'التوصيل',
+        'payment_methods' => 'طرق الدفع',
+        'return_policy' => 'الارجاع خلال 14 يوم',
+        'free_shipping' => 'توصيل مجاني',
+        'order_summary' => 'ملخص الطلب',
+        'products_total' => 'مجموع المنتجات',
+        'shipping_fees' => 'رسوم الشحن',
+        'order_details' => 'تفاصيل الطلب'
     ]
 ];
 
 $t = $translations[$lang];
 
-// Create new PDF document with modern settings
+// Create new PDF document
 $pdf = new TCPDF('P', 'mm', 'A4', true, 'UTF-8', false);
 
 // Set document information
-$pdf->SetCreator('Monster Store');
-$pdf->SetAuthor('Monster Store');
+$pdf->SetCreator(htmlspecialchars($store_settings['store_name'] ?? 'Monster Store'));
+$pdf->SetAuthor(htmlspecialchars($store_settings['store_name'] ?? 'Monster Store'));
 $pdf->SetTitle($t['invoice'] . ' - ' . $order['order_code']);
 $pdf->SetSubject($t['invoice']);
 
@@ -119,107 +159,92 @@ $pdf->SetSubject($t['invoice']);
 $pdf->setPrintHeader(false);
 $pdf->setPrintFooter(false);
 
-// Set margins for modern design
-$pdf->SetMargins(15, 15, 15);
+// Set compact margins
+$pdf->SetMargins(10, 10, 10);
 $pdf->SetAutoPageBreak(TRUE, 25);
 
 // Add a page
 $pdf->AddPage();
 
-// Set modern font
-$pdf->SetFont('helvetica', '', 10);
+// Modern color scheme
+$primaryColor = array(41, 128, 185);
+$accentColor = array(231, 76, 60);
+$darkColor = array(52, 73, 94);
+$lightColor = array(245, 245, 245);
+$successColor = array(46, 204, 113);
 
-// Store information
-$storeName = "Monster Store";
-$storeAddress = "123 Rue du Commerce, Paris 75001";
-$storePhone = "+33 1 23 45 67 89";
-$storeEmail = "info@monsterstore.fr";
-$storeWebsite = "www.monsterstore.fr";
+// Header section - compact design
+$pdf->SetFillColor($primaryColor[0], $primaryColor[1], $primaryColor[2]);
+$pdf->Rect(0, 0, 210, 20, 'F');
 
-// Create modern header with gradient background
-$pdf->SetFillColor(67, 97, 238); // Primary color
-$pdf->Rect(0, 0, 210, 40, 'F');
+// Company name and invoice title
 $pdf->SetTextColor(255, 255, 255);
+$pdf->SetFont('helvetica', 'B', 16);
+$pdf->SetXY(10, 5);
+$pdf->Cell(100, 8, 'MONSTER STORE', 0, 0);
 
-// Logo
-$logoPath = '../assets/images/logo.png';
-if (file_exists($logoPath)) {
-    $pdf->Image($logoPath, 15, 10, 25, 0, 'PNG', '', 'T', false, 300, '', false, false, 0, false, false, false);
-    $pdf->SetXY(45, 12);
-} else {
-    $pdf->SetXY(15, 12);
-}
+$pdf->SetFont('helvetica', 'B', 12);
+$pdf->SetXY(120, 5);
+$pdf->Cell(80, 8, $t['invoice'], 0, 1, 'R');
 
-// Store name in header
-$pdf->SetFont('helvetica', 'B', 18);
-$pdf->Cell(0, 8, $storeName, 0, 1);
-$pdf->SetFont('helvetica', '', 10);
-$pdf->Cell(0, 5, $storeAddress, 0, 1);
+$pdf->SetFont('helvetica', '', 9);
+$pdf->SetXY(10, 12);
+$pdf->Cell(100, 6, $order['order_code'], 0, 0);
 
-// Reset text color for content
+$pdf->SetXY(120, 12);
+$pdf->Cell(80, 6, date('d/m/Y H:i', strtotime($order['created_at'])), 0, 1, 'R');
+
+// Reset for content
 $pdf->SetTextColor(0, 0, 0);
-$pdf->SetY(45);
+$pdf->SetY(25);
 
-// Invoice title section
-$pdf->SetFillColor(245, 247, 251);
-$pdf->Rect(0, 45, 210, 25, 'F');
-$pdf->SetFont('helvetica', 'B', 20);
-$pdf->Cell(0, 10, $t['invoice'], 0, 1, 'C');
-$pdf->SetFont('helvetica', '', 12);
-$pdf->Cell(0, 6, $t['invoice_number'] . ' : ' . $order['order_code'], 0, 1, 'C');
+// Company and Client information - side by side
+$pdf->SetFont('helvetica', 'B', 9);
+$pdf->Cell(95, 5, $t['company_info'], 0, 0);
+$pdf->Cell(95, 5, $t['bill_to'], 0, 1);
 
-// Date and time information with modern design
-$pdf->SetY(75);
-$pdf->SetFont('helvetica', 'B', 12);
-$pdf->Cell(40, 8, $t['invoice_date'] . ' : ', 0, 0);
-$pdf->SetFont('helvetica', '', 12);
-$pdf->Cell(50, 8, date('d/m/Y', strtotime($order['created_at'])), 0, 0);
-$pdf->SetFont('helvetica', 'B', 12);
-$pdf->Cell(30, 8, $t['time'] . ' : ', 0, 0);
-$pdf->SetFont('helvetica', '', 12);
-$pdf->Cell(0, 8, date('H:i:s', strtotime($order['created_at'])), 0, 1);
+// Company details
+$pdf->SetFont('helvetica', '', 8);
+$pdf->MultiCell(95, 4, 
+    "123 Avenue Mohammed V\n" .
+    "Casablanca 20000, Maroc\n" .
+    "Tel: +212 522 123 456\n" .
+    "Email: contact@monsterstore.ma\n" .
+    "Web: www.monsterstore.ma", 0, 'L');
 
-$pdf->SetFont('helvetica', 'B', 12);
-$pdf->Cell(40, 8, $t['order_date'] . ' : ', 0, 0);
-$pdf->SetFont('helvetica', '', 12);
-$pdf->Cell(50, 8, date('d/m/Y', strtotime($order['created_at'])), 0, 1);
+$pdf->SetY(30);
+$pdf->SetX(105);
 
-$pdf->Ln(10);
+// Client details
+$pdf->MultiCell(95, 4, 
+    $order['customer_name'] . "\n" .
+    "Email: " . $order['customer_email'] . "\n" .
+    "Tel: " . $order['customer_phone'] . "\n" .
+    $order['customer_address'] . "\n" .
+    $order['customer_city'] . ", " . $order['customer_zipcode'] . "\n" .
+    $order['customer_country'], 0, 'L');
 
-// Customer information with modern card style
-$pdf->SetFillColor(240, 240, 240);
-$pdf->RoundedRect(15, $pdf->GetY(), 180, 60, 3, '1111', 'DF');
-$pdf->SetFont('helvetica', 'B', 14);
-$pdf->Cell(0, 10, $t['bill_to'] . ' : ', 0, 1);
-$pdf->SetFont('helvetica', 'B', 11);
-$pdf->Cell(30, 6, $t['nom_prenom'] . ' : ', 0, 0);
-$pdf->SetFont('helvetica', '', 11);
-$pdf->Cell(0, 6, $order['customer_name'], 0, 1);
-$pdf->SetFont('helvetica', 'B', 11);
-$pdf->Cell(30, 6, $t['email'] . ' : ', 0, 0);
-$pdf->SetFont('helvetica', '', 11);
-$pdf->Cell(0, 6, $order['customer_email'], 0, 1);
-$pdf->SetFont('helvetica', 'B', 11);
-$pdf->Cell(30, 6, $t['telephone'] . ' : ', 0, 0);
-$pdf->SetFont('helvetica', '', 11);
-$pdf->Cell(0, 6, $order['customer_phone'], 0, 1);
-$pdf->SetFont('helvetica', 'B', 11);
-$pdf->Cell(30, 6, $t['adresse'] . ' : ', 0, 0);
-$pdf->SetFont('helvetica', '', 11);
-// Address - handle multi-line
-$address = $order['customer_address'] . ', ' . 
-           $order['customer_city'] . ', ' . $order['customer_state'] . ' ' . 
-           $order['customer_zipcode'] . ', ' . $order['customer_country'];
-$pdf->MultiCell(0, 6, $address);
-$pdf->Ln(15);
+$pdf->Ln(8);
 
-// Items table with modern styling
-$pdf->SetFillColor(67, 97, 238);
+// Order details bar
+$pdf->SetFillColor($lightColor[0], $lightColor[1], $lightColor[2]);
+$pdf->SetFont('helvetica', 'B', 9);
+$pdf->Cell(0, 6, $t['order_details'], 0, 1, 'C', true);
+
+$pdf->SetFont('helvetica', '', 8);
+$pdf->Cell(70, 4, $t['date'] . ': ' . date('d/m/Y', strtotime($order['created_at'])), 0, 0);
+$pdf->Cell(70, 4, $t['time'] . ': ' . date('H:i:s', strtotime($order['created_at'])), 0, 0);
+$pdf->Cell(50, 4, $t['invoice_number'] . ': ' . $order['order_code'], 0, 1);
+
+$pdf->Ln(5);
+
+// Products table header
+$pdf->SetFillColor($darkColor[0], $darkColor[1], $darkColor[2]);
 $pdf->SetTextColor(255, 255, 255);
-$pdf->SetFont('helvetica', 'B', 11);
+$pdf->SetFont('helvetica', 'B', 9);
 
 // Column widths
-$w = array(90, 25, 30, 35);
+$w = array(100, 20, 35, 25);
 
 // Table header
 $pdf->Cell($w[0], 8, $t['description'], 1, 0, 'C', 1);
@@ -227,59 +252,127 @@ $pdf->Cell($w[1], 8, $t['quantity'], 1, 0, 'C', 1);
 $pdf->Cell($w[2], 8, $t['unit_price'], 1, 0, 'C', 1);
 $pdf->Cell($w[3], 8, $t['total'], 1, 1, 'C', 1);
 
-$pdf->SetFillColor(255, 255, 255);
-$pdf->SetTextColor(0, 0, 0);
-$pdf->SetFont('helvetica', '', 10);
-
 // Table data
+$pdf->SetTextColor(0, 0, 0);
+$pdf->SetFont('helvetica', '', 8);
+
+$rowCount = 0;
 foreach ($orderItems as $item) {
     $itemTotal = $item['product_price'] * $item['quantity'];
     
-    // Product name (might need to be shortened for mobile)
-    $productName = $item['product_name'];
-    if (strlen($productName) > 40) {
-        $productName = substr($productName, 0, 37) . '...';
+    // Alternating row colors
+    if ($rowCount % 2 == 0) {
+        $pdf->SetFillColor(255, 255, 255);
+    } else {
+        $pdf->SetFillColor(250, 250, 250);
     }
     
-    $pdf->Cell($w[0], 8, $productName, 'LR', 0, 'L', true);
-    $pdf->Cell($w[1], 8, $item['quantity'], 'LR', 0, 'C', true);
-    $pdf->Cell($w[2], 8, number_format($item['product_price'], 2) . '  DH', 'LR', 0, 'R', true);
-    $pdf->Cell($w[3], 8, number_format($itemTotal, 2) . '  DH', 'LR', 1, 'R', true);
+    // Product name
+    $productName = $item['product_name'];
+    if (strlen($productName) > 60) {
+        $productName = substr($productName, 0, 57) . '...';
+    }
+    
+    $pdf->Cell($w[0], 7, $productName, 'LR', 0, 'L', true);
+    $pdf->Cell($w[1], 7, $item['quantity'], 'LR', 0, 'C', true);
+    $pdf->Cell($w[2], 7, number_format($item['product_price'], 2) . ' DH', 'LR', 0, 'R', true);
+    $pdf->Cell($w[3], 7, number_format($itemTotal, 2) . ' DH', 'LR', 1, 'R', true);
+    
+    $rowCount++;
 }
 
 // Closing line
 $pdf->Cell(array_sum($w), 0, '', 'T');
+$pdf->Ln(8);
+
+// Order summary - compact layout
+$subtotal = $total;
+$shipping = $subtotal > 500 ? 0 : 45;
+$grandTotal = $subtotal + $shipping;
+
+// Summary section
+$pdf->SetFont('helvetica', 'B', 10);
+$pdf->Cell(0, 6, $t['order_summary'], 0, 1);
+$pdf->Ln(2);
+
+$pdf->SetFont('helvetica', '', 9);
+$pdf->Cell(140, 6, $t['products_total'] . ':', 0, 0, 'R');
+$pdf->Cell(30, 6, number_format($subtotal, 2) . ' DH', 0, 1, 'R');
+
+$pdf->Cell(140, 6, $t['shipping_fees'] . ':', 0, 0, 'R');
+if ($shipping == 0) {
+    $pdf->SetTextColor($successColor[0], $successColor[1], $successColor[2]);
+    $pdf->Cell(30, 6, $t['free_shipping'], 0, 1, 'R');
+    $pdf->SetTextColor(0, 0, 0);
+} else {
+    $pdf->Cell(30, 6, number_format($shipping, 2) . ' DH', 0, 1, 'R');
+}
+
+// Grand total
+$pdf->SetFillColor($successColor[0], $successColor[1], $successColor[2]);
+$pdf->SetTextColor(255, 255, 255);
+$pdf->SetFont('helvetica', 'B', 11);
+$pdf->Cell(140, 8, $t['grand_total'] . ':', 0, 0, 'R', true);
+$pdf->Cell(30, 8, number_format($grandTotal, 2) . ' DH', 0, 1, 'R', true);
+
 $pdf->Ln(10);
 
-// Total section with modern styling
-$pdf->SetFillColor(245, 247, 251);
-$pdf->SetFont('helvetica', '', 12);
-$pdf->Cell($w[0] + $w[1] + $w[2], 10, $t['subtotal'] . ' : ', 0, 0, 'R', true);
-$pdf->Cell($w[3], 10, number_format($total, 2) . '  DH', 0, 1, 'R', true);
+// Additional information - compact layout
+$pdf->SetTextColor(0, 0, 0);
 
-$pdf->SetFont('helvetica', 'B', 14);
-$pdf->Cell($w[0] + $w[1] + $w[2], 12, $t['order_total'] . ' : ', 0, 0, 'R', true);
-$pdf->Cell($w[3], 12, number_format($total, 2) . '  DH', 0, 1, 'R', true);
-$pdf->Ln(15);
+// Two column layout for additional info
+$pdf->SetFont('helvetica', 'B', 9);
+$pdf->Cell(95, 6, $t['payment_methods'], 0, 0);
+$pdf->Cell(95, 6, $t['delivery_info'], 0, 1);
 
-// Payment terms section
-$pdf->SetFillColor(240, 240, 240);
-$pdf->RoundedRect(15, $pdf->GetY(), 180, 15, 3, '1111', 'DF');
-$pdf->SetFont('helvetica', 'I', 9);
-$pdf->Cell(0, 10, $t['payment_terms'], 0, 1, 'C');
-$pdf->Ln(10);
-
-// Thank you message with modern footer
-$pdf->SetTextColor(128, 128, 128);
-$pdf->SetFont('helvetica', 'I', 10);
-$pdf->Cell(0, 5, $t['thank_you'], 0, 1, 'C');
-$pdf->Cell(0, 5, $t['contact_info'], 0, 1, 'C');
-
-// Add contact information in footer
-$pdf->SetY(-30);
 $pdf->SetFont('helvetica', '', 8);
-$pdf->Cell(0, 5, $storeName . ' | ' . $storeAddress . ' | ' . $t['phone'] . ' : ' . $storePhone . ' | ' . $t['email'] . ' : ' . $storeEmail . ' | ' . $t['website'] . ' : ' . $storeWebsite, 0, 1, 'C');
-// $pdf->Cell(0, 2, $t['email'] . ' : ' . $storeEmail . ' | ' . $t['website'] . ' : ' . $storeWebsite, 0, 0, 'C');
+$pdf->MultiCell(95, 4, 
+    " - Especes\n" .
+    " - Carte Bancaire\n" .
+    " - Virement Bancaire\n" .
+    " - Cheque\n" .
+    " - Paiement Mobile", 0, 'L');
+
+$pdf->SetY($pdf->GetY() - 20);
+$pdf->SetX(105);
+$pdf->MultiCell(95, 4, 
+    " - Casablanca: 24h\n" .
+    " - Grand Casablanca: 48h\n" .
+    " - Livraison offerte des 500 DH\n" .
+    " - " . $t['return_policy'], 0, 'L');
+
+$pdf->Ln(8);
+
+// Thank you message
+$pdf->SetFillColor($primaryColor[0], $primaryColor[1], $primaryColor[2]);
+$pdf->SetTextColor(255, 255, 255);
+$pdf->SetFont('helvetica', 'B', 10);
+$pdf->Cell(0, 8, $t['thank_you'], 0, 1, 'C', true);
+
+// Contact information
+$pdf->SetTextColor(100, 100, 100);
+$pdf->SetFont('helvetica', 'I', 8);
+$pdf->Cell(0, 5, $t['contact_info'], 0, 1, 'C');
+$pdf->Cell(0, 5, 'Tel: +212 522 123 456 | Email: contact@monsterstore.ma', 0, 1, 'C');
+
+// Footer with legal information
+$pdf->SetY(-25);
+$pdf->SetTextColor(150, 150, 150);
+$pdf->SetFont('helvetica', '', 7);
+
+// Legal info
+$pdf->Cell(0, 3, $t['legal_info'], 0, 1, 'C');
+$pdf->Cell(0, 3, $t['bank_info'], 0, 1, 'C');
+
+// Simple footer line
+$pdf->SetLineWidth(0.2);
+$pdf->SetDrawColor(200, 200, 200);
+$pdf->Line(10, 275, 200, 275);
+
+// Page number
+$pdf->SetY(-12);
+$pdf->SetFont('helvetica', 'I', 7);
+$pdf->Cell(0, 10, 'Page 1/1', 0, 0, 'C');
 
 // Output the PDF
 $pdf->Output('invoice-' . $order['order_code'] . '.pdf', 'D');

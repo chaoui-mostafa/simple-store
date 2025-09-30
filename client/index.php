@@ -1,8 +1,16 @@
 <?php
 session_start();
+
 require_once '../config/db.php';
 require_once '../controllers/ProductController.php';
 require_once '../controllers/CartController.php';
+
+// require_once '../check_maintenance.php';
+require_once '../controllers/SettingsController.php';
+$settingsController = new SettingsController();
+$sidebar_stats = $settingsController->getSidebarStats();
+$store_settings = $settingsController->getStoreSettings();
+
 
 // Check current theme
 $currentTheme = 'light';
@@ -58,7 +66,7 @@ $availableProducts = array_filter($products, function($product) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Monster Store</title>
+    <title><?php echo htmlspecialchars($store_settings['store_name'] ?? 'Monster Store'); ?></title>
     <link rel="icon" href="../assets/images/logo/logo.jpg" type="image/x-icon">
 
     <!-- Tailwind CSS CDN -->

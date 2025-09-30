@@ -5,6 +5,10 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 require_once '../config/db.php';
+require_once '../../controllers/SettingsController.php';
+$settingsController = new SettingsController();
+$sidebar_stats = $settingsController->getSidebarStats();
+$store_settings = $settingsController->getStoreSettings();
 
 // Get cart count
 $cartCount = 0;
@@ -69,7 +73,7 @@ if (isset($_COOKIE['theme'])) {
                         <span class="text-white font-bold text-xl hidden">M</span>
                     </div>
                 </a>
-                <h1 class="text-xl font-bold text-light-dark">Monster Store</h1>
+                <h1 class="text-xl font-bold text-light-dark"><?php echo htmlspecialchars($store_settings['store_name'] ?? 'Monster Store'); ?></h1>
             </div>
             
             <!-- Navigation Links -->

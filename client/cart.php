@@ -3,9 +3,14 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+
 require_once '../config/db.php';
 require_once '../controllers/CartController.php';
 require_once '../controllers/ProductController.php';
+require_once '../controllers/SettingsController.php';
+$settingsController = new SettingsController();
+$sidebar_stats = $settingsController->getSidebarStats();
+$store_settings = $settingsController->getStoreSettings();
 
 // Établir la connexion à la base de données
 $db = new Database();
@@ -72,7 +77,7 @@ if (isset($_SESSION['error'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panier d'achat - Monster Store</title>
-      <link rel="icon" href="../assets/images/logo/logo.jpg" type="image/x-icon">
+    <link rel="icon" href="../assets/images/logo/logo.jpg" type="image/x-icon">
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome -->
@@ -128,6 +133,140 @@ if (isset($_SESSION['error'])) {
             transition: background-color 0.3s, color 0.3s;
         }
         
+        /* Modal de confirmation moderne */
+        .confirmation-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .confirmation-modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 1;
+        }
+        
+        .modal-content {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 0;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+            border: 1px solid var(--gray-border);
+        }
+        
+        .confirmation-modal.active .modal-content {
+            transform: scale(1);
+        }
+        
+        .modal-header {
+            padding: 1.5rem 1.5rem 1rem;
+            text-align: center;
+            border-bottom: 1px solid var(--gray-border);
+        }
+        
+        .modal-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+        }
+        
+        .modal-icon.warning {
+            background: linear-gradient(135deg, #FEF3C7, #F59E0B);
+            color: #92400E;
+        }
+        
+        .modal-icon.danger {
+            background: linear-gradient(135deg, #FEE2E2, #EF4444);
+            color: #B91C1C;
+        }
+        
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+        
+        .modal-message {
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: 0;
+        }
+        
+        .modal-body {
+            padding: 1.5rem;
+        }
+        
+        .modal-footer {
+            padding: 1rem 1.5rem 1.5rem;
+            display: flex;
+            gap: 0.75rem;
+            justify-content: flex-end;
+        }
+        
+        .modal-btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            min-width: 100px;
+        }
+        
+        .modal-btn-cancel {
+            background: var(--input-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--gray-border);
+        }
+        
+        .modal-btn-cancel:hover {
+            background: var(--gray-light);
+            transform: translateY(-1px);
+        }
+        
+        .modal-btn-confirm {
+            background: linear-gradient(135deg, var(--error), #DC2626);
+            color: white;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+        }
+        
+        .modal-btn-confirm:hover {
+            background: linear-gradient(135deg, #DC2626, #B91C1C);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+        }
+        
+        /* Animation pour les boutons */
+        @keyframes buttonPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .modal-btn-confirm:active {
+            animation: buttonPulse 0.3s ease;
+        }
+        
         /* Mobile-first cart display */
         .cart-list {
             display: flex;
@@ -180,7 +319,7 @@ if (isset($_SESSION['error'])) {
             font-size: 0.95rem;
             margin-bottom: 0.25rem;
             display: -webkit-box;
-            -webkit-line-camp: 2;
+            -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
@@ -539,12 +678,40 @@ if (isset($_SESSION['error'])) {
             .bottom-nav {
                 display: none;
             }
+            
+            /* Modal responsive pour desktop */
+            .modal-content {
+                max-width: 450px;
+            }
         }
         
         @media (min-width: 1024px) {
             .cart-item-image-container {
                 width: 140px;
                 height: 140px;
+            }
+        }
+        
+        /* Mobile responsive pour le modal */
+        @media (max-width: 640px) {
+            .modal-content {
+                width: 95%;
+                margin: 1rem;
+            }
+            
+            .modal-footer {
+                flex-direction: column-reverse;
+            }
+            
+            .modal-btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .modal-icon {
+                width: 60px;
+                height: 60px;
+                font-size: 2rem;
             }
         }
         
@@ -558,30 +725,6 @@ if (isset($_SESSION['error'])) {
         
         .main-content {
             padding-bottom: 80px; /* Space for bottom nav */
-        }
-        
-        /* Responsive footer columns */
-        @media (max-width: 1024px) {
-            .footer-section {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 1.5rem;
-            }
-        }
-        
-        @media (max-width: 640px) {
-            .footer-section {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-            }
-            
-            .footer-features {
-                flex-direction: column;
-                gap: 1rem;
-            }
-            
-            .desktop-footer {
-                display: none;
-            }
         }
         
         /* Empty cart styles */
@@ -638,9 +781,78 @@ if (isset($_SESSION['error'])) {
             cursor: pointer;
             border: 1px solid var(--gray-border);
         }
+        
+        /* Animation pour l'entrée du modal */
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        .confirmation-modal.active .modal-content {
+            animation: modalSlideIn 0.3s ease-out;
+        }
     </style>
 </head>
 <body class="antialiased">
+    <!-- Modal de confirmation de suppression -->
+    <div id="confirmationModal" class="confirmation-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-icon danger">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <h3 class="modal-title">Confirmer la suppression</h3>
+                <p class="modal-message" id="modalMessage">Êtes-vous sûr de vouloir supprimer cet article de votre panier ?</p>
+            </div>
+            <div class="modal-body">
+                <p class="text-sm text-gray-600 dark:text-gray-400">Cette action est irréversible. L'article sera définitivement retiré de votre panier.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="modal-btn modal-btn-cancel" onclick="closeConfirmationModal()">
+                    Annuler
+                </button>
+                <form id="confirmationForm" method="POST" class="inline">
+                    <input type="hidden" name="product_id" id="confirmProductId">
+                    <button type="submit" name="remove_from_cart" class="modal-btn modal-btn-confirm">
+                        <i class="fas fa-trash mr-2"></i> Supprimer
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de confirmation pour vider le panier -->
+    <div id="clearCartModal" class="confirmation-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-icon warning">
+                    <i class="fas fa-shopping-cart"></i>
+                </div>
+                <h3 class="modal-title">Vider le panier</h3>
+                <p class="modal-message">Êtes-vous sûr de vouloir vider votre panier ?</p>
+            </div>
+            <div class="modal-body">
+                <p class="text-sm text-gray-600 dark:text-gray-400">Tous les articles seront supprimés de votre panier. Cette action est irréversible.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="modal-btn modal-btn-cancel" onclick="closeClearCartModal()">
+                    Annuler
+                </button>
+                <form method="POST" class="inline">
+                    <button type="submit" name="clear_cart" class="modal-btn modal-btn-confirm">
+                        <i class="fas fa-broom mr-2"></i> Vider le panier
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- Notification Messages -->
     <?php if ($successMessage): ?>
     <div class="notification success" id="success-notification">
@@ -656,38 +868,31 @@ if (isset($_SESSION['error'])) {
     </div>
     <?php endif; ?>
 
- <!-- Header -->
-<header class="sticky-header">
-    <div class="container mx-auto px-4">
-        <div class="flex items-center justify-between py-3 md:py-4">
-            <!-- Logo + Title -->
-            <div class="flex items-center">
-                <a href="index.php" class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-blue-600 flex items-center justify-center mr-2 sm:mr-3 overflow-hidden">
-                    <img src="../assets/images/logo/logo.jpg" 
-                         alt="Logo" 
-                         class="w-full h-full object-cover" 
-                         onerror="this.style.display='none'; this.parentElement.querySelector('span').style.display='flex';">
-                    <span class="text-white font-bold text-sm sm:text-xl hidden">M</span>
-                </a>
-                <h1 class="text-sm sm:text-base md:text-xl font-bold dark:text">Monster Store</h1>
-            </div>
+    <!-- Header -->
+    <header class="sticky-header">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between py-3 md:py-4">
+                <!-- Logo + Title -->
+                <div class="flex items-center">
+                    <a href="index.php" class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-blue-600 flex items-center justify-center mr-2 sm:mr-3 overflow-hidden">
+                        <img src="../assets/images/logo/logo.jpg" 
+                             alt="Logo" 
+                             class="w-full h-full object-cover" 
+                             onerror="this.style.display='none'; this.parentElement.querySelector('span').style.display='flex';">
+                        <span class="text-white font-bold text-sm sm:text-xl hidden">M</span>
+                    </a>
+                    <h1 class="text-sm sm:text-base md:text-xl font-bold dark:text"><?php echo htmlspecialchars($store_settings['store_name'] ?? 'Monster Store'); ?></h1>
+                </div>
 
-            <!-- Actions -->
-            <div class="flex items-center gap-2 sm:gap-4">
-                <!-- Theme toggle إذا بغيت تعود تفعيل -->
-                <!--
-                <button id="theme-toggle" class="theme-toggle p-1 sm:p-2 rounded">
-                    <i id="theme-icon" class="fas fa-moon text-xs sm:text-sm"></i>
-                </button>
-                -->
-
-                <a href="index.php" class="text-blue-600 hover:text-blue-800 flex items-center text-xs sm:text-sm dark:text-blue-400 dark:hover:text-blue-300">
-                    <i class="fas fa-arrow-left mr-1 sm:mr-2 text-xs sm:text-sm"></i> Continuer les achats
-                </a>
+                <!-- Actions -->
+                <div class="flex items-center gap-2 sm:gap-4">
+                    <a href="index.php" class="text-blue-600 hover:text-blue-800 flex items-center text-xs sm:text-sm dark:text-blue-400 dark:hover:text-blue-300">
+                        <i class="fas fa-arrow-left mr-1 sm:mr-2 text-xs sm:text-sm"></i> Continuer les achats
+                    </a>
+                </div>
             </div>
         </div>
-    </div>
-</header>
+    </header>
 
     <!-- Main Content -->
     <main class="main-content">
@@ -758,25 +963,24 @@ if (isset($_SESSION['error'])) {
                                             </button>
                                         </form>
                                         
-                                        <form method="POST">
-                                            <input type="hidden" name="product_id" value="<?php echo $item['product_id']; ?>">
-                                            <button type="submit" name="remove_from_cart" class="remove-btn" title="Retirer l'article">
-                                                <i class="fas fa-trash-alt"></i>
-                                            </button>
-                                        </form>
+                                        <button type="button" class="remove-btn" 
+                                                onclick="showConfirmationModal(<?php echo $item['product_id']; ?>, '<?php echo htmlspecialchars(addslashes($item['name'])); ?>')"
+                                                title="Retirer l'article">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
                         <?php endforeach; ?>
                         
                         <!-- Clear cart button -->
-                        <form method="POST" class="text-right mt-4">
-                            <button type="submit" name="clear_cart" 
+                        <div class="text-right mt-4">
+                            <button type="button" 
                                     class="text-red-600 hover:text-red-800 text-sm flex items-center justify-end transition-colors dark:text-red-400 dark:hover:text-red-300"
-                                    onclick="return confirm('Êtes-vous sûr de vouloir vider votre panier ?')">
-                                <i class="fas fa-trash mr-2"></i> Vider le panier
+                                    onclick="showClearCartModal()">
+                                <i class="fas fa-broom mr-2"></i> Vider le panier
                             </button>
-                        </form>
+                        </div>
                     </div>
                     
                     <!-- Order summary -->
@@ -816,9 +1020,8 @@ if (isset($_SESSION['error'])) {
     </main>
 
     <!-- Desktop Footer -->
-    <?php include '../assets/part/footer.php'  ?>
+    <!-- <?php include '../assets/part/footer.php'  ?> -->
     
-
     <!-- Bottom Navigation (Mobile) -->
     <?php include '../assets/part/nav-mobil.php'; ?>
     
@@ -829,12 +1032,6 @@ if (isset($_SESSION['error'])) {
             const savedTheme = localStorage.getItem('theme') || 'light';
             document.documentElement.setAttribute('data-theme', savedTheme);
             updateThemeIcon(savedTheme);
-            
-            // Theme toggle functionality
-            const themeToggle = document.getElementById('theme-toggle');
-            if (themeToggle) {
-                themeToggle.addEventListener('click', toggleTheme);
-            }
             
             // Show notifications
             const successNotification = document.getElementById('success-notification');
@@ -857,21 +1054,57 @@ if (isset($_SESSION['error'])) {
             }
         });
         
-        function toggleTheme() {
-            const currentTheme = document.documentElement.getAttribute('data-theme');
-            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+        // Modal functions
+        function showConfirmationModal(productId, productName) {
+            const modal = document.getElementById('confirmationModal');
+            const message = document.getElementById('modalMessage');
+            const productIdInput = document.getElementById('confirmProductId');
             
-            document.documentElement.setAttribute('data-theme', newTheme);
-            localStorage.setItem('theme', newTheme);
-            updateThemeIcon(newTheme);
+            message.textContent = `Êtes-vous sûr de vouloir supprimer "${productName}" de votre panier ?`;
+            productIdInput.value = productId;
+            
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
         }
         
-        function updateThemeIcon(theme) {
-            const themeIcon = document.getElementById('theme-icon');
-            if (themeIcon) {
-                themeIcon.className = theme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
-            }
+        function closeConfirmationModal() {
+            const modal = document.getElementById('confirmationModal');
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
         }
+        
+        function showClearCartModal() {
+            const modal = document.getElementById('clearCartModal');
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeClearCartModal() {
+            const modal = document.getElementById('clearCartModal');
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+        
+        // Close modal when clicking outside
+        document.addEventListener('click', function(e) {
+            const confirmationModal = document.getElementById('confirmationModal');
+            const clearCartModal = document.getElementById('clearCartModal');
+            
+            if (e.target === confirmationModal) {
+                closeConfirmationModal();
+            }
+            if (e.target === clearCartModal) {
+                closeClearCartModal();
+            }
+        });
+        
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeConfirmationModal();
+                closeClearCartModal();
+            }
+        });
         
         // Quantity buttons functionality
         function incrementQuantity(button) {
@@ -907,6 +1140,56 @@ if (isset($_SESSION['error'])) {
                 });
             });
         });
+        
+        // Add smooth animations for modal interactions
+        function addModalAnimations() {
+            const modalButtons = document.querySelectorAll('.modal-btn');
+            modalButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    // Add ripple effect
+                    const ripple = document.createElement('span');
+                    const rect = this.getBoundingClientRect();
+                    const size = Math.max(rect.width, rect.height);
+                    const x = e.clientX - rect.left - size / 2;
+                    const y = e.clientY - rect.top - size / 2;
+                    
+                    ripple.style.cssText = `
+                        position: absolute;
+                        border-radius: 50%;
+                        background: rgba(255, 255, 255, 0.5);
+                        transform: scale(0);
+                        animation: ripple 0.6s linear;
+                        width: ${size}px;
+                        height: ${size}px;
+                        left: ${x}px;
+                        top: ${y}px;
+                    `;
+                    
+                    this.style.position = 'relative';
+                    this.style.overflow = 'hidden';
+                    this.appendChild(ripple);
+                    
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 600);
+                });
+            });
+        }
+        
+        // Initialize modal animations
+        document.addEventListener('DOMContentLoaded', addModalAnimations);
+        
+        // Ripple effect animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes ripple {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
     </script>
 </body>
 </html>

@@ -1,7 +1,12 @@
 <?php
 // Check if user is admin for admin link
 $isAdmin = isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/test/simple-store/controllers/SettingsController.php';
+$settingsController = new SettingsController();
+$sidebar_stats = $settingsController->getSidebarStats();
+$store_settings = $settingsController->getStoreSettings();
 ?>
+
 <?php
 // Check current theme from global variable or default to light
 $currentTheme = isset($GLOBALS['currentTheme']) ? $GLOBALS['currentTheme'] : 'light';
@@ -21,7 +26,7 @@ $currentTheme = isset($GLOBALS['currentTheme']) ? $GLOBALS['currentTheme'] : 'li
     <span class="text-white font-bold text-xl hidden">M</span>
 </div>
 
-                    <h1 class="text-xl font-bold dark:text">Monster Store</h1>
+                    <h1 class="text-xl font-bold dark:text"><?php echo htmlspecialchars($store_settings['store_name'] ?? 'Monster Store'); ?></h1>
                 </a>
             </div>
 

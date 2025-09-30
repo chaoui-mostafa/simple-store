@@ -29,7 +29,7 @@ class OrderController {
             $product_id        = (int) filter_var($data['product_id'] ?? 0, FILTER_SANITIZE_NUMBER_INT);
             $quantity          = max(1, (int) filter_var($data['quantity'] ?? 1, FILTER_SANITIZE_NUMBER_INT));
             $customer_name     = trim($data['customer_name'] ?? '');
-            $customer_email    = filter_var(trim($data['customer_email'] ?? ''), FILTER_SANITIZE_EMAIL);
+            $customer_email    = isset($data['customer_email']) ? filter_var(trim($data['customer_email']), FILTER_SANITIZE_EMAIL) : '';
             $customer_phone    = trim($data['customer_phone'] ?? '');
             $customer_whatsapp = trim($data['customer_whatsapp'] ?? '');
             $customer_city     = trim($data['customer_city'] ?? '');
@@ -39,16 +39,17 @@ class OrderController {
             $customer_address  = trim($data['customer_address'] ?? '');
             $customer_notes    = trim($data['customer_notes'] ?? '');
 
-            // Validate required fields (allow 0 for zipcode, allow phone/whatsapp to be optional)
+            // Validate required fields (allow 0 for zipcode, allow phone/whatsapp/email to be optional)
             $required = [$customer_name, $customer_city, $customer_country, $customer_address];
             foreach ($required as $field) {
                 if ($field === '') {
                     return ['success' => false, 'message' => 'Please fill in all required fields.'];
                 }
             }
-            // if (!filter_var($customer_email, FILTER_VALIDATE_EMAIL)) {
-            //     return ['success' => false, 'message' => 'Please provide a valid email address.'];
-            // }
+            // Email is optional, but if provided, validate it
+            if ($customer_email !== '' && !filter_var($customer_email, FILTER_VALIDATE_EMAIL)) {
+                return ['success' => false, 'message' => 'Please provide a valid email address.'];
+            }
 
             $productController = new ProductController($this->conn);
             $this->conn->beginTransaction();
@@ -75,7 +76,6 @@ class OrderController {
             ");
             $session_id = session_id();
             $stmt->execute([
-                
                 ':session_id' => $session_id,
                 ':product_id' => $product_id,
                 ':quantity' => $quantity,
@@ -122,7 +122,8 @@ class OrderController {
         } catch (Exception $e) {
             if ($this->conn->inTransaction()) $this->conn->rollBack();
             error_log("OrderController:createOrder Exception: " . $e->getMessage());
-            return ['success' => false, 'message' => 'An error occurred. Please try again later.'];
+            error_log("OrderController:createOrder Trace: " . $e->getTraceAsString());
+            return ['success' => false, 'message' => 'An error occurred: ' . $e->getMessage()];
         }
     }
 
@@ -415,50 +416,55 @@ class OrderController {
     }
 
     // Get all orders with filters
-    public function getAllOrders($phoneFilter = '', $minOrdersFilter = '', $codeFilter = '', $page = 1, $perPage = 10) {
-        $offset = ($page - 1) * $perPage;
-        
-        $sql = "SELECT o.*, p.name as product_name, p.price as product_price, p.image as product_image 
-                FROM orders o 
-                LEFT JOIN products p ON o.product_id = p.id 
-                WHERE 1=1";
-        
-        $params = [];
-        
-        if (!empty($phoneFilter)) {
-            $sql .= " AND o.customer_phone LIKE ?";
-            $params[] = "%$phoneFilter%";
-        }
-        
-        if (!empty($codeFilter)) {
-            $sql .= " AND o.order_code LIKE ?";
-            $params[] = "%$codeFilter%";
-        }
-        
-        // For min_orders filter, we need to find customers with at least X orders
-        if (!empty($minOrdersFilter)) {
-            $sql .= " AND o.customer_phone IN (
-                        SELECT customer_phone 
-                        FROM orders 
-                        GROUP BY customer_phone 
-                        HAVING COUNT(*) >= ?
-                    )";
-            $params[] = $minOrdersFilter;
-        }
-        
-        // Add ordering and pagination
-        $sql .= " ORDER BY o.created_at DESC LIMIT $perPage OFFSET $offset";
-        
-        try {
-            $stmt = $this->conn->prepare($sql);
-            $stmt->execute($params);
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            error_log("SQL Error in getAllOrders: " . $e->getMessage());
-            error_log("SQL Query: " . $sql);
-            return [];
-        }
+   public function getAllOrders($phoneFilter = '', $minOrdersFilter = '', $codeFilter = '', $page = 1, $perPage = 10) {
+    // تأكد أن page و perPage أعداد صحيحة
+    $page = max((int)$page, 1);
+    $perPage = max((int)$perPage, 10);
+
+    $offset = ($page - 1) * $perPage;
+
+    $sql = "SELECT o.*, p.name as product_name, p.price as product_price, p.image as product_image 
+            FROM orders o 
+            LEFT JOIN products p ON o.product_id = p.id 
+            WHERE 1=1";
+
+    $params = [];
+
+    if (!empty($phoneFilter)) {
+        $sql .= " AND o.customer_phone LIKE ?";
+        $params[] = "%$phoneFilter%";
     }
+
+    if (!empty($codeFilter)) {
+        $sql .= " AND o.order_code LIKE ?";
+        $params[] = "%$codeFilter%";
+    }
+
+    if (!empty($minOrdersFilter)) {
+        $minOrdersFilter = (int)$minOrdersFilter;
+        $sql .= " AND o.customer_phone IN (
+                    SELECT customer_phone 
+                    FROM orders 
+                    GROUP BY customer_phone 
+                    HAVING COUNT(*) >= ?
+                )";
+        $params[] = $minOrdersFilter;
+    }
+
+    $sql .= " ORDER BY o.created_at DESC LIMIT $perPage OFFSET $offset";
+
+    try {
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        error_log("SQL Error in getAllOrders: " . $e->getMessage());
+        error_log("SQL Query: " . $sql);
+        return [];
+    }
+}
+
+
 
     // Count total orders for pagination
     public function countAllOrders($phoneFilter = '', $minOrdersFilter = '', $codeFilter = '') {
@@ -534,4 +540,60 @@ class OrderController {
             ':order_id' => $orderId
         ]);
     }
+    public function getCustomersWithOrders() {
+    try {
+        $sql = "SELECT 
+                    customer_phone,
+                    customer_name,
+                    customer_whatsapp,
+                    customer_email,
+                    COUNT(*) as order_count,
+                    MAX(created_at) as last_order_date
+                FROM orders 
+                GROUP BY customer_phone, customer_name, customer_whatsapp, customer_email
+                ORDER BY last_order_date DESC";
+        
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute();
+        
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        error_log("Error getting customers with orders: " . $e->getMessage());
+        return [];
+    }
+}
+public function getOrdersByCustomer($phone) {
+    try {
+        $sql = "SELECT * FROM orders WHERE customer_phone = ? ORDER BY created_at DESC";
+        
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([$phone]);
+        
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        error_log("Error getting orders by customer: " . $e->getMessage());
+        return [];
+    }
+}
+
+function getCustomerStats($pdo, $phone) {
+    $stmt = $pdo->prepare("
+        SELECT 
+            SUM(p.price * o.quantity) as total_spent,
+            COUNT(o.id) as total_orders,
+            MAX(o.created_at) as last_order_date
+        FROM orders o
+        JOIN products p ON o.product_id = p.id
+        WHERE o.customer_phone = :phone
+    ");
+    $stmt->execute([':phone' => $phone]);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
+// 👇 مثال: جلب الإحصائيات للزبون الحالي
+// $stats = getCustomerStats($pdo, $customer['customer_phone']);
+// $orderTotal = $stats['total_spent'] ?? 0;
+// $totalOrders = $stats['total_orders'] ?? 0;
+// $lastOrderDate = $stats['last_order_date'] ?? null;
+
 }

@@ -2,7 +2,7 @@
 <footer class="desktop-footer">
     <div class="footer-section">
         <div class="footer-column">
-            <h3>Monster Store</h3>
+            <h3><?php echo htmlspecialchars($store_settings['store_name'] ?? 'Monster Store'); ?></h3>
             <p class="text-gray-600 dark:text-gray-400 text-sm">Votre destination unique pour les dernières tendances mode et produits de qualité.</p>
         </div>
         
@@ -55,7 +55,7 @@
     </div>
     
     <div class="footer-bottom">
-        <p class="dark:text-gray-400">&copy; 2025 Monster Store. Tous droits réservés.</p>
+        <p class="dark:text-gray-400">&copy; 2025 <?php echo htmlspecialchars($store_settings['store_name'] ?? 'Monster Store'); ?>. Tous droits réservés.</p>
     </div>
 </footer>
 
